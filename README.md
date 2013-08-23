@@ -11,7 +11,7 @@ Install with [npm](https://npmjs.org/package/download): `npm install download`
 ```js
 var download = require('download');
 
-download('foo.tar.gz', 'bar');
+download('foo.tar.gz', 'bar', { extract: true; });
 // => download and extract `foo.tar.gz` into `bar/`
 
 download('foo.jpg', 'bar/foo.jpg');
