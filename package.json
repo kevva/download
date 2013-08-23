@@ -1,0 +1,38 @@
+{
+  "name": "download",
+  "version": "0.1.0",
+  "description": "Download and extract files",
+  "keywords": [
+    "url",
+    "http",
+    "download",
+    "extract"
+  ],
+  "homepage": "https://github.com/kevva/download",
+  "bugs": "https://github.com/kevva/download/issues",
+  "author": {
+    "name": "Kevin Martensson",
+    "email": "kevinmartensson@gmail.com",
+    "url": "http://kevinmartensson.com"
+  },
+  "license": "MIT",
+  "repository": "git://github.com/kevva/download.git",
+  "scripts": {
+    "test": "mocha --reporter list"
+  },
+  "files": [
+    "download.js"
+  ],
+  "dependencies": {
+    "decompress": "~0.1.0",
+    "mkdirp": "~0.3.5",
+    "request": "~2.25.0",
+    "through2": "~0.1.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  }
+}
