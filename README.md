@@ -1,4 +1,4 @@
-# download
+# download [![Build Status](https://secure.travis-ci.org/kevva/download.png?branch=master)](http://travis-ci.org/kevva/download)
 
 Downloading made easy.
 
