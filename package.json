@@ -20,6 +20,7 @@
   "scripts": {
     "test": "mocha --reporter list"
   },
+  "main": "download.js",
   "files": [
     "download.js"
   ],
