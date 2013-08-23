@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var mkdir = require('mkdirp');
 var request = require('request');
-var decompress = require('../decompress/decompress');
+var decompress = require('decompress');
 var stream = require('through2')();
 
 module.exports = function (url, dest, opts) {
