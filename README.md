@@ -1,6 +1,6 @@
 # download [![Build Status](https://secure.travis-ci.org/kevva/download.png?branch=master)](http://travis-ci.org/kevva/download)
 
-Downloading made easy.
+Download and extract files effortlessly in Node.js.
 
 ## Getting started
 
@@ -8,15 +8,30 @@ Install with [npm](https://npmjs.org/package/download): `npm install download`
 
 ## Examples
 
+If you're fetching an archive you can set `extract: true` in options and it'll 
+extract it for you.
+
 ```js
 var download = require('download');
 
+// download and extract `foo.tar.gz` into `bar/`
 download('foo.tar.gz', 'bar', { extract: true; });
-// => download and extract `foo.tar.gz` into `bar/`
 
+// download and save `foo.jpg` into `bar/foo.jpg`
 download('foo.jpg', 'bar/foo.jpg');
-// => download and save `foo.jpg` into `bar/foo.jpg`
 ```
+
+## API
+
+### download(url, dest, opts)
+
+Download a file to a given destination.
+
+## Options
+
+* `extract` — If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
+
+You can also define options accepted by the [request](https://github.com/mikeal/request/) module.
 
 ## License
 
