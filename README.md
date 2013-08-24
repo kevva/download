@@ -8,8 +8,8 @@ Install with [npm](https://npmjs.org/package/download): `npm install download`
 
 ## Examples
 
-If you're fetching an archive you can set `extract: true` in options and it'll 
-extract it for you.
+If you're fetching an archive you can set `extract: true` in options and 
+it'll extract it for you.
 
 ```js
 var download = require('download');
