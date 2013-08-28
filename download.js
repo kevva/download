@@ -46,11 +46,11 @@ module.exports = function (url, dest, opts) {
         if (opts.extract && decompress.canExtract(url, mime)) {
             end = decompress.extract({ ext: mime, path: dest });
         } else {
-            end = fs.createWriteStream(dest);
-
             if (!fs.existsSync(path.dirname(dest))) {
                 mkdir.sync(path.dirname(dest));
             }
+
+            end = fs.createWriteStream(dest);
         }
 
         req.pipe(end);
