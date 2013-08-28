@@ -14,9 +14,9 @@ var stream = require('through2')();
  *
  *   - `extract` Try extracting the file
  *
- * @param  {String} url
- * @param  {String} dest
- * @param  {Object} opts
+ * @param {String} url
+ * @param {String} dest
+ * @param {Object} opts
  */
 
 module.exports = function (url, dest, opts) {
@@ -33,6 +33,7 @@ module.exports = function (url, dest, opts) {
     .on('error', function (err) {
         stream.emit('error', err);
     });
+
     req.on('response', function (res) {
         var mime = res.headers['content-type'];
         var status = res.statusCode;
