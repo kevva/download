@@ -17,6 +17,7 @@ var stream = require('through2')();
  * @param {String} url
  * @param {String} dest
  * @param {Object} opts
+ * @api public
  */
 
 module.exports = function (url, dest, opts) {
