@@ -18,14 +18,18 @@ var download = require('download');
 download('foo.tar.gz', 'bar', { extract: true; });
 
 // download and save `foo.jpg` into `bar/foo.jpg`
-download('foo.jpg', 'bar/foo.jpg');
+download('foo.jpg', 'bar');
+
+// download and save an array of files in `bar/`
+var files = ['foo.jpg', 'bar.jpg', 'cat.jpg'];
+download(files, 'bar');
 ```
 
 ## API
 
 ### download(url, dest, opts)
 
-Download a file to a given destination.
+Download a file or an array of files to a given destination.
 
 ## Options
 

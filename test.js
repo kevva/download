@@ -21,16 +21,30 @@ describe('download()', function () {
     });
     it('should download a file', function (cb) {
         var src = 'https://www.google.se/images/srpr/logo4w.png';
-        var dest = 'tmp/test.png';
+        var dest = 'tmp';
         var dl = download(src, dest);
 
         dl.once('close', function () {
-            fs.stat(dest, cb);
+            fs.stat(dest + '/logo4w.png', cb);
+        });
+    });
+    it('should download an array of files', function (cb) {
+        var src = [
+            'https://www.google.se/images/srpr/logo4w.png',
+            'https://ssl.gstatic.com/gb/images/k1_a31af7ac.png'
+        ];
+        var dest = 'tmp';
+        var dl = download(src, dest);
+
+        dl.once('close', function () {
+            fs.statSync(dest + '/logo4w.png');
+            fs.statSync(dest + '/k1_a31af7ac.png');
+            cb();
         });
     });
     it('should return status code 404', function (cb) {
-        var src = 'https://github.com/not/existing/url';
-        var dest = 'tmp/404';
+        var src = 'https://github.com/asd/asd/asd';
+        var dest = 'tmp';
         var dl = download(src, dest);
 
         dl.once('response', function (res) {

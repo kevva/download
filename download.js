@@ -1,6 +1,7 @@
 'use strict';
 
 var decompress = require('decompress');
+var forEach = require('async-foreach').forEach;
 var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
@@ -21,43 +22,48 @@ var stream = require('through2')();
  */
 
 module.exports = function (url, dest, opts) {
-    opts = opts || {};
-    opts.url = url;
+    url = Array.isArray(url) ? url : [url];
 
-    var req = request.get(opts)
-    .on('response', function (res) {
-        stream.emit('response', res);
-    })
-    .on('data', function (data) {
-        stream.emit('data', data);
-    })
-    .on('error', function (err) {
-        stream.emit('error', err);
-    });
+    forEach(url, function (url) {
+        opts = opts || {};
+        opts.url = url;
+        opts.dest = path.join(dest, path.basename(url));
 
-    req.on('response', function (res) {
-        var mime = res.headers['content-type'];
-        var status = res.statusCode;
-        var end;
+        var req = request.get(opts)
+        .on('response', function (res) {
+            stream.emit('response', res);
+        })
+        .on('data', function (data) {
+            stream.emit('data', data);
+        })
+        .on('error', function (err) {
+            stream.emit('error', err);
+        });
 
-        if (status < 200 || status >= 300) {
-            return;
-        }
+        req.on('response', function (res) {
+            var mime = res.headers['content-type'];
+            var status = res.statusCode;
+            var end;
 
-        if (opts.extract && decompress.canExtract(url, mime)) {
-            end = decompress.extract({ ext: mime, path: dest });
-        } else {
-            if (!fs.existsSync(path.dirname(dest))) {
-                mkdir.sync(path.dirname(dest));
+            if (status < 200 || status >= 300) {
+                return;
             }
 
-            end = fs.createWriteStream(dest);
-        }
+            if (opts.extract && decompress.canExtract(url, mime)) {
+                end = decompress.extract({ ext: mime, path: dest });
+            } else {
+                if (!fs.existsSync(dest)) {
+                    mkdir.sync(dest);
+                }
 
-        req.pipe(end);
+                end = fs.createWriteStream(opts.dest);
+            }
 
-        end.on('close', function () {
-            stream.emit('close');
+            req.pipe(end);
+
+            end.on('close', function () {
+                stream.emit('close');
+            });
         });
     });
 
