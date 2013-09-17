@@ -42,13 +42,4 @@ describe('download()', function () {
             cb();
         });
     });
-    it('should return status code 404', function (cb) {
-        var src = 'https://github.com/asd/asd/asd';
-        var dest = 'tmp';
-        var dl = download(src, dest);
-
-        dl.once('response', function (res) {
-            cb(assert.equal(res.statusCode, '404'));
-        });
-    });
 });
