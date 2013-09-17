@@ -15,7 +15,7 @@ var stream = require('through2')();
  *
  *   - `extract` Try extracting the file
  *
- * @param {String} url
+ * @param {String|Array} url
  * @param {String} dest
  * @param {Object} opts
  * @api public
