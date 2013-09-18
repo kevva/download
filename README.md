@@ -15,10 +15,10 @@ it'll extract it for you.
 var download = require('download');
 
 // download and extract `foo.tar.gz` into `bar/`
-download('foo.tar.gz', 'bar', { extract: true; });
+download('foo.tar.gz', 'bar', { extract: true });
 
 // download and save `foo.exe` into `bar/foo.exe` with mode `0755`
-download('foo.exe', 'bar', { mode: 0755 });
+download('foo.exe', 'bar', { mode: '0755' });
 
 // download and save an array of files in `bar/`
 var files = ['foo.jpg', 'bar.jpg', 'cat.jpg'];
@@ -33,7 +33,8 @@ Download a file or an array of files to a given destination.
 
 ## Options
 
-* `extract` — If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
+* `extract` — If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/)
+* `mode` — Set mode on the downloaded files
 
 You can also define options accepted by the [request](https://github.com/mikeal/request/) module.
 
