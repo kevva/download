@@ -17,8 +17,8 @@ var download = require('download');
 // download and extract `foo.tar.gz` into `bar/`
 download('foo.tar.gz', 'bar', { extract: true; });
 
-// download and save `foo.jpg` into `bar/foo.jpg`
-download('foo.jpg', 'bar');
+// download and save `foo.exe` into `bar/foo.exe` with mode `0755`
+download('foo.exe', 'bar', { mode: 0755 });
 
 // download and save an array of files in `bar/`
 var files = ['foo.jpg', 'bar.jpg', 'cat.jpg'];

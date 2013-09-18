@@ -14,6 +14,7 @@ var stream = require('through2')();
  * Options:
  *
  *   - `extract` Try extracting the file
+ *   - `mode` Set mode on the downloaded files
  *
  * @param {String|Array} url
  * @param {String} dest
@@ -62,6 +63,10 @@ module.exports = function (url, dest, opts) {
             req.pipe(end);
 
             end.on('close', function () {
+                if (!opts.extract && opts.mode) {
+                    fs.chmodSync(opts.dest, opts.mode);
+                }
+
                 stream.emit('close');
             });
         });

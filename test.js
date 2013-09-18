@@ -28,6 +28,18 @@ describe('download()', function () {
             fs.stat(dest + '/logo4w.png', cb);
         });
     });
+    it('should download a file and set the right mode', function (cb) {
+        var src = 'https://raw.github.com/yeoman/node-gifsicle/master/vendor/osx/gifsicle';
+        var dest = 'tmp';
+        var dl = download(src, dest, { mode: '0755' });
+
+        dl.once('close', function () {
+            fs.stat(dest + '/gifsicle', function (err, stats) {
+                var mode = stats.mode.toString(8);
+                cb(assert.equal(mode, '100755'));
+            });
+        });
+    });
     it('should download an array of files', function (cb) {
         var src = [
             'https://www.google.se/images/srpr/logo4w.png',
