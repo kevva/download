@@ -35,6 +35,7 @@ Download a file or an array of files to a given destination.
 
 * `extract` — If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/)
 * `mode` — Set mode on the downloaded files
+* `strip` — Equivalent to `--strip-components` for tar
 
 You can also define options accepted by the [request](https://github.com/mikeal/request/) module.
 

@@ -15,6 +15,7 @@ var stream = require('through2')();
  *
  *   - `extract` Try extracting the file
  *   - `mode` Set mode on the downloaded files
+ *   - `strip` Equivalent to --strip-components for tar
  *
  * @param {String|Array} url
  * @param {String} dest
@@ -29,6 +30,7 @@ module.exports = function (url, dest, opts) {
         opts = opts || {};
         opts.url = url;
         opts.dest = path.join(dest, path.basename(url));
+        opts.strip = opts.strip || '0';
 
         var req = request.get(opts)
         .on('response', function (res) {
@@ -51,7 +53,7 @@ module.exports = function (url, dest, opts) {
             }
 
             if (opts.extract && decompress.canExtract(url, mime)) {
-                end = decompress.extract({ ext: mime, path: dest });
+                end = decompress.extract({ ext: mime, path: dest, strip: opts.strip });
             } else {
                 if (!fs.existsSync(dest)) {
                     mkdir.sync(dest);
