@@ -53,7 +53,15 @@ module.exports = function (url, dest, opts) {
             }
 
             if (opts.extract && decompress.canExtract(url, mime)) {
-                end = decompress.extract({ ext: url, path: dest, strip: opts.strip });
+                var ext;
+
+                if (decompress.canExtract(url)) {
+                    ext = url;
+                } else {
+                    ext = mime;
+                }
+
+                end = decompress.extract({ ext: ext, path: dest, strip: opts.strip });
             } else {
                 if (!fs.existsSync(dest)) {
                     mkdir.sync(dest);

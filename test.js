@@ -19,6 +19,15 @@ describe('download()', function () {
             fs.stat(dest + '/download-master/download.js', cb);
         });
     });
+    it('should download and extract a file using MIME type', function (cb) {
+        var src = 'https://github.com/kevva/decompress/zipball/master';
+        var dest = 'tmp';
+        var dl = download(src, dest, { extract: true });
+
+        dl.once('close', function () {
+            fs.stat(dest + '/kevva-decompress-f86d0f0/decompress.js', cb);
+        });
+    });
     it('should download a file', function (cb) {
         var src = 'https://www.google.se/images/srpr/logo4w.png';
         var dest = 'tmp';
