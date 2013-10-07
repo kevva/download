@@ -49,7 +49,7 @@ module.exports = function (url, dest, opts) {
             var end;
 
             if (status < 200 || status >= 300) {
-                return;
+                stream.emit('error', status);
             }
 
             if (opts.extract && decompress.canExtract(url, mime)) {

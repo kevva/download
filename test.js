@@ -25,7 +25,7 @@ describe('download()', function () {
         var dl = download(src, dest, { extract: true });
 
         dl.once('close', function () {
-            fs.stat(dest + '/kevva-decompress-f86d0f0/decompress.js', cb);
+            fs.stat(dest + '/kevva-decompress-f2dfecd/decompress.js', cb);
         });
     });
     it('should download a file', function (cb) {
