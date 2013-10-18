@@ -39,6 +39,26 @@ Download a file or an array of files to a given destination.
 
 You can also define options accepted by the [request](https://github.com/mikeal/request/) module.
 
+## Callback
+
+```js
+var download = require('download');
+
+var stream = download(file, 'bar');
+stream.on('close', function() {
+    console.log('File downloaded.');
+});
+stream.on('response', function(res) {
+    console.log(res);
+});
+stream.on('data', function(data) {
+    console.log(data);
+});
+stream.on('error', function(error) {
+    console.log(error);
+});
+```
+
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License) (c) [Kevin Mårtensson](http://kevinmartensson.com)
