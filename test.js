@@ -21,11 +21,11 @@ describe('download()', function () {
     });
     it('should download and extract a file using MIME type', function (cb) {
         var src = 'https://github.com/kevva/decompress/zipball/master';
-        var dest = 'tmp';
-        var dl = download(src, dest, { extract: true });
+        var dest = 'tmp/decompress';
+        var dl = download(src, dest, { extract: true, strip: 1 });
 
         dl.once('close', function () {
-            fs.stat(dest + '/kevva-decompress-f2dfecd/decompress.js', cb);
+            fs.stat(dest + '/decompress.js', cb);
         });
     });
     it('should download a file', function (cb) {
