@@ -39,7 +39,7 @@ Download a file or an array of files to a given destination.
 
 You can also define options accepted by the [request](https://github.com/mikeal/request/) module.
 
-## Callback
+## Events
 
 ```js
 var download = require('download');
