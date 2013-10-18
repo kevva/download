@@ -29,7 +29,8 @@ download(files, 'bar');
 
 ### download(url, dest, opts)
 
-Download a file or an array of files to a given destination.
+Download a file or an array of files to a given destination. Returns an EventEmitter 
+with three possible events — `response`, `data` and `error`.
 
 ## Options
 
