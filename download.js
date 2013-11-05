@@ -11,13 +11,17 @@ var stream = require('through2')();
 /**
  * Download a file to a given destination
  *
+ * Files can be renamed by passing in an object / array of objects with the
+ * following structure:
+ *   { url: 'src-url.jpg', filename: 'new-file-name.jpg' }
+ *
  * Options:
  *
  *   - `extract` Try extracting the file
  *   - `mode` Set mode on the downloaded files
  *   - `strip` Equivalent to --strip-components for tar
  *
- * @param {String|Array} url
+ * @param {String|Array|Object} url
  * @param {String} dest
  * @param {Object} opts
  * @api public
@@ -27,9 +31,16 @@ module.exports = function (url, dest, opts) {
     url = Array.isArray(url) ? url : [url];
 
     forEach(url, function (url) {
+
+        var filename = path.basename(url);
+        if (url.url && url.filename) {
+            filename = url.filename;
+            url = url.url;
+        }
+
         opts = opts || {};
         opts.url = url;
-        opts.dest = path.join(dest, path.basename(url));
+        opts.dest = path.join(dest, filename);
         opts.strip = opts.strip || '0';
 
         var req = request.get(opts)
