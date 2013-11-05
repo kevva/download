@@ -7,6 +7,7 @@ var fs = require('fs');
 var rm = require('rimraf');
 
 describe('download()', function () {
+
     after(function (cb) {
         rm('tmp', cb);
     });
@@ -37,6 +38,18 @@ describe('download()', function () {
             fs.stat(dest + '/logo4w.png', cb);
         });
     });
+    it('should download and rename a file', function (cb) {
+        var src = {
+            url: 'https://www.google.se/images/srpr/logo4w.png',
+            filename: 'google.png'
+        };
+        var dest = 'tmp';
+        var dl = download(src, dest);
+
+        dl.once('close', function () {
+            fs.stat(dest + '/google.png', cb);
+        });
+    });
     it('should download a file and set the right mode', function (cb) {
         var src = 'https://raw.github.com/yeoman/node-gifsicle/master/vendor/osx/gifsicle';
         var dest = 'tmp';
@@ -60,6 +73,20 @@ describe('download()', function () {
         dl.once('close', function () {
             fs.statSync(dest + '/logo4w.png');
             fs.statSync(dest + '/k1_a31af7ac.png');
+            cb();
+        });
+    });
+    it('should download and rename an array of files', function (cb) {
+        var src = [
+            { url: 'https://www.google.se/images/srpr/logo4w.png', filename: 'google.png'},
+            { url: 'https://ssl.gstatic.com/gb/images/k1_a31af7ac.png', filename: 'test.png' }
+        ];
+        var dest = 'tmp';
+        var dl = download(src, dest);
+
+        dl.once('close', function () {
+            fs.statSync(dest + '/google.png');
+            fs.statSync(dest + '/test.png');
             cb();
         });
     });

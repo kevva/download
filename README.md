@@ -8,7 +8,7 @@ Install with [npm](https://npmjs.org/package/download): `npm install download`
 
 ## Examples
 
-If you're fetching an archive you can set `extract: true` in options and 
+If you're fetching an archive you can set `extract: true` in options and
 it'll extract it for you.
 
 ```js
@@ -20,6 +20,9 @@ download('foo.tar.gz', 'bar', { extract: true });
 // download and save `foo.exe` into `bar/foo.exe` with mode `0755`
 download('foo.exe', 'bar', { mode: '0755' });
 
+// download and rename `foo.exe` to `oof.exe`
+download({ url: 'foo.exe', filename: 'oof.exe' });
+
 // download and save an array of files in `bar/`
 var files = ['foo.jpg', 'bar.jpg', 'cat.jpg'];
 download(files, 'bar');
@@ -29,7 +32,7 @@ download(files, 'bar');
 
 ### download(url, dest, opts)
 
-Download a file or an array of files to a given destination. Returns an EventEmitter 
+Download a file or an array of files to a given destination. Returns an EventEmitter
 with three possible events — `response`, `data` and `error`.
 
 ## Options
