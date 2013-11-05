@@ -77,6 +77,7 @@ describe('download()', function () {
         });
     });
     it('should download and rename an array of files', function (cb) {
+        this.timeout(6000);
         var src = [
             { url: 'https://www.google.se/images/srpr/logo4w.png', filename: 'google.png'},
             { url: 'http://www.gstatic.com/gb/images/k1_a31af7ac.png', filename: 'test.png' }
