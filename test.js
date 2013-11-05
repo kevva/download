@@ -8,8 +8,6 @@ var rm = require('rimraf');
 
 describe('download()', function () {
 
-    this.timeout(10000);
-
     after(function (cb) {
         rm('tmp', cb);
     });
@@ -81,7 +79,7 @@ describe('download()', function () {
     it('should download and rename an array of files', function (cb) {
         var src = [
             { url: 'https://www.google.se/images/srpr/logo4w.png', filename: 'google.png'},
-            { url: 'https://ssl.gstatic.com/gb/images/k1_a31af7ac.png', filename: 'test.png' }
+            { url: 'http://www.gstatic.com/gb/images/k1_a31af7ac.png', filename: 'test.png' }
         ];
         var dest = 'tmp';
         var dl = download(src, dest);
