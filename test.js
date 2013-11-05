@@ -8,6 +8,8 @@ var rm = require('rimraf');
 
 describe('download()', function () {
 
+    this.timeout(6000);
+
     after(function (cb) {
         rm('tmp', cb);
     });
