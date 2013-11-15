@@ -24,15 +24,21 @@ var stream = require('through2')();
  */
 
 module.exports = function (url, dest, opts) {
+
     url = Array.isArray(url) ? url : [url];
 
     forEach(url, function (url) {
-        opts = opts || {};
-        opts.url = url;
-        opts.dest = path.join(dest, path.basename(url));
-        opts.strip = opts.strip || '0';
 
-        var req = request.get(opts)
+        // Load in global options for this particular download
+        // This will prevent conflicts between multiple download requests
+        // while still maintaining global defaults set through opts
+        var this_opts = opts || {};
+        this_opts.strip = this_opts.strip || '0';
+
+        this_opts.url = url;
+        this_opts.destination = path.join(dest, path.basename(url));
+
+        var req = request.get(this_opts)
         .on('response', function (res) {
             stream.emit('response', res);
         })
@@ -52,32 +58,35 @@ module.exports = function (url, dest, opts) {
                 stream.emit('error', status);
             }
 
-            if (opts.extract && decompress.canExtract(url, mime)) {
+            if (this_opts.extract && decompress.canExtract(this_opts.url, mime)) {
                 var ext;
 
-                if (decompress.canExtract(url)) {
-                    ext = url;
+                if (decompress.canExtract(this_opts.url)) {
+                    ext = this_opts.url;
                 } else {
                     ext = mime;
                 }
 
-                end = decompress.extract({ ext: ext, path: dest, strip: opts.strip });
+                end = decompress.extract({ ext: ext, path: dest, strip: this_opts.strip });
             } else {
+
                 if (!fs.existsSync(dest)) {
                     mkdir.sync(dest);
                 }
 
-                end = fs.createWriteStream(opts.dest);
+                end = fs.createWriteStream(this_opts.destination);
             }
 
             req.pipe(end);
 
             end.on('close', function () {
-                if (!opts.extract && opts.mode) {
-                    fs.chmodSync(opts.dest, opts.mode);
+
+                if (!this_opts.extract && this_opts.mode) {
+                    fs.chmodSync(this_opts.destination, this_opts.mode);
                 }
 
                 stream.emit('close');
+
             });
         });
     });
