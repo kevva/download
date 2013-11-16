@@ -1,7 +1,7 @@
 'use strict';
 
 var decompress = require('decompress');
-var forEach = require('async-foreach').forEach;
+//var forEach = require('async-foreach').forEach;
 var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
@@ -33,21 +33,21 @@ module.exports = function (url, dest, opts) {
         // Load in global options for this particular download
         // This will prevent conflicts between multiple download requests
         // while still maintaining global defaults set through opts
-        var this_opts = opts || {};
-        this_opts.strip = this_opts.strip || '0';
+        var urlOptions = opts || {};
+        urlOptions.strip = urlOptions.strip || '0';
 
         // If passed a "download object" instead of a string,
         // use the URL property in the object and the filename property to save the file
         // (this "download object" can be extended for other uses on individual files)
         if (url.url && url.filename) {
-            this_opts.url = url.url;
-            this_opts.destination = path.join(dest, url.filename);
+            urlOptions.url = url.url;
+            urlOptions.destination = path.join(dest, url.filename);
         } else {
-            this_opts.url = url;
-            this_opts.destination = path.join(dest, path.basename(url));
+            urlOptions.url = url;
+            urlOptions.destination = path.join(dest, path.basename(url));
         }
 
-        var req = request.get(this_opts)
+        var req = request.get(urlOptions)
         .on('response', function (res) {
             stream.emit('response', res);
         })
@@ -69,31 +69,31 @@ module.exports = function (url, dest, opts) {
                 return cb(new Error('Invalid status code: ' + status), status);
             }
 
-            if (this_opts.extract && decompress.canExtract(this_opts.url, mime)) {
+            if (urlOptions.extract && decompress.canExtract(urlOptions.url, mime)) {
                 var ext;
 
-                if (decompress.canExtract(this_opts.url)) {
-                    ext = this_opts.url;
+                if (decompress.canExtract(urlOptions.url)) {
+                    ext = urlOptions.url;
                 } else {
                     ext = mime;
                 }
 
-                end = decompress.extract({ ext: ext, path: dest, strip: this_opts.strip });
+                end = decompress.extract({ ext: ext, path: dest, strip: urlOptions.strip });
             } else {
 
                 if (!fs.existsSync(dest)) {
                     mkdir.sync(dest);
                 }
 
-                end = fs.createWriteStream(this_opts.destination);
+                end = fs.createWriteStream(urlOptions.destination);
             }
 
             req.pipe(end);
 
             end.on('close', function () {
 
-                if (!this_opts.extract && this_opts.mode) {
-                    fs.chmodSync(this_opts.destination, this_opts.mode);
+                if (!urlOptions.extract && urlOptions.mode) {
+                    fs.chmodSync(urlOptions.destination, urlOptions.mode);
                 }
 
                 stream.emit('close');
@@ -103,7 +103,7 @@ module.exports = function (url, dest, opts) {
 
             });
         });
-    }, function (error, status_code_collection) {
+    }, function (error, statusCodeCollection) {
 
         // This block is here to ensure all requests have
         // completed before emitting a "done" event

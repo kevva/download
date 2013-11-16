@@ -75,12 +75,12 @@ describe('download()', function () {
     });
     it('should download an array of files and save each with a custom filename', function (cb) {
         // Crazy, dynamic image URLs (GitHub's and Joyent's Gravatars)
-        var array_files = [
+        var src = [
             { url: 'https://2.gravatar.com/avatar/61024896f291303615bcd4f7a0dcfb74?d=https%3A%2F%2Fidenticons.github.com%2Fae816a80e4c1c56caa2eb4e1819cbb2f.png&r=x&s=440', filename: 'github_gravatar.png' },
             { url: 'https://0.gravatar.com/avatar/95c8b4070c2ba024f87a8fdca63e9d24?d=https%3A%2F%2Fidenticons.github.com%2Fb569502f473b890f9fcfc45b8a227baa.png&r=x&s=440', filename: 'joyent_gravatar.png' }
         ];
         var dest = 'tmp';
-        var dl = download(array_files, dest);
+        var dl = download(src, dest);
 
         dl.once('done', function () {
             fs.statSync(dest + '/github_gravatar.png');
