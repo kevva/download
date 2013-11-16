@@ -15,7 +15,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest, { extract: true });
 
-        dl.once('close', function () {
+        dl.once('done', function () {
             fs.stat(dest + '/download-master/download.js', cb);
         });
     });
@@ -24,7 +24,7 @@ describe('download()', function () {
         var dest = 'tmp/decompress';
         var dl = download(src, dest, { extract: true, strip: 1 });
 
-        dl.once('close', function () {
+        dl.once('done', function () {
             fs.stat(dest + '/decompress.js', cb);
         });
     });
@@ -33,7 +33,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest);
 
-        dl.once('close', function () {
+        dl.once('done', function () {
             fs.stat(dest + '/logo4w.png', cb);
         });
     });
@@ -42,7 +42,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest, { mode: '0755' });
 
-        dl.once('close', function () {
+        dl.once('done', function () {
             fs.stat(dest + '/gifsicle', function (err, stats) {
                 var mode = stats.mode.toString(8);
                 cb(assert.equal(mode, '100755'));
@@ -57,7 +57,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest);
 
-        dl.once('close', function () {
+        dl.once('done', function () {
             fs.statSync(dest + '/logo4w.png');
             fs.statSync(dest + '/k1_a31af7ac.png');
             cb();

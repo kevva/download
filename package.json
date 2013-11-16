@@ -29,7 +29,8 @@
     "mkdirp": "~0.3.5",
     "request": "~2.25.0",
     "through2": "~0.1.0",
-    "async-foreach": "~0.1.3"
+    "async-foreach": "~0.1.3",
+    "async": "0.2.9"
   },
   "devDependencies": {
     "mocha": "~1.12.0",

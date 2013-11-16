@@ -7,6 +7,7 @@ var mkdir = require('mkdirp');
 var path = require('path');
 var request = require('request');
 var stream = require('through2')();
+var async = require('async');
 
 /**
  * Download a file to a given destination
@@ -27,7 +28,7 @@ module.exports = function (url, dest, opts) {
 
     url = Array.isArray(url) ? url : [url];
 
-    forEach(url, function (url) {
+    async.map(url, function (url, cb) {
 
         // Load in global options for this particular download
         // This will prevent conflicts between multiple download requests
@@ -50,12 +51,14 @@ module.exports = function (url, dest, opts) {
         });
 
         req.on('response', function (res) {
+
             var mime = res.headers['content-type'];
             var status = res.statusCode;
             var end;
 
             if (status < 200 || status >= 300) {
                 stream.emit('error', status);
+                return callback(new Error('Invalid status code: ' + status), status);
             }
 
             if (this_opts.extract && decompress.canExtract(this_opts.url, mime)) {
@@ -87,9 +90,28 @@ module.exports = function (url, dest, opts) {
 
                 stream.emit('close');
 
+                // Callback
+                return cb(null, status);
+
             });
         });
+    }, function (error, status_code_collection) {
+
+        // This block is here to ensure all requests have
+        // completed before emitting a "done" event
+        // I've had issues with race conditions in tests, even with only 2 items.
+        // One file would complete, emit the "close" event, and the test would check for all files
+        // This was problematic as some of the other requests/io were not done yet.
+
+        // Error is handled by emiting an error on each individual file.
+        // So we ignore it here for now
+        // if (error) {}
+
+        // We are done!
+        stream.emit('done');
+
     });
 
     return stream;
+
 };
