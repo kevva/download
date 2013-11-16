@@ -66,7 +66,7 @@ module.exports = function (url, dest, opts) {
 
             if (status < 200 || status >= 300) {
                 stream.emit('error', status);
-                return callback(new Error('Invalid status code: ' + status), status);
+                return cb(new Error('Invalid status code: ' + status), status);
             }
 
             if (this_opts.extract && decompress.canExtract(this_opts.url, mime)) {
