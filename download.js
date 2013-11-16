@@ -36,8 +36,16 @@ module.exports = function (url, dest, opts) {
         var this_opts = opts || {};
         this_opts.strip = this_opts.strip || '0';
 
-        this_opts.url = url;
-        this_opts.destination = path.join(dest, path.basename(url));
+        // If passed a "download object" instead of a string,
+        // use the URL property in the object and the filename property to save the file
+        // (this "download object" can be extended for other uses on individual files)
+        if (url.url && url.filename) {
+            this_opts.url = url.url;
+            this_opts.destination = path.join(dest, url.filename);
+        } else {
+            this_opts.url = url;
+            this_opts.destination = path.join(dest, path.basename(url));
+        }
 
         var req = request.get(this_opts)
         .on('response', function (res) {
