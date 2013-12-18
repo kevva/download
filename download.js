@@ -1,7 +1,7 @@
 'use strict';
 
 var decompress = require('decompress');
-var forEach = require('async-foreach').forEach;
+var eachAsync = require('each-async');
 var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
@@ -26,7 +26,7 @@ var stream = require('through2')();
 module.exports = function (url, dest, opts) {
     url = Array.isArray(url) ? url : [url];
 
-    forEach(url, function (url) {
+    eachAsync(url, function (url, index, done) {
         opts = opts || {};
         opts.url = url;
         opts.dest = path.join(dest, path.basename(url));
@@ -78,6 +78,7 @@ module.exports = function (url, dest, opts) {
                 }
 
                 stream.emit('close');
+                done();
             });
         });
     });
