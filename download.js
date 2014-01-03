@@ -24,13 +24,14 @@ var Transform = require('through2');
  */
 
 module.exports = function (url, dest, opts) {
-    var stream = Transform();
     url = Array.isArray(url) ? url : [url];
+    opts = opts || {};
+
+    var stream = Transform();
+    var strip = opts.strip || '0';
 
     eachAsync(url, function (url, index, done) {
-        opts = opts || {};
         opts.url = url;
-        opts.strip = opts.strip || '0';
 
         var target = path.join(dest, path.basename(url));
 
@@ -64,7 +65,7 @@ module.exports = function (url, dest, opts) {
                     ext = mime;
                 }
 
-                end = decompress.extract({ ext: ext, path: dest, strip: opts.strip });
+                end = decompress.extract({ ext: ext, path: dest, strip: strip });
             } else {
                 if (!fs.existsSync(dest)) {
                     mkdir.sync(dest);
