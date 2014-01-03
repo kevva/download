@@ -6,7 +6,7 @@ var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
 var request = require('request');
-var stream = require('through2')();
+var Transform = require('through2');
 
 /**
  * Download a file to a given destination
@@ -24,6 +24,7 @@ var stream = require('through2')();
  */
 
 module.exports = function (url, dest, opts) {
+    var stream = Transform();
     url = Array.isArray(url) ? url : [url];
 
     eachAsync(url, function (url, index, done) {
