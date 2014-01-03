@@ -75,4 +75,14 @@ describe('download()', function () {
             cb();
         });
     });
+    it('should emit an error on connection failure', function (cb) {
+        var src = 'http://bogus-domain:12345/foo';
+        var dest = 'tmp';
+        var dl = download(src, dest);
+
+        dl.once('error', function(err) {
+            assert.ok(err instanceof Error);
+            cb();
+        });
+    });
 });
