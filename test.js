@@ -20,7 +20,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest, { extract: true });
 
-        dl.once('close', function () {
+        dl.on('close', function () {
             assert.ok(fs.existsSync(dest + '/success.txt'));
             cb(scope.done());
         });
@@ -35,7 +35,7 @@ describe('download()', function () {
         var dest = 'tmp/success';
         var dl = download(src, dest, { extract: true, strip: 1 });
 
-        dl.once('close', function () {
+        dl.on('close', function () {
             assert.ok(fs.existsSync(dest + '/success.txt'));
             cb(scope.done());
         });
@@ -49,7 +49,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest);
 
-        dl.once('close', function () {
+        dl.on('close', function () {
             assert.ok(fs.existsSync(dest + '/success.zip'));
             cb(scope.done());
         });
@@ -63,7 +63,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest, { mode: '0755' });
 
-        dl.once('close', function () {
+        dl.on('close', function () {
             fs.stat(dest + '/empty-file', function (err, stats) {
                 var mode = stats.mode.toString(8);
                 assert.equal(mode, '100755');
@@ -104,7 +104,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest);
 
-        dl.once('error', function(status) {
+        dl.on('error', function(status) {
             // providing an Error would be more consistent
             assert.equal(status, 404);
             assert.ok(!fs.existsSync(dest + '/bogus-resource'));
@@ -116,7 +116,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest);
 
-        dl.once('error', function(err) {
+        dl.on('error', function(err) {
             assert.ok(err instanceof Error);
             cb();
         });
