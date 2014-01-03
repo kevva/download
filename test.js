@@ -63,4 +63,16 @@ describe('download()', function () {
             cb();
         });
     });
+    it('should emit an error on 404', function (cb) {
+        var src = 'https://www.google.com/bogus-resource';
+        var dest = 'tmp';
+        var dl = download(src, dest);
+
+        dl.once('error', function(status) {
+            // providing an Error would be more consistent
+            assert.equal(status, 404);
+            assert.ok(!fs.existsSync(dest + '/bogus-resource'));
+            cb();
+        });
+    });
 });

@@ -50,6 +50,7 @@ module.exports = function (url, dest, opts) {
 
             if (status < 200 || status >= 300) {
                 stream.emit('error', status);
+                return;
             }
 
             if (opts.extract && decompress.canExtract(url, mime)) {
