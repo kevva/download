@@ -33,7 +33,8 @@
   },
   "devDependencies": {
     "mocha": "~1.12.0",
-    "rimraf": "~2.2.2"
+    "rimraf": "~2.2.2",
+    "nock": "~0.27.1"
   },
   "engines": {
     "node": ">=0.8.0"

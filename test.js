@@ -5,54 +5,82 @@ var assert = require('assert');
 var download = require('./download');
 var fs = require('fs');
 var rm = require('rimraf');
+var nock = require('nock');
 
 describe('download()', function () {
     afterEach(function (cb) {
         rm('tmp', cb);
     });
     it('should download and extract a file', function (cb) {
-        var src = 'https://github.com/kevva/download/archive/master.zip';
+        var scope = nock('http://example.com')
+            .get('/success.zip')
+            .replyWithFile(200, __dirname + '/fixtures/success.zip');
+
+        var src = 'http://example.com/success.zip';
         var dest = 'tmp';
         var dl = download(src, dest, { extract: true });
 
         dl.once('close', function () {
-            fs.stat(dest + '/download-master/download.js', cb);
+            assert.ok(fs.existsSync(dest + '/success.txt'));
+            cb(scope.done());
         });
     });
     it('should download and extract a file using MIME type', function (cb) {
-        var src = 'https://github.com/kevva/decompress/zipball/master';
-        var dest = 'tmp/decompress';
+        var scope = nock('http://example.com')
+            .get('/success/zipball/master')
+            .replyWithFile(200, __dirname + '/fixtures/success.zip',
+                {'content-type': 'application/zip'});
+
+        var src = 'http://example.com/success/zipball/master';
+        var dest = 'tmp/success';
         var dl = download(src, dest, { extract: true, strip: 1 });
 
         dl.once('close', function () {
-            fs.stat(dest + '/decompress.js', cb);
+            assert.ok(fs.existsSync(dest + '/success.txt'));
+            cb(scope.done());
         });
     });
-    it('should download a file', function (cb) {
-        var src = 'https://www.google.se/images/srpr/logo4w.png';
+    it('should download a file (without extracting)', function (cb) {
+        var scope = nock('http://example.com')
+            .get('/success.zip')
+            .replyWithFile(200, __dirname + '/fixtures/success.zip');
+
+        var src = 'http://example.com/success.zip';
         var dest = 'tmp';
         var dl = download(src, dest);
 
         dl.once('close', function () {
-            fs.stat(dest + '/logo4w.png', cb);
+            assert.ok(fs.existsSync(dest + '/success.zip'));
+            cb(scope.done());
         });
     });
     it('should download a file and set the right mode', function (cb) {
-        var src = 'https://raw.github.com/yeoman/node-gifsicle/master/vendor/osx/gifsicle';
+        var scope = nock('http://example.com')
+            .get('/empty-file')
+            .replyWithFile(200, __dirname + '/fixtures/empty-file');
+
+        var src = 'http://example.com/empty-file';
         var dest = 'tmp';
         var dl = download(src, dest, { mode: '0755' });
 
         dl.once('close', function () {
-            fs.stat(dest + '/gifsicle', function (err, stats) {
+            fs.stat(dest + '/empty-file', function (err, stats) {
                 var mode = stats.mode.toString(8);
-                cb(assert.equal(mode, '100755'));
+                assert.equal(mode, '100755');
+                cb(scope.done());
             });
         });
     });
     it('should download an array of files', function (cb) {
+        var scope = nock('http://example.com')
+            .get('/success.zip')
+            .replyWithFile(200, __dirname + '/fixtures/success.zip')
+            .get('/empty-file')
+            .replyWithFile(200, __dirname + '/fixtures/empty-file');
+
         var src = [
-            'https://www.google.se/images/srpr/logo4w.png',
-            'https://ssl.gstatic.com/gb/images/k1_a31af7ac.png'
+            'http://example.com/success.zip',
+            'http://example.com/empty-file'
         ];
         var dest = 'tmp';
         var dl = download(src, dest);
@@ -61,14 +89,18 @@ describe('download()', function () {
         dl.on('close', function() {
             ++calls;
             if (calls === 2) {
-                fs.statSync(dest + '/logo4w.png');
-                fs.statSync(dest + '/k1_a31af7ac.png');
+                fs.statSync(dest + '/success.zip');
+                fs.statSync(dest + '/empty-file');
                 cb();
             }
         });
     });
     it('should emit an error on 404', function (cb) {
-        var src = 'https://www.google.com/bogus-resource';
+        var scope = nock('http://example.com')
+            .get('/bogus-resource')
+            .reply(404);
+
+        var src = 'http://example.com/bogus-resource';
         var dest = 'tmp';
         var dl = download(src, dest);
 
