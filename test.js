@@ -1,4 +1,4 @@
-/*global describe, it, after */
+/*global describe, it, afterEach */
 'use strict';
 
 var assert = require('assert');
@@ -7,7 +7,7 @@ var fs = require('fs');
 var rm = require('rimraf');
 
 describe('download()', function () {
-    after(function (cb) {
+    afterEach(function (cb) {
         rm('tmp', cb);
     });
     it('should download and extract a file', function (cb) {
@@ -56,11 +56,15 @@ describe('download()', function () {
         ];
         var dest = 'tmp';
         var dl = download(src, dest);
+        var calls = 0;
 
-        dl.once('close', function () {
-            fs.statSync(dest + '/logo4w.png');
-            fs.statSync(dest + '/k1_a31af7ac.png');
-            cb();
+        dl.on('close', function() {
+            ++calls;
+            if (calls === 2) {
+                fs.statSync(dest + '/logo4w.png');
+                fs.statSync(dest + '/k1_a31af7ac.png');
+                cb();
+            }
         });
     });
     it('should emit an error on 404', function (cb) {
