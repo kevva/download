@@ -29,8 +29,9 @@ module.exports = function (url, dest, opts) {
     eachAsync(url, function (url, index, done) {
         opts = opts || {};
         opts.url = url;
-        opts.dest = path.join(dest, path.basename(url));
         opts.strip = opts.strip || '0';
+        // Avoid being covered
+        var destPath = path.join(dest, path.basename(url));
 
         var req = request.get(opts)
         .on('response', function (res) {
@@ -67,20 +68,23 @@ module.exports = function (url, dest, opts) {
                     mkdir.sync(dest);
                 }
 
-                end = fs.createWriteStream(opts.dest);
+                end = fs.createWriteStream(destPath);
             }
 
             req.pipe(end);
 
             end.on('close', function () {
                 if (!opts.extract && opts.mode) {
-                    fs.chmodSync(opts.dest, opts.mode);
+                    fs.chmodSync(destPath, opts.mode);
                 }
-
+                // Emitted when just one file downloaded
                 stream.emit('close');
                 done();
             });
         });
+    }, function () {
+        // Emitted when all files downloaded
+        stream.emit('done');
     });
 
     return stream;

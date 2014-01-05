@@ -57,7 +57,7 @@ describe('download()', function () {
         var dest = 'tmp';
         var dl = download(src, dest);
 
-        dl.once('close', function () {
+        dl.once('done', function () {
             fs.statSync(dest + '/logo4w.png');
             fs.statSync(dest + '/k1_a31af7ac.png');
             cb();
