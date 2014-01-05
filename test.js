@@ -51,8 +51,8 @@ describe('download()', function () {
     });
     it('should download an array of files', function (cb) {
         var src = [
-            'https://www.google.se/images/srpr/logo4w.png',
-            'https://ssl.gstatic.com/gb/images/k1_a31af7ac.png'
+            'https://ssl.gstatic.com/gb/images/k1_a31af7ac.png',
+            'https://www.google.se/images/srpr/logo4w.png'
         ];
         var dest = 'tmp';
         var dl = download(src, dest);
