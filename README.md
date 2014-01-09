@@ -8,7 +8,7 @@ Install with [npm](https://npmjs.org/package/download): `npm install download`
 
 ## Examples
 
-If you're fetching an archive you can set `extract: true` in options and 
+If you're fetching an archive you can set `extract: true` in options and
 it'll extract it for you.
 
 ```js
@@ -29,16 +29,33 @@ download(files, 'bar');
 
 ### download(url, dest, opts)
 
-Download a file or an array of files to a given destination. Returns an EventEmitter 
+Download a file or an array of files to a given destination. Returns an EventEmitter
 with three possible events — `response`, `data` and `error`.
 
 ## Options
 
-* `extract` — If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/)
-* `mode` — Set mode on the downloaded files
-* `strip` — Equivalent to `--strip-components` for tar
+You can define options accepted by the [request](https://github.com/mikeal/request/) module besides from the options below.
 
-You can also define options accepted by the [request](https://github.com/mikeal/request/) module.
+### extract
+
+Type: `Boolean`  
+Default: `false`
+
+If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
+
+### mode
+
+Type: `String`  
+Default: `undefined`
+
+Set mode on the downloaded files.
+
+### strip
+
+Type: `Number`  
+Default: `0`
+
+Equivalent to `--strip-components` for tar.
 
 ## License
 
