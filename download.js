@@ -6,7 +6,7 @@ var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
 var request = require('request');
-var stream = require('through2')();
+var Transform = require('through2');
 
 /**
  * Download a file to a given destination
@@ -25,12 +25,15 @@ var stream = require('through2')();
 
 module.exports = function (url, dest, opts) {
     url = Array.isArray(url) ? url : [url];
+    opts = opts || {};
+
+    var stream = Transform();
+    var strip = opts.strip || '0';
 
     eachAsync(url, function (url, index, done) {
-        opts = opts || {};
         opts.url = url;
-        opts.dest = path.join(dest, path.basename(url));
-        opts.strip = opts.strip || '0';
+
+        var target = path.join(dest, path.basename(url));
 
         var req = request.get(opts)
         .on('response', function (res) {
@@ -50,6 +53,7 @@ module.exports = function (url, dest, opts) {
 
             if (status < 200 || status >= 300) {
                 stream.emit('error', status);
+                return;
             }
 
             if (opts.extract && decompress.canExtract(url, mime)) {
@@ -61,22 +65,21 @@ module.exports = function (url, dest, opts) {
                     ext = mime;
                 }
 
-                end = decompress.extract({ ext: ext, path: dest, strip: opts.strip });
+                end = decompress.extract({ ext: ext, path: dest, strip: strip });
             } else {
                 if (!fs.existsSync(dest)) {
                     mkdir.sync(dest);
                 }
 
-                end = fs.createWriteStream(opts.dest);
+                end = fs.createWriteStream(target);
             }
 
             req.pipe(end);
 
             end.on('close', function () {
                 if (!opts.extract && opts.mode) {
-                    fs.chmodSync(opts.dest, opts.mode);
+                    fs.chmodSync(target, opts.mode);
                 }
-
                 stream.emit('close');
                 done();
             });
