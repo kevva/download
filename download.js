@@ -6,7 +6,7 @@ var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
 var request = require('request');
-var through = require('through');
+var through = require('through2');
 
 /**
  * Download a file to a given destination
