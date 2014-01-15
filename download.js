@@ -85,10 +85,11 @@ module.exports = function (url, dest, opts) {
                     fs.chmodSync(target, opts.mode);
                 }
 
-                stream.emit('close');
                 done();
             });
         });
+    }, function () {
+        stream.emit('close');
     });
 
     return stream;

@@ -89,16 +89,11 @@ describe('download()', function () {
         ];
         var dest = path.join(__dirname, 'tmp');
         var dl = download(src, dest);
-        var calls = 0;
 
         dl.on('close', function () {
-            ++calls;
-
-            if (calls === 2) {
-                fs.existsSync(path.join(dest, 'file.zip'));
-                fs.existsSync(path.join(dest, 'file.tar'));
-                cb(scope.done());
-            }
+            fs.existsSync(path.join(dest, 'file.zip'));
+            fs.existsSync(path.join(dest, 'file.tar'));
+            cb(scope.done());
         });
     });
 
