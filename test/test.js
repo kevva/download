@@ -58,6 +58,24 @@ describe('download()', function () {
         });
     });
 
+    it('should download a file and rename it', function (cb) {
+        var scope = nock('http://example.com')
+            .get('/file.zip')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'));
+
+        var src = {
+            url: 'http://example.com/file.zip',
+            name: 'file-rename.zip'
+        };
+        var dest = path.join(__dirname, 'tmp');
+        var dl = download(src, dest);
+
+        dl.on('close', function () {
+            assert.ok(fs.existsSync(path.join(dest, 'file-rename.zip')));
+            cb(scope.done());
+        });
+    });
+
     it('should download a file and set the right mode', function (cb) {
         var scope = nock('http://example.com')
             .get('/file.zip')
@@ -93,6 +111,30 @@ describe('download()', function () {
         dl.on('close', function () {
             fs.existsSync(path.join(dest, 'file.zip'));
             fs.existsSync(path.join(dest, 'file.tar'));
+            cb(scope.done());
+        });
+    });
+
+    it('should download an array of files and rename them', function (cb) {
+        var scope = nock('http://example.com')
+            .get('/file.zip')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'))
+            .get('/file.tar')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.tar'));
+
+        var src = [{
+            url: 'http://example.com/file.zip',
+            name: 'file-rename.zip'
+        }, {
+            url: 'http://example.com/file.tar',
+            name: 'file-rename.tar'
+        }];
+        var dest = path.join(__dirname, 'tmp');
+        var dl = download(src, dest);
+
+        dl.on('close', function () {
+            fs.existsSync(path.join(dest, 'file-rename.zip'));
+            fs.existsSync(path.join(dest, 'file-rename.tar'));
             cb(scope.done());
         });
     });

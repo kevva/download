@@ -35,6 +35,11 @@ module.exports = function (url, dest, opts) {
         opts.url = url;
         target = path.join(dest, path.basename(url));
 
+        if (url.url && url.name) {
+            target = path.join(dest, url.name);
+            opts.url = url.url;
+        }
+
         var req = request.get(opts)
         .on('response', function (res) {
             stream.emit('response', res);

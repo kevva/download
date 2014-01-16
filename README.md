@@ -20,8 +20,21 @@ download('foo.tar.gz', 'bar', { extract: true });
 // download and save `foo.exe` into `bar/foo.exe` with mode `0755`
 download('foo.exe', 'bar', { mode: '0755' });
 
+// download and save `foo.zip` into `bar/foobar.zip`
+download({ url: 'foo.zip', name: 'foobar.zip' }, 'bar');
+
 // download and save an array of files in `bar/`
 var files = ['foo.jpg', 'bar.jpg', 'cat.jpg'];
+download(files, 'bar');
+
+// download, save and rename an array of files in `bar/`
+var files = [{
+    url: 'foo.jpg',
+    name: 'foobar.jpg'
+}, {
+    url: 'cat.jpg',
+    name: 'dog.jpg'
+}];
 download(files, 'bar');
 ```
 
