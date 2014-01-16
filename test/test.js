@@ -160,8 +160,7 @@ describe('download()', function () {
         var dl = download(src, dest);
 
         dl.on('error', function (err) {
-            assert.ok(err instanceof Error);
-            cb();
+            cb(assert.ok(err instanceof Error));
         });
     });
 });

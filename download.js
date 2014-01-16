@@ -17,7 +17,7 @@ var through = require('through2');
  *   - `mode` Set mode on the downloaded files
  *   - `strip` Equivalent to --strip-components for tar
  *
- * @param {String|Array} url
+ * @param {String|Array|Object} url
  * @param {String} dest
  * @param {Object} opts
  * @api public
