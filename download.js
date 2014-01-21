@@ -29,11 +29,10 @@ module.exports = function (url, dest, opts) {
 
     var stream = through();
     var strip = opts.strip || '0';
-    var target;
 
     eachAsync(url, function (url, index, done) {
         opts.url = url;
-        target = path.join(dest, path.basename(url));
+        var target = path.join(dest, path.basename(url));
 
         if (url.url && url.name) {
             target = path.join(dest, url.name);
