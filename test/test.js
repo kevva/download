@@ -109,8 +109,8 @@ describe('download()', function () {
         var dl = download(src, dest);
 
         dl.on('close', function () {
-            fs.existsSync(path.join(dest, 'file.zip'));
-            fs.existsSync(path.join(dest, 'file.tar'));
+            assert.ok(fs.existsSync(path.join(dest, 'file.zip')));
+            assert.ok(fs.existsSync(path.join(dest, 'file.tar')));
             cb(scope.done());
         });
     });
@@ -133,8 +133,8 @@ describe('download()', function () {
         var dl = download(src, dest);
 
         dl.on('close', function () {
-            fs.existsSync(path.join(dest, 'file-rename.zip'));
-            fs.existsSync(path.join(dest, 'file-rename.tar'));
+            assert.ok(fs.existsSync(path.join(dest, 'file-rename.zip')));
+            assert.ok(fs.existsSync(path.join(dest, 'file-rename.tar')));
             cb(scope.done());
         });
     });
