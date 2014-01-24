@@ -20,9 +20,9 @@
   "scripts": {
     "test": "mocha --reporter list"
   },
-  "main": "download.js",
+  "main": "index.js",
   "files": [
-    "download.js"
+    "index.js"
   ],
   "dependencies": {
     "decompress": "~0.1.5",

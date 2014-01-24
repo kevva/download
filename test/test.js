@@ -2,7 +2,7 @@
 'use strict';
 
 var assert = require('assert');
-var download = require('../download');
+var download = require('../');
 var fs = require('fs');
 var nock = require('nock');
 var path = require('path');
