@@ -28,25 +28,26 @@ module.exports = function (url, dest, opts) {
     opts = opts || {};
 
     var stream = through();
-    var strip = opts.strip || '0';
+    var strip = +opts.strip || '0';
 
     eachAsync(url, function (url, index, done) {
-        opts.url = url;
+        var req;
         var target = path.join(dest, path.basename(url));
+
+        opts.url = url;
 
         if (url.url && url.name) {
             target = path.join(dest, url.name);
             opts.url = url.url;
         }
 
-        var req = request.get(opts)
-        .on('response', function (res) {
-            stream.emit('response', res);
-        })
-        .on('data', function (data) {
+        req = request.get(opts);
+
+        req.on('data', function (data) {
             stream.emit('data', data);
-        })
-        .on('error', function (err) {
+        });
+
+        req.on('error', function (err) {
             stream.emit('error', err);
         });
 
@@ -60,14 +61,10 @@ module.exports = function (url, dest, opts) {
                 return;
             }
 
-            if (opts.extract && decompress.canExtract(url, mime)) {
-                var ext;
+            stream.emit('response', res);
 
-                if (decompress.canExtract(url)) {
-                    ext = url;
-                } else {
-                    ext = mime;
-                }
+            if (opts.extract && decompress.canExtract(url, mime)) {
+                var ext = decompress.canExtract(url) ? url : mime;
 
                 end = decompress.extract({
                     ext: ext,
