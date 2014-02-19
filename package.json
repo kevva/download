@@ -3,10 +3,11 @@
   "version": "0.1.10",
   "description": "Download and extract files effortlessly",
   "keywords": [
-    "url",
-    "http",
     "download",
-    "extract"
+    "extract",
+    "http",
+    "request",
+    "url"
   ],
   "homepage": "https://github.com/kevva/download",
   "bugs": "https://github.com/kevva/download/issues",
@@ -28,7 +29,7 @@
     "decompress": "~0.1.5",
     "each-async": "~0.1.1",
     "mkdirp": "~0.3.5",
-    "request": "~2.31.0",
+    "request": "~2.34.0",
     "through2": "~0.4.0"
   },
   "devDependencies": {
