@@ -66,7 +66,7 @@ module.exports = function (url, dest, opts) {
             if (opts.extract && decompress.canExtract(opts.url, mime)) {
                 var ext = decompress.canExtract(opts.url) ? opts.url : mime;
 
-                end = decompress.extract({
+                end = decompress({
                     ext: ext,
                     path: dest,
                     strip: strip
