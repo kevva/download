@@ -2,9 +2,12 @@
 'use strict';
 
 var download = require('./');
+var input = process.argv.splice(2);
 var path = require('path');
 var pkg = require('./package.json');
 var stdin = require('get-stdin');
+var url = require('get-urls');
+
 
 /**
  * Help screen
@@ -26,7 +29,7 @@ function help() {
  * Show help
  */
 
-if (process.argv.indexOf('-h') !== -1 || process.argv.indexOf('--help') !== -1) {
+if (input.indexOf('-h') !== -1 || input.indexOf('--help') !== -1) {
     help();
     return;
 }
@@ -35,7 +38,7 @@ if (process.argv.indexOf('-h') !== -1 || process.argv.indexOf('--help') !== -1) 
  * Show package version
  */
 
-if (process.argv.indexOf('-v') !== -1 || process.argv.indexOf('--version') !== -1) {
+if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
     console.log(pkg.version);
     return;
 }
@@ -44,38 +47,40 @@ if (process.argv.indexOf('-v') !== -1 || process.argv.indexOf('--version') !== -
  * Run
  */
 
-function run(src, dest) {
-    if (!src || src.length === 0) {
+function run(input) {
+    var src = url(input.join(' '));
+    var dest = input.filter(function (i) {
+        return !i.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi);
+    });
+
+    if (src.length === 0) {
         console.error('Specify a URL');
         return;
     }
 
-    if (!dest || dest.length === 0) {
+    if (dest.length === 0) {
         console.error('Specify a destination path');
         return;
     }
 
-    src = Array.isArray(src) ? src : [src];
-    dest = Array.isArray(dest) ? dest.join('') : dest;
-
-    download(src, dest)
+    download(src, dest.join(''))
         .on('error', function (err) {
             throw err;
         })
         .on('close', function () {
-            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(dest));
+            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(dest.join('')));
         });
 }
-
 
 /**
  * Apply arguments
  */
 
 if (process.stdin.isTTY) {
-    run(process.argv[2], process.argv[3]);
+    run(input);
 } else {
     stdin(function (data) {
-        run([].concat(data.trim().split('\n')), process.argv.splice(2));
+        [].push.apply(input, data.trim().split('\n'));
+        run(input);
     });
 }
