@@ -19,6 +19,7 @@
     "test": "mocha --reporter list"
   },
   "files": [
+    "cli.js",
     "index.js"
   ],
   "keywords": [
