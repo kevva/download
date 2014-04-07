@@ -12,6 +12,9 @@
   "engines": {
     "node": ">=0.10.0"
   },
+  "bin": {
+    "download": "cli.js"
+  },
   "scripts": {
     "test": "mocha --reporter list"
   },
@@ -28,6 +31,7 @@
   "dependencies": {
     "decompress": "~0.2.0",
     "each-async": "~0.1.1",
+    "get-stdin": "^0.1.0",
     "mkdirp": "~0.3.5",
     "request": "~2.34.0",
     "through2": "~0.4.0"

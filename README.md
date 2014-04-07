@@ -81,6 +81,28 @@ Default: `0`
 
 Equivalent to `--strip-components` for tar.
 
+## CLI
+
+You can also use it as a CLI app by installing it globally:
+
+```bash
+$ npm install --global download
+```
+
+### Usage
+
+```bash
+$ download --help
+
+Usage
+  $ download <url> <path>
+  $ cat <file> | download <path>
+
+Example
+  $ download https://github.com/kevva/download/archive/master.zip files
+  $ cat urls.txt | download files
+```
+
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License) © [Kevin Mårtensson](http://kevinmartensson.com)
