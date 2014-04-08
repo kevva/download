@@ -1,6 +1,6 @@
 {
   "name": "download",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Download and extract files effortlessly",
   "license": "MIT",
   "repository": "kevva/download",
@@ -30,18 +30,18 @@
     "url"
   ],
   "dependencies": {
-    "decompress": "~0.2.0",
-    "each-async": "~0.1.1",
+    "decompress": "^0.2.0",
+    "each-async": "^0.1.1",
     "get-stdin": "^0.1.0",
     "get-urls": "^0.1.1",
-    "mkdirp": "~0.3.5",
+    "mkdirp": "^0.3.5",
     "nopt": "^2.2.0",
-    "request": "~2.34.0",
-    "through2": "~0.4.0"
+    "request": "^2.34.0",
+    "through2": "^0.4.0"
   },
   "devDependencies": {
-    "mocha": "~1.18.2",
-    "nock": "~0.27.1",
-    "rimraf": "~2.2.5"
+    "mocha": "^1.18.2",
+    "nock": "^0.27.1",
+    "rimraf": "^2.2.5"
   }
 }
