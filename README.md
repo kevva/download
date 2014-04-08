@@ -95,11 +95,11 @@ $ npm install --global download
 $ download --help
 
 Usage
-  $ download <url> <path>
-  $ cat <file> | download <path>
+  $ download <url> [destination]
+  $ cat <file> | download [destination]>
 
 Example
-  $ download https://github.com/kevva/download/archive/master.zip files
+  $ download https://github.com/kevva/download/archive/master.zip --extract
   $ cat urls.txt | download files
 
 Options

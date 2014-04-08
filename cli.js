@@ -30,11 +30,11 @@ function help() {
     console.log(pkg.description);
     console.log('');
     console.log('Usage');
-    console.log('  $ download <url> <path>');
-    console.log('  $ cat <file> | download <path>');
+    console.log('  $ download <url> [destination]');
+    console.log('  $ cat <file> | download [destination]>');
     console.log('');
     console.log('Example');
-    console.log('  $ download https://github.com/kevva/download/archive/master.zip files');
+    console.log('  $ download https://github.com/kevva/download/archive/master.zip --extract');
     console.log('  $ cat urls.txt | download files');
     console.log('');
     console.log('Options');
@@ -67,24 +67,19 @@ function run(input) {
     var src = url(input.join(' '));
     var dest = input.filter(function (i) {
         return !i.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi);
-    });
+    })[0] || process.cwd();
 
     if (src.length === 0) {
         console.error('Specify a URL');
         return;
     }
 
-    if (dest.length === 0) {
-        console.error('Specify a destination path');
-        return;
-    }
-
-    download(src, dest.join(''), { extract: opts.extract })
+    download(src, dest, { extract: opts.extract })
         .on('error', function (err) {
             throw err;
         })
         .on('close', function () {
-            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(dest.join('')));
+            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(dest));
         });
 }
 
