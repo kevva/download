@@ -103,7 +103,8 @@ Example
   $ cat urls.txt | download files
 
 Options
-  -e, --extract    Extract archive files on download
+  -e, --extract           Extract archive files on download
+  -s, --strip <number>    Strip path segments from root when extracting
 ```
 
 ## License

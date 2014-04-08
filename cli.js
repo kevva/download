@@ -15,10 +15,12 @@ var url = require('get-urls');
 var opts = nopt({
     extract: Boolean,
     help: Boolean,
+    strip: Number,
     version: Boolean
 }, {
     e: '--extract',
     h: '--help',
+    s: '--strip',
     v: '--version'
 });
 
@@ -38,7 +40,8 @@ function help() {
     console.log('  $ cat urls.txt | download files');
     console.log('');
     console.log('Options');
-    console.log('  -e, --extract    Extract archive files on download');
+    console.log('  -e, --extract           Extract archive files on download');
+    console.log('  -s, --strip <number>    Strip path segments from root when extracting');
 }
 
 /**
@@ -74,7 +77,7 @@ function run(input) {
         return;
     }
 
-    download(src, dest, { extract: opts.extract })
+    download(src, dest, { extract: opts.extract, strip: opts.strip })
         .on('error', function (err) {
             throw err;
         })
