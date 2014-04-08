@@ -101,6 +101,9 @@ Usage
 Example
   $ download https://github.com/kevva/download/archive/master.zip files
   $ cat urls.txt | download files
+
+Options
+  -e, --extract    Extract archive files on download
 ```
 
 ## License

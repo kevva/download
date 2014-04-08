@@ -2,12 +2,25 @@
 'use strict';
 
 var download = require('./');
-var input = process.argv.splice(2);
+var nopt = require('nopt');
 var path = require('path');
 var pkg = require('./package.json');
 var stdin = require('get-stdin');
 var url = require('get-urls');
 
+/**
+ * Options
+ */
+
+var opts = nopt({
+    extract: Boolean,
+    help: Boolean,
+    version: Boolean
+}, {
+    e: '--extract',
+    h: '--help',
+    v: '--version'
+});
 
 /**
  * Help screen
@@ -23,13 +36,16 @@ function help() {
     console.log('Example');
     console.log('  $ download https://github.com/kevva/download/archive/master.zip files');
     console.log('  $ cat urls.txt | download files');
+    console.log('');
+    console.log('Options');
+    console.log('  -e, --extract    Extract archive files on download');
 }
 
 /**
  * Show help
  */
 
-if (input.indexOf('-h') !== -1 || input.indexOf('--help') !== -1) {
+if (opts.help) {
     help();
     return;
 }
@@ -38,7 +54,7 @@ if (input.indexOf('-h') !== -1 || input.indexOf('--help') !== -1) {
  * Show package version
  */
 
-if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
+if (opts.version) {
     console.log(pkg.version);
     return;
 }
@@ -63,7 +79,7 @@ function run(input) {
         return;
     }
 
-    download(src, dest.join(''))
+    download(src, dest.join(''), { extract: opts.extract })
         .on('error', function (err) {
             throw err;
         })
@@ -77,9 +93,11 @@ function run(input) {
  */
 
 if (process.stdin.isTTY) {
+    var input = opts.argv.remain;
     run(input);
 } else {
     stdin(function (data) {
+        var input = opts.argv.remain;
         [].push.apply(input, data.trim().split('\n'));
         run(input);
     });
