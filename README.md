@@ -1,4 +1,4 @@
-# download [![Build Status](https://secure.travis-ci.org/kevva/download.png?branch=master)](http://travis-ci.org/kevva/download)
+# download [![Build Status](https://travis-ci.org/kevva/download.svg?branch=master)](https://travis-ci.org/kevva/download)
 
 > Download and extract files effortlessly in Node.js.
 
