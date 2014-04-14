@@ -5,7 +5,6 @@ var eachAsync = require('each-async');
 var fs = require('fs');
 var mkdir = require('mkdirp');
 var path = require('path');
-var request = require('request');
 var through = require('through2');
 
 /**
@@ -27,6 +26,7 @@ module.exports = function (url, dest, opts) {
     url = Array.isArray(url) ? url : [url];
     opts = opts || {};
 
+    var request = require('request');
     var stream = through();
     var strip = +opts.strip || '0';
 
