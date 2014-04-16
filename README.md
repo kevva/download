@@ -95,15 +95,16 @@ $ npm install --global download
 $ download --help
 
 Usage
-  $ download <url> [destination]
-  $ cat <file> | download [destination]>
+  $ download <url>
+  $ cat <file> | download>
 
 Example
-  $ download https://github.com/kevva/download/archive/master.zip --extract
-  $ cat urls.txt | download files
+  $ download --out dist --extract https://github.com/kevva/download/archive/master.zip
+  $ cat urls.txt | download --out dist
 
 Options
   -e, --extract           Extract archive files on download
+  -o, --out               Path to download or extract the files to
   -s, --strip <number>    Strip path segments from root when extracting
 ```
 

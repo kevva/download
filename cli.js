@@ -15,11 +15,13 @@ var url = require('get-urls');
 var opts = nopt({
     extract: Boolean,
     help: Boolean,
+    out: String,
     strip: Number,
     version: Boolean
 }, {
     e: '--extract',
     h: '--help',
+    o: '--out',
     s: '--strip',
     v: '--version'
 });
@@ -32,15 +34,16 @@ function help() {
     console.log(pkg.description);
     console.log('');
     console.log('Usage');
-    console.log('  $ download <url> [destination]');
-    console.log('  $ cat <file> | download [destination]>');
+    console.log('  $ download <url>');
+    console.log('  $ cat <file> | download>');
     console.log('');
     console.log('Example');
-    console.log('  $ download https://github.com/kevva/download/archive/master.zip --extract');
-    console.log('  $ cat urls.txt | download files');
+    console.log('  $ download --out dist --extract https://github.com/kevva/download/archive/master.zip');
+    console.log('  $ cat urls.txt | download --out dist');
     console.log('');
     console.log('Options');
     console.log('  -e, --extract           Extract archive files on download');
+    console.log('  -o, --out               Path to download or extract the files to');
     console.log('  -s, --strip <number>    Strip path segments from root when extracting');
 }
 
@@ -68,21 +71,18 @@ if (opts.version) {
 
 function run(input) {
     var src = url(input.join(' '));
-    var dest = input.filter(function (i) {
-        return !i.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi);
-    })[0] || process.cwd();
 
     if (src.length === 0) {
         console.error('Specify a URL');
         return;
     }
 
-    download(src, dest, { extract: opts.extract, strip: opts.strip })
+    download(src, opts.out, { extract: opts.extract, strip: opts.strip })
         .on('error', function (err) {
             throw err;
         })
         .on('close', function () {
-            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(dest));
+            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(opts.out));
         });
 }
 
