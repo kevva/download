@@ -82,7 +82,8 @@ function run(input) {
             throw err;
         })
         .on('close', function () {
-            console.log('Successfully downloaded ' + src.length + ' files to ' + path.resolve(opts.out));
+            var m = src.length > 1 ? 'files' : 'file';
+            console.log('Successfully downloaded ' + src.length, m + ' to ' + path.resolve(opts.out));
         });
 }
 
