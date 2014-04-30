@@ -1,6 +1,6 @@
 # download [![Build Status](https://travis-ci.org/kevva/download.svg?branch=master)](https://travis-ci.org/kevva/download)
 
-> Download and extract files effortlessly in Node.js.
+> Download and extract files effortlessly
 
 ## Install
 
@@ -83,13 +83,9 @@ Equivalent to `--strip-components` for tar.
 
 ## CLI
 
-You can also use it as a CLI app by installing it globally:
-
 ```bash
 $ npm install --global download
 ```
-
-### Usage
 
 ```bash
 $ download --help
@@ -110,4 +106,4 @@ Options
 
 ## License
 
-[MIT License](http://en.wikipedia.org/wiki/MIT_License) © [Kevin Mårtensson](http://kevinmartensson.com)
+MIT © [Kevin Mårtensson](http://kevinmartensson.com)
