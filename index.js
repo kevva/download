@@ -30,6 +30,11 @@ module.exports = function (url, dest, opts) {
     var stream = through();
     var strip = +opts.strip || '0';
 
+    var proxyServer = process.env.HTTPS_PROXY
+            || process.env.https_proxy
+            || process.env.HTTP_PROXY
+            || process.env.http_proxy;
+
     eachAsync(url, function (url, index, done) {
         var req;
         var target = path.join(dest, path.basename(url));
@@ -39,6 +44,10 @@ module.exports = function (url, dest, opts) {
         if (url.url && url.name) {
             target = path.join(dest, url.name);
             opts.url = url.url;
+        }
+
+        if (proxyServer) {
+            request = request.defaults({ proxy: proxyServer, timeout: 5000 });
         }
 
         req = request.get(opts);
