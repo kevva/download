@@ -30,11 +30,15 @@ module.exports = function (url, dest, opts) {
     var stream = through();
     var strip = +opts.strip || '0';
 
-    eachAsync(url, function (url, index, done) {
+    eachAsync(url, function (url, i, done) {
         var req;
         var target = path.join(dest, path.basename(url));
 
         opts.url = url;
+        opts.proxy = process.env.HTTPS_PROXY ||
+                     process.env.https_proxy ||
+                     process.env.HTTP_PROXY ||
+                     process.env.http_proxy;
 
         if (url.url && url.name) {
             target = path.join(dest, url.name);
