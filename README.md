@@ -60,21 +60,30 @@ or when the response status code is not in the 200s. Listeners called with an
 
 You can define options accepted by the [request](https://github.com/mikeal/request/) module besides from the options below.
 
-### extract
+### extract  
 
 Type: `Boolean`  
 Default: `false`
 
 If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
 
-### mode
+### ext  
+
+Type: `String`  
+Default: `undefined`
+
+Sometimes you may be downloading an `application/octet-stream` and you want to 
+extract it, eg it may be a zip, this option allows you to specify the extention 
+of the file to be downloaded.
+
+### mode  
 
 Type: `String`  
 Default: `undefined`
 
 Set mode on the downloaded files.
 
-### strip
+### strip  
 
 Type: `Number`  
 Default: `0`

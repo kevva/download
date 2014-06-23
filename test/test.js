@@ -31,11 +31,30 @@ describe('download()', function () {
     it('should download and extract a file using MIME type', function (cb) {
         var scope = nock('http://example.com')
             .get('/file')
-            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'), {'content-type': 'application/zip'});
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'), {
+                'content-type': 'application/zip'
+            });
 
         var src = 'http://example.com/file';
         var dest = path.join(__dirname, 'tmp');
         var dl = download(src, dest, { extract: true });
+
+        dl.on('close', function () {
+            assert.ok(fs.existsSync(path.join(dest, 'file.txt')));
+            cb(scope.done());
+        });
+    });
+
+    it('should download and extract a file using a defined file extension', function (cb) {
+        var scope = nock('http://example.com')
+            .get('/file')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'), {
+                'content-type': 'application/octet-stream'
+            });
+
+        var src = 'http://example.com/file';
+        var dest = path.join(__dirname, 'tmp');
+        var dl = download(src, dest, { extract: true, ext: '.zip' });
 
         dl.on('close', function () {
             assert.ok(fs.existsSync(path.join(dest, 'file.txt')));
