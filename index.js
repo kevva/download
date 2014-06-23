@@ -67,11 +67,11 @@ module.exports = function (url, dest, opts) {
 
             stream.emit('response', res);
 
-            if (opts.extract && decompress.canExtract(opts.url, mime)) {
+            if (opts.extract && (decompress.canExtract(opts.url, mime) || opts.forceExtract)) {
                 var ext = decompress.canExtract(opts.url) ? opts.url : mime;
 
                 end = decompress({
-                    ext: ext,
+                    ext: opts.forceExt || ext,
                     path: dest,
                     strip: strip
                 });
