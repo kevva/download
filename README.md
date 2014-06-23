@@ -62,21 +62,28 @@ You can define options accepted by the [request](https://github.com/mikeal/reque
 
 ### extract
 
-Type: `Boolean`  
+Type: `Boolean`
 Default: `false`
 
 If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
 
+### forceExt
+
+Type: `String`
+Default: `''`
+
+Sometimes you may be downloading an `application/octet-stream` and you want to extract it, eg it may be a zip, this option allows you to specify the extention of the file to be downloaded.
+
 ### mode
 
-Type: `String`  
+Type: `String`
 Default: `undefined`
 
 Set mode on the downloaded files.
 
 ### strip
 
-Type: `Number`  
+Type: `Number`
 Default: `0`
 
 Equivalent to `--strip-components` for tar.
