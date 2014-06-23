@@ -43,6 +43,21 @@ describe('download()', function () {
         });
     });
 
+    it('should download and extract a file using the force', function (cb) {
+        var scope = nock('http://example.com')
+            .get('/file')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'), {'content-type': 'application/octet-stream'});
+
+        var src = 'http://example.com/file';
+        var dest = path.join(__dirname, 'tmp');
+        var dl = download(src, dest, { extract: true, forceExt: '.zip' });
+
+        dl.on('close', function () {
+            assert.ok(fs.existsSync(path.join(dest, 'file.txt')));
+            cb(scope.done());
+        });
+    });
+
     it('should download a file without extracting', function (cb) {
         var scope = nock('http://example.com')
             .get('/file.zip')
