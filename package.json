@@ -30,7 +30,7 @@
     "url"
   ],
   "dependencies": {
-    "decompress": "^0.2.0",
+    "decompress": "^0.3.0",
     "each-async": "^0.1.1",
     "get-stdin": "^0.1.0",
     "get-urls": "^0.1.1",
