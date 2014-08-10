@@ -73,6 +73,8 @@ Download.prototype.proxy = function (proxy) {
  */
 
 Download.prototype.run = function (cb) {
+    cb = cb || function () {};
+
     var request = require('request');
     var self = this;
 
