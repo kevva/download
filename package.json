@@ -12,14 +12,10 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "bin": {
-    "download": "cli.js"
-  },
   "scripts": {
     "test": "mocha --reporter list"
   },
   "files": [
-    "cli.js",
     "index.js"
   ],
   "keywords": [
@@ -30,14 +26,11 @@
     "url"
   ],
   "dependencies": {
-    "decompress": "^0.2.0",
+    "decompress": "^0.3.0",
     "each-async": "^0.1.1",
-    "get-stdin": "^0.1.0",
-    "get-urls": "^0.1.1",
-    "mkdirp": "^0.3.5",
-    "nopt": "^2.2.0",
-    "request": "^2.34.0",
-    "through2": "^0.4.0"
+    "fs-extra": "^0.10.0",
+    "object-assign": "^0.3.1",
+    "request": "^2.34.0"
   },
   "devDependencies": {
     "mocha": "^1.18.2",

@@ -1,101 +1,150 @@
 'use strict';
 
-var decompress = require('decompress');
-var eachAsync = require('each-async');
-var fs = require('fs');
-var mkdir = require('mkdirp');
+var assign = require('object-assign');
+var Decompress = require('decompress');
+var each = require('each-async');
+var fs = require('fs-extra');
 var path = require('path');
-var through = require('through2');
 
 /**
- * Download a file to a given destination
+ * Initialize Download
  *
- * Options:
+ * @param {Object} opts
+ * @api public
+ */
+
+function Download(opts) {
+    this._url = [];
+    this.opts = opts || {};
+    this.opts.encoding = null;
+    this.opts.proxy = process.env.HTTPS_PROXY ||
+                      process.env.https_proxy ||
+                      process.env.HTTP_PROXY ||
+                      process.env.http_proxy;
+}
+
+/**
+ * Add a URL to download
  *
- *   - `extract` Try extracting the file
- *   - `mode` Set mode on the downloaded files
- *   - `strip` Equivalent to --strip-components for tar
- *
- * @param {String|Array|Object} url
+ * @param {String|Object} file
  * @param {String} dest
  * @param {Object} opts
  * @api public
  */
 
-module.exports = function (url, dest, opts) {
-    url = Array.isArray(url) ? url : [url];
+Download.prototype.url = function (file, dest, opts) {
+    if (!arguments.length) {
+        return this._url;
+    }
+
+    dest = dest || process.cwd();
     opts = opts || {};
 
+    if (file.url && file.name) {
+        this._url.push({ url: file.url, name: file.name, dest: dest, opts: opts });
+    } else {
+        this._url.push({ url: file, dest: dest, opts: opts });
+    }
+
+    return this;
+};
+
+/**
+ * Set proxy
+ *
+ * @param {String} proxy
+ * @api public
+ */
+
+Download.prototype.proxy = function (proxy) {
+    if (!arguments.length) {
+        return this.opts.proxy;
+    }
+
+    this.opts.proxy = proxy;
+    return this;
+};
+
+/**
+ * Run
+ *
+ * @param {Function} cb
+ * @api public
+ */
+
+Download.prototype.run = function (cb) {
     var request = require('request');
-    var stream = through();
-    var strip = +opts.strip || '0';
+    var self = this;
 
-    eachAsync(url, function (url, i, done) {
-        var req;
-        var target = path.join(dest, path.basename(url));
+    each(this.url(), function (obj, i, done) {
+        var name = obj.name || path.basename(obj.url);
+        var opts = assign(self.opts, obj.opts);
 
-        opts.url = url;
-        opts.proxy = process.env.HTTPS_PROXY ||
-                     process.env.https_proxy ||
-                     process.env.HTTP_PROXY ||
-                     process.env.http_proxy;
-
-        if (url.url && url.name) {
-            target = path.join(dest, url.name);
-            opts.url = url.url;
-        }
-
-        req = request.get(opts);
-
-        req.on('data', function (data) {
-            stream.emit('data', data);
-        });
-
-        req.on('error', function (err) {
-            stream.emit('error', err);
-        });
-
-        req.on('response', function (res) {
-            var mime = res.headers['content-type'];
-            var status = res.statusCode;
-            var end;
-
-            if (status < 200 || status >= 300) {
-                stream.emit('error', status);
-                return;
+        request.get(obj.url, opts, function (err, res, data) {
+            if (err) {
+                return done(err);
             }
 
-            stream.emit('response', res);
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+                return done(res.statusCode);
+            }
 
-            if (opts.extract && (decompress.canExtract(opts.url, mime) || opts.ext)) {
-                var ext = decompress.canExtract(opts.url) ? opts.url : mime;
+            if (opts.extract) {
+                return self._extract(data, obj.dest, opts, function (err) {
+                    if (err) {
+                        return done(err);
+                    }
 
-                end = decompress({
-                    ext: opts.ext || ext,
-                    path: dest,
-                    strip: strip
+                    done(err);
                 });
-            } else {
-                if (!fs.existsSync(dest)) {
-                    mkdir.sync(dest);
-                }
-
-                end = fs.createWriteStream(target);
             }
 
-            req.pipe(end);
-
-            end.on('close', function () {
-                if (!opts.extract && opts.mode) {
-                    fs.chmodSync(target, opts.mode);
+            fs.outputFile(path.join(obj.dest, name), data, function (err) {
+                if (err) {
+                    return done(err);
                 }
 
                 done();
             });
         });
-    }, function () {
-        stream.emit('close');
-    });
+    }, function (err) {
+        if (err) {
+            return cb(err);
+        }
 
-    return stream;
+        cb();
+    });
 };
+
+/**
+ * Extract archive
+ *
+ * @param {Buffer} buf
+ * @param {String} dest
+ * @param {Object} opts
+ * @param {Function} cb
+ * @api private
+ */
+
+Download.prototype._extract = function (buf, dest, opts, cb) {
+    var decompress = new Decompress()
+        .src(buf)
+        .dest(dest)
+        .use(Decompress.tar(opts))
+        .use(Decompress.targz(opts))
+        .use(Decompress.zip(opts));
+
+    decompress.decompress(function (err) {
+        if (err) {
+            return cb(err);
+        }
+
+        cb();
+    });
+};
+
+/**
+ * Module exports
+ */
+
+module.exports = Download;
