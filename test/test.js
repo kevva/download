@@ -15,7 +15,7 @@ describe('download()', function () {
 
     it('should download a file', function (cb) {
         var download = new Download()
-            .url('http://example.com/file.zip', path.join(__dirname, 'tmp'));
+            .get('http://example.com/file.zip', path.join(__dirname, 'tmp'));
         var scope = nock('http://example.com')
             .get('/file.zip')
             .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'));
@@ -29,7 +29,7 @@ describe('download()', function () {
 
     it('should download a file and rename it', function (cb) {
         var download = new Download()
-            .url({ url: 'http://example.com/file.zip', name: 'file-rename.zip' }, path.join(__dirname, 'tmp'));
+            .get({ url: 'http://example.com/file.zip', name: 'file-rename.zip' }, path.join(__dirname, 'tmp'));
         var scope = nock('http://example.com')
             .get('/file.zip')
             .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'));
@@ -43,8 +43,8 @@ describe('download()', function () {
 
     it('should download multiple files', function (cb) {
         var download = new Download()
-            .url('http://example.com/file.zip', path.join(__dirname, 'tmp'))
-            .url('http://example.com/file.tar', path.join(__dirname, 'tmp'));
+            .get('http://example.com/file.zip', path.join(__dirname, 'tmp'))
+            .get('http://example.com/file.tar', path.join(__dirname, 'tmp'));
         var scope = nock('http://example.com')
             .get('/file.zip')
             .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'))
@@ -61,7 +61,7 @@ describe('download()', function () {
 
     it('should download and extract a file', function (cb) {
         var download = new Download({ extract: true })
-            .url('http://example.com/file.zip', path.join(__dirname, 'tmp'));
+            .get('http://example.com/file.zip', path.join(__dirname, 'tmp'));
         var scope = nock('http://example.com')
             .get('/file.zip')
             .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'));
@@ -75,7 +75,7 @@ describe('download()', function () {
 
     it('should error on 404', function (cb) {
         var download = new Download()
-            .url('http://example.com/error', path.join(__dirname, 'tmp'));
+            .get('http://example.com/error', path.join(__dirname, 'tmp'));
         var scope = nock('http://example.com')
             .get('/error')
             .reply(404);

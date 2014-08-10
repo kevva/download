@@ -17,9 +17,9 @@ it'll extract it for you.
 var Download = require('download');
 
 var download = new Download()
-    .url('http://example.com/foo.zip', 'destFolder', { extract: true, strip: 1 })
-    .url('http://example.com/bar.jpg', 'destFolder')
-    .url({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder');
+    .get('http://example.com/foo.zip', 'destFolder', { extract: true, strip: 1 })
+    .get('http://example.com/bar.jpg', 'destFolder')
+    .get({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder');
 
 download.run(function (err) {
     if (err) {
@@ -37,10 +37,10 @@ download.run(function (err) {
 Creates a new `Download` instance. Options defined here will be applied to all 
 downloads.
 
-### .url(file, dest, opts)
+### .get(file, dest, opts)
 
 Add a file to download. The `file` argument accepts a `String` containing a URL 
-or an `Object` with a URL and a name. For example `{ url: http://example.com/file.zip, name: 'foo.zip' }`.
+or an `Object` with a URL and a desired name. For example `{ url: http://example.com/file.zip, name: 'foo.zip' }`.
 
 Options defined here will only apply to the specified file.
 

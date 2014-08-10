@@ -32,7 +32,7 @@ function Download(opts) {
  * @api public
  */
 
-Download.prototype.url = function (file, dest, opts) {
+Download.prototype.get = function (file, dest, opts) {
     if (!arguments.length) {
         return this._url;
     }
@@ -76,7 +76,7 @@ Download.prototype.run = function (cb) {
     var request = require('request');
     var self = this;
 
-    each(this.url(), function (obj, i, done) {
+    each(this.get(), function (obj, i, done) {
         var name = obj.name || path.basename(obj.url);
         var opts = assign(self.opts, obj.opts);
 
