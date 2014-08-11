@@ -57,14 +57,21 @@ Downloads your files and returns an error if something has gone wrong.
 You can define options accepted by the [request](https://github.com/mikeal/request#requestoptions-callback) 
 module besides from the options below.
 
-### extract  
+### extract
 
 Type: `Boolean`  
 Default: `false`
 
 If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
 
-### strip  
+### mode
+
+Type: `Number`  
+Default: `null`
+
+Set mode on the downloaded file.
+
+### strip
 
 Type: `Number`  
 Default: `0`

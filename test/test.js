@@ -22,7 +22,7 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp', 'file.zip')));
+            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.zip')));
             cb(scope.done());
         });
     });
@@ -36,8 +36,25 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp', 'file-rename.zip')));
+            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file-rename.zip')));
             cb(scope.done());
+        });
+    });
+
+    it('should download a file and set the right mode', function (cb) {
+        var download = new Download({ mode: 755 })
+            .get('http://example.com/file.zip', path.join(__dirname, 'tmp'));
+        var scope = nock('http://example.com')
+            .get('/file.zip')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'));
+
+        download.run(function (err) {
+            assert(!err);
+
+            fs.stat(path.join(__dirname, 'tmp/file.zip'), function (err, stats) {
+                assert.equal(stats.mode.toString(8), '100755');
+                cb(scope.done());
+            });
         });
     });
 
@@ -53,8 +70,8 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp', 'file.zip')));
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp', 'file.tar')));
+            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.zip')));
+            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.tar')));
             cb(scope.done());
         });
     });
@@ -68,7 +85,7 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp', 'file.txt')));
+            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.txt')));
             cb(scope.done());
         });
     });

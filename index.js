@@ -17,6 +17,7 @@ function Download(opts) {
     this._url = [];
     this.opts = opts || {};
     this.opts.encoding = null;
+    this.opts.mode = parseInt(this.opts.mode, 8) || null;
     this.opts.proxy = process.env.HTTPS_PROXY ||
                       process.env.https_proxy ||
                       process.env.HTTP_PROXY ||
@@ -104,6 +105,16 @@ Download.prototype.run = function (cb) {
             fs.outputFile(path.join(obj.dest, name), data, function (err) {
                 if (err) {
                     return done(err);
+                }
+
+                if (opts.mode) {
+                    return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
+                        if (err) {
+                            return done(err);
+                        }
+
+                        done();
+                    });
                 }
 
                 done();
