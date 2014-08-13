@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "decompress": "^0.3.0",
-    "each-async": "^0.1.1",
+    "each-async": "^1.0.0",
     "fs-extra": "^0.10.0",
     "object-assign": "^0.3.1",
     "request": "^2.34.0",
