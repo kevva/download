@@ -19,7 +19,8 @@ var Download = require('download');
 var download = new Download()
     .get('http://example.com/foo.zip', 'destFolder', { extract: true, strip: 1 })
     .get('http://example.com/bar.jpg', 'destFolder')
-    .get({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder');
+    .get({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder')
+    .use(Download.progress());
 
 download.run(function (err) {
     if (err) {
@@ -43,6 +44,10 @@ Add a file to download. The `file` argument accepts a `String` containing a URL
 or an `Object` with a URL and a desired name. For example `{ url: http://example.com/file.zip, name: 'foo.zip' }`.
 
 Options defined here will only apply to the specified file.
+
+### .use(plugin)
+
+Adds a plugin to the middleware stack.
 
 ### .proxy(proxy)
 

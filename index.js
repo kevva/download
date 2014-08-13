@@ -5,6 +5,7 @@ var Decompress = require('decompress');
 var each = require('each-async');
 var fs = require('fs-extra');
 var path = require('path');
+var Ware = require('ware');
 
 /**
  * Initialize Download
@@ -15,6 +16,7 @@ var path = require('path');
 
 function Download(opts) {
     this._url = [];
+    this.ware = new Ware();
     this.opts = opts || {};
     this.opts.encoding = null;
     this.opts.mode = parseInt(this.opts.mode, 8) || null;
@@ -51,6 +53,18 @@ Download.prototype.get = function (file, dest, opts) {
 };
 
 /**
+ * Add a plugin to the middleware stack
+ *
+ * @param {Function} plugin
+ * @api public
+ */
+
+Download.prototype.use = function (plugin) {
+    this.ware.use(plugin);
+    return this;
+};
+
+/**
  * Set proxy
  *
  * @param {String} proxy
@@ -82,44 +96,52 @@ Download.prototype.run = function (cb) {
     each(this.get(), function (obj, i, done) {
         var name = obj.name || path.basename(obj.url);
         var opts = assign(self.opts, obj.opts);
+        var ret = [];
 
-        request.get(obj.url, opts, function (err, res, data) {
-            if (err) {
-                return done(err);
-            }
+        request.get(obj.url, opts)
+            .on('error', done)
 
-            if (res.statusCode < 200 || res.statusCode >= 300) {
-                return done(res.statusCode);
-            }
+            .on('data', function (data) {
+                ret.push(data);
+            })
 
-            if (opts.extract) {
-                return self._extract(data, obj.dest, opts, function (err) {
-                    if (err) {
-                        return done(err);
-                    }
-
-                    done(err);
-                });
-            }
-
-            fs.outputFile(path.join(obj.dest, name), data, function (err) {
-                if (err) {
-                    return done(err);
+            .on('response', function (res) {
+                if (res.statusCode < 200 || res.statusCode >= 300) {
+                    return done(res.statusCode);
                 }
 
-                if (opts.mode) {
-                    return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
+                self._run(res);
+            })
+
+            .on('end', function () {
+                if (opts.extract) {
+                    return self._extract(Buffer.concat(ret), obj.dest, opts, function (err) {
                         if (err) {
                             return done(err);
                         }
 
-                        done();
+                        done(err);
                     });
                 }
 
-                done();
+                fs.outputFile(path.join(obj.dest, name), Buffer.concat(ret), function (err) {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    if (opts.mode) {
+                        return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
+                            if (err) {
+                                return done(err);
+                            }
+
+                            done();
+                        });
+                    }
+
+                    done();
+                });
             });
-        });
     }, function (err) {
         if (err) {
             return cb(err);
@@ -127,6 +149,18 @@ Download.prototype.run = function (cb) {
 
         cb();
     });
+};
+
+/**
+ * Run the response through the middleware
+ *
+ * @param {Object} res
+ * @param {Function} cb
+ * @api public
+ */
+
+Download.prototype._run = function (res) {
+    this.ware.run(res, this);
 };
 
 /**
