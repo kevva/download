@@ -15,12 +15,13 @@ it'll extract it for you.
 
 ```js
 var Download = require('download');
+var progress = require('download-status');
 
 var download = new Download()
     .get('http://example.com/foo.zip', 'destFolder', { extract: true, strip: 1 })
     .get('http://example.com/bar.jpg', 'destFolder')
     .get({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder')
-    .use(Download.progress());
+    .use(progress());
 
 download.run(function (err) {
     if (err) {
