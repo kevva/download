@@ -99,8 +99,6 @@ Download.prototype.run = function (cb) {
         var ret = [];
 
         request.get(obj.url, opts)
-            .on('error', done)
-
             .on('data', function (data) {
                 ret.push(data);
             })
@@ -112,6 +110,8 @@ Download.prototype.run = function (cb) {
 
                 self._run(res);
             })
+
+            .on('error', done)
 
             .on('end', function () {
                 if (opts.extract) {
