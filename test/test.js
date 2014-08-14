@@ -22,8 +22,12 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.zip')));
-            cb(scope.done());
+            assert(scope.isDone());
+
+            fs.exists(path.join(__dirname, 'tmp/file.zip'), function (e) {
+                assert(e);
+                cb();
+            });
         });
     });
 
@@ -36,8 +40,12 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file-rename.zip')));
-            cb(scope.done());
+            assert(scope.isDone());
+
+            fs.exists(path.join(__dirname, 'tmp/file-rename.zip'), function (e) {
+                assert(e);
+                cb();
+            });
         });
     });
 
@@ -50,29 +58,12 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
+            assert(scope.isDone());
 
             fs.stat(path.join(__dirname, 'tmp/file.zip'), function (err, stats) {
-                assert.equal(stats.mode.toString(8), '100755');
-                cb(scope.done());
+                assert(stats.mode.toString(8) === '100755');
+                cb();
             });
-        });
-    });
-
-    it('should download multiple files', function (cb) {
-        var download = new Download()
-            .get('http://example.com/file.zip', path.join(__dirname, 'tmp'))
-            .get('http://example.com/file.tar', path.join(__dirname, 'tmp'));
-        var scope = nock('http://example.com')
-            .get('/file.zip')
-            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'))
-            .get('/file.tar')
-            .replyWithFile(200, path.join(__dirname, 'fixtures/file.tar'));
-
-        download.run(function (err) {
-            assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.zip')));
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.tar')));
-            cb(scope.done());
         });
     });
 
@@ -85,8 +76,12 @@ describe('download()', function () {
 
         download.run(function (err) {
             assert(!err);
-            assert.ok(fs.existsSync(path.join(__dirname, 'tmp/file.txt')));
-            cb(scope.done());
+            assert(scope.isDone());
+
+            fs.exists(path.join(__dirname, 'tmp/file.txt'), function (e) {
+                assert(e);
+                cb();
+            });
         });
     });
 
@@ -98,8 +93,9 @@ describe('download()', function () {
             .reply(404);
 
         download.run(function (err) {
-            assert(err);
-            cb(scope.done());
+            assert(err === 404);
+            assert(scope.isDone());
+            cb();
         });
     });
 });

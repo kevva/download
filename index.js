@@ -99,47 +99,47 @@ Download.prototype.run = function (cb) {
         var ret = [];
 
         request.get(obj.url, opts)
+            .on('error', done)
+
             .on('data', function (data) {
                 ret.push(data);
             })
 
             .on('response', function (res) {
                 if (res.statusCode < 200 || res.statusCode >= 300) {
-                    return done(res.statusCode);
+                    return cb(res.statusCode);
                 }
 
                 self._run(res);
-            })
 
-            .on('error', done)
-
-            .on('end', function () {
-                if (opts.extract) {
-                    return self._extract(Buffer.concat(ret), obj.dest, opts, function (err) {
-                        if (err) {
-                            return done(err);
-                        }
-
-                        done(err);
-                    });
-                }
-
-                fs.outputFile(path.join(obj.dest, name), Buffer.concat(ret), function (err) {
-                    if (err) {
-                        return done(err);
-                    }
-
-                    if (opts.mode) {
-                        return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
+                res.on('end', function () {
+                    if (opts.extract) {
+                        return self._extract(Buffer.concat(ret), obj.dest, opts, function (err) {
                             if (err) {
                                 return done(err);
                             }
 
-                            done();
+                            done(err);
                         });
                     }
 
-                    done();
+                    fs.outputFile(path.join(obj.dest, name), Buffer.concat(ret), function (err) {
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (opts.mode) {
+                            return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
+                                if (err) {
+                                    return done(err);
+                                }
+
+                                done();
+                            });
+                        }
+
+                        done();
+                    });
                 });
             });
     }, function (err) {

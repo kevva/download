@@ -34,7 +34,7 @@
     "ware": "^0.3.0"
   },
   "devDependencies": {
-    "mocha": "^1.18.2",
+    "mocha": "^1.21.4",
     "nock": "^0.27.1",
     "rimraf": "^2.2.5"
   }
