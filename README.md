@@ -4,7 +4,7 @@
 
 ## Install
 
-```bash
+```sh
 $ npm install --save download
 ```
 

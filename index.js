@@ -107,7 +107,8 @@ Download.prototype.run = function (cb) {
 
             .on('response', function (res) {
                 if (res.statusCode < 200 || res.statusCode >= 300) {
-                    return cb(res.statusCode);
+                    cb(res.statusCode);
+                    return;
                 }
 
                 self._run(res);
@@ -116,7 +117,8 @@ Download.prototype.run = function (cb) {
                     if (opts.extract) {
                         return self._extract(Buffer.concat(ret), obj.dest, opts, function (err) {
                             if (err) {
-                                return done(err);
+                                done(err);
+                                return;
                             }
 
                             done(err);
@@ -125,13 +127,15 @@ Download.prototype.run = function (cb) {
 
                     fs.outputFile(path.join(obj.dest, name), Buffer.concat(ret), function (err) {
                         if (err) {
-                            return done(err);
+                            done(err);
+                            return;
                         }
 
                         if (opts.mode) {
                             return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
                                 if (err) {
-                                    return done(err);
+                                    done(err);
+                                    return;
                                 }
 
                                 done();
@@ -144,7 +148,8 @@ Download.prototype.run = function (cb) {
             });
     }, function (err) {
         if (err) {
-            return cb(err);
+            cb(err);
+            return;
         }
 
         cb();
@@ -183,7 +188,8 @@ Download.prototype._extract = function (buf, dest, opts, cb) {
 
     decompress.decompress(function (err) {
         if (err) {
-            return cb(err);
+            cb(err);
+            return;
         }
 
         cb();
