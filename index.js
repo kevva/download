@@ -95,7 +95,7 @@ Download.prototype.run = function (cb) {
 
     each(this.get(), function (obj, i, done) {
         var name = obj.name || path.basename(obj.url);
-        var opts = assign(self.opts, obj.opts);
+        var opts = assign({}, self.opts, obj.opts);
         var ret = [];
 
         request.get(obj.url, opts)
