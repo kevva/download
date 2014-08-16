@@ -121,25 +121,14 @@ Download.prototype.run = function (cb) {
                                 return;
                             }
 
-                            done(err);
+                            done();
                         });
                     }
 
-                    fs.outputFile(path.join(obj.dest, name), Buffer.concat(ret), function (err) {
+                    self._write(Buffer.concat(ret), path.join(obj.dest, name), opts, function (err) {
                         if (err) {
                             done(err);
                             return;
-                        }
-
-                        if (opts.mode) {
-                            return fs.chmod(path.join(obj.dest, name), opts.mode, function (err) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-
-                                done();
-                            });
                         }
 
                         done();
@@ -166,6 +155,38 @@ Download.prototype.run = function (cb) {
 
 Download.prototype._run = function (res) {
     this.ware.run(res, this);
+};
+
+/**
+ * Write to file
+ *
+ * @param {Buffer} buf
+ * @param {String} dest
+ * @param {Object} opts
+ * @param {Function} cb
+ * @api private
+ */
+
+Download.prototype._write = function (buf, dest, opts, cb) {
+    fs.outputFile(dest, buf, function (err) {
+        if (err) {
+            cb(err);
+            return;
+        }
+
+        if (opts.mode) {
+            return fs.chmod(dest, opts.mode, function (err) {
+                if (err) {
+                    cb(err);
+                    return;
+                }
+
+                cb();
+            });
+        }
+
+        cb();
+    });
 };
 
 /**
