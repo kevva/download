@@ -43,7 +43,7 @@ if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
  */
 
 var download = new Download()
-    .get(input[0]);
+    .get(input[0], process.cwd());
 
 download.run(function (err) {
     if (err) {

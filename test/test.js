@@ -85,6 +85,21 @@ describe('download()', function () {
         });
     });
 
+    it('should download a file to buffer', function (cb) {
+        var download = new Download({ extract: true })
+            .get('http://example.com/file.zip');
+        var scope = nock('http://example.com')
+            .get('/file.zip')
+            .replyWithFile(200, path.join(__dirname, 'fixtures/file.zip'));
+
+        download.run(function (err, files) {
+            assert(!err);
+            assert(scope.isDone());
+            assert(files[0].contents.length > 0);
+            cb();
+        });
+    });
+
     it('should error on 404', function (cb) {
         var download = new Download()
             .get('http://example.com/error', path.join(__dirname, 'tmp'));

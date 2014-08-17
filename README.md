@@ -23,12 +23,13 @@ var download = new Download()
     .get({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder')
     .use(progress());
 
-download.run(function (err) {
+download.run(function (err, files) {
     if (err) {
         throw err;
     }
 
-    console.log('Download complete!');
+    console.log(files);
+    => [{ url: http://example.com/foo.zip, contents: <Buffer 50 4b 03 ...>, ... }]
 });
 ```
 
@@ -42,7 +43,7 @@ downloads.
 ### .get(file, dest, opts)
 
 Add a file to download. The `file` argument accepts a `String` containing a URL 
-or an `Object` with a URL and a desired name. For example `{ url: http://example.com/file.zip, name: 'foo.zip' }`.
+or an `Object` with a URL and a desired name. For example `{ url: http://example.com/file.zip, name: 'foo.zip' }`. If you don't supply a `dest` no files will be written to the disk.
 
 Options defined here will only apply to the specified file.
 

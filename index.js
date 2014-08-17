@@ -40,7 +40,11 @@ Download.prototype.get = function (file, dest, opts) {
         return this._url;
     }
 
-    dest = dest || process.cwd();
+    if (typeof dest === 'object') {
+        opts = dest;
+        dest = undefined;
+    }
+
     opts = opts || {};
 
     if (file.url && file.name) {
@@ -90,6 +94,7 @@ Download.prototype.proxy = function (proxy) {
 Download.prototype.run = function (cb) {
     cb = cb || function () {};
 
+    var files = [];
     var request = require('request');
     var self = this;
 
@@ -114,6 +119,13 @@ Download.prototype.run = function (cb) {
                 self._run(res);
 
                 res.on('end', function () {
+                    files.push({ url: obj.url, contents: Buffer.concat(ret) });
+
+                    if (!obj.dest) {
+                        done();
+                        return;
+                    }
+
                     if (opts.extract) {
                         return self._extract(Buffer.concat(ret), obj.dest, opts, function (err) {
                             if (err) {
@@ -141,7 +153,7 @@ Download.prototype.run = function (cb) {
             return;
         }
 
-        cb();
+        cb(null, files);
     });
 };
 
