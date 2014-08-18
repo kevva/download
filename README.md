@@ -29,7 +29,7 @@ download.run(function (err, files) {
     }
 
     console.log(files);
-    => [{ url: http://example.com/foo.zip, contents: <Buffer 50 4b 03 ...>, ... }]
+    //=> [{ url: http://example.com/foo.zip, contents: <Buffer 50 4b 03 ...> }, { ... }]
 });
 ```
 
