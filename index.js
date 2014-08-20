@@ -100,7 +100,6 @@ Download.prototype.run = function (cb) {
 
     each(this.get(), function (obj, i, done) {
         var name = obj.name || path.basename(obj.url);
-        var dest = obj.opts.extract ? obj.dest : path.join(obj.dest, name);
         var ret = [];
 
         request.get(obj.url, obj.opts)
@@ -128,7 +127,7 @@ Download.prototype.run = function (cb) {
                 }
 
                 if (obj.opts.extract) {
-                    return self._extract(Buffer.concat(ret), dest, obj.opts, function (err) {
+                    return self._extract(Buffer.concat(ret), obj.dest, obj.opts, function (err) {
                         if (err) {
                             done(err);
                             return;
@@ -138,7 +137,7 @@ Download.prototype.run = function (cb) {
                     });
                 }
 
-                self._write(Buffer.concat(ret), dest, obj.opts, function (err) {
+                self._write(Buffer.concat(ret), path.join(obj.dest, name), obj.opts, function (err) {
                     if (err) {
                         done(err);
                         return;
