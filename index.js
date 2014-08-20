@@ -15,7 +15,7 @@ var Ware = require('ware');
  */
 
 function Download(opts) {
-    this._url = [];
+    this._get = [];
     this.ware = new Ware();
     this.opts = opts || {};
     this.opts.encoding = null;
@@ -37,7 +37,7 @@ function Download(opts) {
 
 Download.prototype.get = function (file, dest, opts) {
     if (!arguments.length) {
-        return this._url;
+        return this._get;
     }
 
     if (typeof dest === 'object') {
@@ -45,12 +45,12 @@ Download.prototype.get = function (file, dest, opts) {
         dest = undefined;
     }
 
-    opts = opts || {};
+    opts = assign({}, this.opts, opts);
 
     if (file.url && file.name) {
-        this._url.push({ url: file.url, name: file.name, dest: dest, opts: opts });
+        this._get.push({ url: file.url, name: file.name, dest: dest, opts: opts });
     } else {
-        this._url.push({ url: file, dest: dest, opts: opts });
+        this._get.push({ url: file, dest: dest, opts: opts });
     }
 
     return this;
@@ -100,10 +100,10 @@ Download.prototype.run = function (cb) {
 
     each(this.get(), function (obj, i, done) {
         var name = obj.name || path.basename(obj.url);
-        var opts = assign({}, self.opts, obj.opts);
+        var dest = obj.opts.extract ? obj.dest : path.join(obj.dest, name);
         var ret = [];
 
-        request.get(obj.url, opts)
+        request.get(obj.url, obj.opts)
             .on('error', done)
 
             .on('data', function (data) {
@@ -117,27 +117,18 @@ Download.prototype.run = function (cb) {
                 }
 
                 self._run(res);
+            })
 
-                res.on('end', function () {
-                    files.push({ url: obj.url, contents: Buffer.concat(ret) });
+            .on('end', function () {
+                files.push({ url: obj.url, contents: Buffer.concat(ret) });
 
-                    if (!obj.dest) {
-                        done();
-                        return;
-                    }
+                if (!obj.dest) {
+                    done();
+                    return;
+                }
 
-                    if (opts.extract) {
-                        return self._extract(Buffer.concat(ret), obj.dest, opts, function (err) {
-                            if (err) {
-                                done(err);
-                                return;
-                            }
-
-                            done();
-                        });
-                    }
-
-                    self._write(Buffer.concat(ret), path.join(obj.dest, name), opts, function (err) {
+                if (obj.opts.extract) {
+                    return self._extract(Buffer.concat(ret), dest, obj.opts, function (err) {
                         if (err) {
                             done(err);
                             return;
@@ -145,6 +136,15 @@ Download.prototype.run = function (cb) {
 
                         done();
                     });
+                }
+
+                self._write(Buffer.concat(ret), dest, obj.opts, function (err) {
+                    if (err) {
+                        done(err);
+                        return;
+                    }
+
+                    done();
                 });
             });
     }, function (err) {
@@ -161,7 +161,6 @@ Download.prototype.run = function (cb) {
  * Run the response through the middleware
  *
  * @param {Object} res
- * @param {Function} cb
  * @api public
  */
 
