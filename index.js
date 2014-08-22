@@ -15,6 +15,10 @@ var Ware = require('ware');
  */
 
 function Download(opts) {
+    if (!(this instanceof Download)) {
+        return new Download();
+    }
+
     this._get = [];
     this.ware = new Ware();
     this.opts = opts || {};
