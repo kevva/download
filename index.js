@@ -2,8 +2,8 @@
 
 var assign = require('object-assign');
 var Decompress = require('decompress');
+var DownloadJob = require('./downloadJob');
 var each = require('each-async');
-var fs = require('fs-extra');
 var path = require('path');
 var Ware = require('ware');
 
@@ -46,15 +46,16 @@ Download.prototype.get = function (file, dest, opts) {
 
     if (typeof dest === 'object') {
         opts = dest;
-        dest = undefined;
+        dest = require('os').tmpdir();
     }
 
     opts = assign({}, this.opts, opts);
 
     if (file.url && file.name) {
-        this._get.push({ url: file.url, name: file.name, dest: dest, opts: opts });
+        this._get.push(new DownloadJob(file.url, file.name, dest, opts));
     } else {
-        this._get.push({ url: file, dest: dest, opts: opts });
+        var name = path.basename(file);
+        this._get.push(new DownloadJob(file, name, dest, opts));
     }
 
     return this;
@@ -96,42 +97,27 @@ Download.prototype.proxy = function (proxy) {
  */
 
 Download.prototype.run = function (cb) {
-    cb = cb || function () {};
+    cb = (cb && typeof cb === 'function')? cb : function () {};
 
     var files = [];
-    var request = require('request');
     var self = this;
 
-    each(this.get(), function (obj, i, done) {
-        var name = obj.name || path.basename(obj.url);
-        var ret = [];
+    each(this.get(), function (job, i, done) {
 
-        request.get(obj.url, obj.opts)
-            .on('error', done)
+        console.log(job.opts.abc);
+        job.on('error', done)
 
-            .on('data', function (data) {
-                ret.push(data);
-            })
-
-            .on('response', function (res) {
-                if (res.statusCode < 200 || res.statusCode >= 300) {
-                    cb(res.statusCode);
-                    return;
-                }
+        .on('response', function (res) {
 
                 self._run(res);
             })
 
-            .on('end', function () {
-                files.push({ url: obj.url, contents: Buffer.concat(ret) });
+        .on('finish', function () {
 
-                if (!obj.dest) {
-                    done();
-                    return;
-                }
+                files.push({ url: job.url, location: job.getFullPath() });
 
-                if (obj.opts.extract) {
-                    return self._extract(Buffer.concat(ret), obj.dest, obj.opts, function (err) {
+                if (job.opts.extract) {
+                    return self._extract(job.getFullPath(), job.dest, job.opts, function (err) {
                         if (err) {
                             done(err);
                             return;
@@ -139,17 +125,16 @@ Download.prototype.run = function (cb) {
 
                         done();
                     });
+
+                }else{
+                    done();
                 }
 
-                self._write(Buffer.concat(ret), path.join(obj.dest, name), obj.opts, function (err) {
-                    if (err) {
-                        done(err);
-                        return;
-                    }
+            })
 
-                    done();
-                });
-            });
+        .start();
+
+
     }, function (err) {
         if (err) {
             cb(err);
@@ -171,37 +156,6 @@ Download.prototype._run = function (res) {
     this.ware.run(res, this);
 };
 
-/**
- * Write to file
- *
- * @param {Buffer} buf
- * @param {String} dest
- * @param {Object} opts
- * @param {Function} cb
- * @api private
- */
-
-Download.prototype._write = function (buf, dest, opts, cb) {
-    fs.outputFile(dest, buf, function (err) {
-        if (err) {
-            cb(err);
-            return;
-        }
-
-        if (opts.mode) {
-            return fs.chmod(dest, opts.mode, function (err) {
-                if (err) {
-                    cb(err);
-                    return;
-                }
-
-                cb();
-            });
-        }
-
-        cb();
-    });
-};
 
 /**
  * Extract archive
@@ -213,9 +167,10 @@ Download.prototype._write = function (buf, dest, opts, cb) {
  * @api private
  */
 
-Download.prototype._extract = function (buf, dest, opts, cb) {
+Download.prototype._extract = function (filePath, dest, opts, cb) {
+
     var decompress = new Decompress()
-        .src(buf)
+        .src(filePath)
         .dest(dest)
         .use(Decompress.tar(opts))
         .use(Decompress.targz(opts))
