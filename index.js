@@ -214,7 +214,7 @@ Download.prototype._write = function (buf, dest, opts, cb) {
  */
 
 Download.prototype._extract = function (buf, dest, opts, cb) {
-    var decompress = new Decompress()
+    var decompress = new Decompress(opts)
         .src(buf)
         .dest(dest)
         .use(Decompress.tar(opts))
