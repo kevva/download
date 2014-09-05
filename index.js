@@ -24,7 +24,7 @@ function Download(opts) {
     this.ware = new Ware();
     this.opts = opts || {};
     this.opts.encoding = null;
-    this.opts.mode = parseInt(this.opts.mode, 8) || null;
+    this.opts.mode = this.opts.mode || null;
     this.opts.proxy = process.env.HTTPS_PROXY ||
                       process.env.https_proxy ||
                       process.env.HTTP_PROXY ||
@@ -190,7 +190,7 @@ Download.prototype._write = function (buf, dest, opts, cb) {
         }
 
         if (opts.mode) {
-            return fs.chmod(dest, opts.mode, function (err) {
+            return fs.chmod(dest, parseInt(opts.mode, 8), function (err) {
                 if (err) {
                     cb(err);
                     return;
