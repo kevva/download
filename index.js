@@ -219,6 +219,7 @@ Download.prototype._extract = function (buf, dest, opts, cb) {
         .src(buf)
         .dest(dest)
         .use(Decompress.tar(opts))
+        .use(Decompress.tarbz2(opts))
         .use(Decompress.targz(opts))
         .use(Decompress.zip(opts));
 
