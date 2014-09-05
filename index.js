@@ -1,6 +1,7 @@
 'use strict';
 
 var assign = require('object-assign');
+var archiveType = require('archive-type');
 var Decompress = require('decompress');
 var each = require('each-async');
 var fs = require('fs-extra');
@@ -130,7 +131,7 @@ Download.prototype.run = function (cb) {
                     return;
                 }
 
-                if (obj.opts.extract) {
+                if (obj.opts.extract && archiveType(Buffer.concat(ret))) {
                     return self._extract(Buffer.concat(ret), obj.dest, obj.opts, function (err) {
                         if (err) {
                             done(err);

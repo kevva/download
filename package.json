@@ -26,6 +26,7 @@
     "url"
   ],
   "dependencies": {
+    "archive-type": "^1.0.2",
     "decompress": "^1.0.1",
     "each-async": "^1.0.0",
     "fs-extra": "^0.11.0",
