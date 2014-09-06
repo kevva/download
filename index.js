@@ -120,7 +120,7 @@ Download.prototype.run = function (cb) {
                     return;
                 }
 
-                self._run(res);
+                self._run(res, obj);
             })
 
             .on('end', function () {
@@ -165,11 +165,12 @@ Download.prototype.run = function (cb) {
  * Run the response through the middleware
  *
  * @param {Object} res
+ * @param {Object} file
  * @api public
  */
 
-Download.prototype._run = function (res) {
-    this.ware.run(res, this);
+Download.prototype._run = function (res, file) {
+    this.ware.run(res, file);
 };
 
 /**
