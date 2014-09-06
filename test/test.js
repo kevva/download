@@ -4,6 +4,7 @@ var Download = require('../');
 var fs = require('fs');
 var nock = require('nock');
 var path = require('path');
+var server = require('./test-server');
 var test = require('ava');
 
 test('expose a constructor', function (t) {
@@ -102,6 +103,31 @@ test('download a file to Buffer', function (t) {
         t.assert(files[0].url === 'http://e.com/f.zip');
         t.assert(files[0].contents.length > 0);
     });
+});
+
+test('proxy google.com', function (t) {
+    t.plan(3);
+
+    var srv = server(9001);
+    var download = new Download({
+        headers: { 'proxy-authorization': 'Foo Bar' }
+    });
+
+    srv.listen(9001, function () {
+        srv.on('http://google.com/', function (req, res) {
+            t.assert(req.headers.host === 'google.com');
+            t.assert(req.headers['proxy-authorization'] === 'Foo Bar');
+            res.end();
+        });
+    });
+
+    download
+        .proxy('http://localhost:9001')
+        .get('http://google.com/')
+        .run(function (err) {
+            t.assert(!err);
+            srv.close();
+        });
 });
 
 test('error on 404', function (t) {
