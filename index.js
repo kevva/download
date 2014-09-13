@@ -224,7 +224,7 @@ Download.prototype._extract = function (buf, dest, opts, cb) {
         .use(Decompress.targz(opts))
         .use(Decompress.zip(opts));
 
-    decompress.decompress(function (err) {
+    decompress.run(function (err) {
         if (err) {
             cb(err);
             return;

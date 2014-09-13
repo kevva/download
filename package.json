@@ -27,15 +27,15 @@
   ],
   "dependencies": {
     "archive-type": "^1.0.2",
-    "decompress": "^1.0.7",
+    "decompress": "^2.0.0",
     "each-async": "^1.0.0",
-    "fs-extra": "^0.11.0",
+    "fs-extra": "^0.11.1",
     "object-assign": "^1.0.0",
     "request": "^2.34.0",
-    "ware": "^0.3.0"
+    "ware": "^1.0.1"
   },
   "devDependencies": {
     "ava": "0.0.4",
-    "nock": "^0.45.0"
+    "nock": "^0.47.0"
   }
 }
