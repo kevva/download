@@ -2,6 +2,7 @@
 
 var combine = require('stream-combiner');
 var concat = require('concat-stream');
+var conf = require('rc')('npm');
 var decompress = require('decompress');
 var each = require('each-async');
 var File = require('vinyl');
@@ -25,6 +26,8 @@ function Download(opts) {
     }
 
     this.opts = opts || {};
+    this.opts.proxy = conf['https-proxy'] || conf['http-proxy'] || conf.proxy;
+    this.opts.strictSSL = conf['strict-ssl'];
     this.plugins = [];
     this.ware = new Ware();
     this._get = [];

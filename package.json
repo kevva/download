@@ -30,6 +30,7 @@
     "decompress": "^2.0.0",
     "each-async": "^1.0.0",
     "gulp-rename": "^1.2.0",
+    "rc": "^0.5.1",
     "request": "^2.34.0",
     "stream-combiner": "^0.2.1",
     "through2": "^0.6.1",
