@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "ava": "0.0.4",
+    "gulp-tar": "^1.1.0",
     "nock": "^0.47.0"
   }
 }

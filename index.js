@@ -28,7 +28,7 @@ function Download(opts) {
     this.opts = opts || {};
     this.opts.proxy = conf['https-proxy'] || conf['http-proxy'] || conf.proxy;
     this.opts.strictSSL = conf['strict-ssl'];
-    this.plugins = [];
+    this.tasks = [];
     this.ware = new Ware();
     this._get = [];
 }
@@ -94,6 +94,18 @@ Download.prototype.use = function (plugin) {
 };
 
 /**
+ * Add a task to the middleware stack
+ *
+ * @param {Function} task
+ * @api public
+ */
+
+Download.prototype.pipe = function (task) {
+    this.tasks.push(task);
+    return this;
+};
+
+/**
  * Run
  *
  * @param {Function} cb
@@ -149,7 +161,7 @@ Download.prototype.run = function (cb) {
             return;
         }
 
-        var pipe = self.pipe(files);
+        var pipe = self.construct(files);
         var end = concat(function (files) {
             cb(null, files, pipe);
         });
@@ -170,33 +182,33 @@ Download.prototype.run = function (cb) {
  * @api public
  */
 
-Download.prototype.pipe = function (files) {
+Download.prototype.construct = function (files) {
     var stream = through.obj();
-    var streams = [];
 
     files.forEach(function (file) {
         stream.write(new File(file));
     });
 
     stream.end();
-    streams.push(stream);
 
     if (this.opts.extract) {
-        streams.push(decompress.tar(this.opts));
-        streams.push(decompress.tarbz2(this.opts));
-        streams.push(decompress.targz(this.opts));
-        streams.push(decompress.zip(this.opts));
+        this.tasks.unshift(decompress.tar(this.opts));
+        this.tasks.unshift(decompress.tarbz2(this.opts));
+        this.tasks.unshift(decompress.targz(this.opts));
+        this.tasks.unshift(decompress.zip(this.opts));
     }
 
+    this.tasks.unshift(stream);
+
     if (this.rename()) {
-        streams.push(rename(this.rename()));
+        this.tasks.push(rename(this.rename()));
     }
 
     if (this.dest()) {
-        streams.push(fs.dest(this.dest(), this.opts));
+        this.tasks.push(fs.dest(this.dest(), this.opts));
     }
 
-    return combine(streams);
+    return combine(this.tasks);
 };
 
 /**

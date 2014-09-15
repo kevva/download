@@ -5,6 +5,7 @@ var Download = require('../');
 var nock = require('nock');
 var path = require('path');
 var fixture = path.join.bind(path, __dirname, 'fixtures');
+var tar = require('gulp-tar');
 var test = require('ava');
 
 test('expose a constructor', function (t) {
@@ -81,6 +82,24 @@ test('download and extract a file', function (t) {
         t.assert(!err);
         t.assert(scope.isDone());
         t.assert(files[0].path === 'file.txt');
+    });
+});
+
+test('download and perform task on it', function (t) {
+    t.plan(3);
+
+    var download = new Download()
+        .get('http://foo.com/file.zip')
+        .pipe(tar('file.tar'));
+
+    var scope = nock('http://foo.com')
+        .get('/file.zip')
+        .replyWithFile(200, fixture('file.zip'));
+
+    download.run(function (err, files) {
+        t.assert(!err);
+        t.assert(scope.isDone());
+        t.assert(path.basename(files[0].path) === 'file.tar');
     });
 });
 
