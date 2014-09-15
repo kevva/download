@@ -26,12 +26,16 @@
     "url"
   ],
   "dependencies": {
-    "archive-type": "^1.0.2",
+    "concat-stream": "^1.4.6",
     "decompress": "^2.0.0",
     "each-async": "^1.0.0",
-    "fs-extra": "^0.11.1",
-    "object-assign": "^1.0.0",
+    "gulp-rename": "^1.2.0",
     "request": "^2.34.0",
+    "stream-combiner": "^0.2.1",
+    "through2": "^0.6.1",
+    "url-regex": "^1.0.3",
+    "vinyl": "^0.4.3",
+    "vinyl-fs": "^0.3.7",
     "ware": "^1.0.1"
   },
   "devDependencies": {

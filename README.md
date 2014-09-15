@@ -17,10 +17,10 @@ it'll extract it for you.
 var Download = require('download');
 var progress = require('download-status');
 
-var download = new Download()
-    .get('http://example.com/foo.zip', 'destFolder', { extract: true, strip: 1 })
-    .get('http://example.com/bar.jpg', 'destFolder')
-    .get({ url: 'http://example.com/bar.jpg', name: 'foobar.jpg' }, 'destFolder')
+var download = new Download({ extract: true, strip: 1 })
+    .get('http://example.com/foo.zip')
+    .get('http://example.com/cat.jpg')
+    .dest('dest')
     .use(progress());
 
 download.run(function (err, files) {
@@ -28,8 +28,7 @@ download.run(function (err, files) {
         throw err;
     }
 
-    console.log(files);
-    //=> [{ url: http://example.com/foo.zip, contents: <Buffer 50 4b 03 ...> }, { ... }]
+    console.log('File downloaded successfully!');
 });
 ```
 
@@ -37,23 +36,19 @@ download.run(function (err, files) {
 
 ### new Download(opts)
 
-Creates a new `Download` instance. Options defined here will be applied to all 
-downloads.
+Creates a new `Download` instance.
 
-### .get(file, dest, opts)
+### .get(url)
 
-Add a file to download. The `file` argument accepts a `String` containing a URL 
-or an `Object` with a URL and a desired name. For example `{ url: http://example.com/file.zip, name: 'foo.zip' }`. If you don't supply a `dest` no files will be written to the disk.
+Add a file to download.
 
-Options defined here will only apply to the specified file.
+### .dest(dir)
+
+Set the destination folder to where your files will be written.
 
 ### .use(plugin)
 
 Adds a plugin to the middleware stack.
-
-### .proxy(proxy)
-
-Set proxy settings. Defaults to `process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy;`.
 
 ### .run(cb)
 

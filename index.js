@@ -1,15 +1,19 @@
 'use strict';
 
-var assign = require('object-assign');
-var archiveType = require('archive-type');
-var Decompress = require('decompress');
+var combine = require('stream-combiner');
+var concat = require('concat-stream');
+var decompress = require('decompress');
 var each = require('each-async');
-var fs = require('fs-extra');
+var File = require('vinyl');
+var fs = require('vinyl-fs');
 var path = require('path');
+var rename = require('gulp-rename');
+var through = require('through2');
+var urlRegex = require('url-regex');
 var Ware = require('ware');
 
 /**
- * Initialize Download
+ * Initialize a new `Download`
  *
  * @param {Object} opts
  * @api public
@@ -20,44 +24,57 @@ function Download(opts) {
         return new Download();
     }
 
-    this._get = [];
-    this.ware = new Ware();
     this.opts = opts || {};
-    this.opts.encoding = null;
-    this.opts.mode = this.opts.mode || null;
-    this.opts.proxy = process.env.HTTPS_PROXY ||
-                      process.env.https_proxy ||
-                      process.env.HTTP_PROXY ||
-                      process.env.http_proxy;
+    this.plugins = [];
+    this.ware = new Ware();
+    this._get = [];
 }
 
 /**
- * Add a URL to download
+ * Get or set URL to download
  *
- * @param {String|Object} file
- * @param {String} dest
- * @param {Object} opts
+ * @param {String} url
  * @api public
  */
 
-Download.prototype.get = function (file, dest, opts) {
+Download.prototype.get = function (url) {
     if (!arguments.length) {
         return this._get;
     }
 
-    if (typeof dest === 'object') {
-        opts = dest;
-        dest = undefined;
+    this._get.push(url);
+    return this;
+};
+
+/**
+ * Get or set the destination folder
+ *
+ * @param {String} dir
+ * @api public
+ */
+
+Download.prototype.dest = function (dir) {
+    if (!arguments.length) {
+        return this._dest;
     }
 
-    opts = assign({}, this.opts, opts);
+    this._dest = dir;
+    return this;
+};
 
-    if (file.url && file.name) {
-        this._get.push({ url: file.url, name: file.name, dest: dest, opts: opts });
-    } else {
-        this._get.push({ url: file, dest: dest, opts: opts });
+/**
+ * Rename the downloaded file
+ *
+ * @param {Function|String} name
+ * @api public
+ */
+
+Download.prototype.rename = function (name) {
+    if (!arguments.length) {
+        return this._name;
     }
 
+    this._name = name;
     return this;
 };
 
@@ -74,22 +91,6 @@ Download.prototype.use = function (plugin) {
 };
 
 /**
- * Set proxy
- *
- * @param {String} proxy
- * @api public
- */
-
-Download.prototype.proxy = function (proxy) {
-    if (!arguments.length) {
-        return this.opts.proxy;
-    }
-
-    this.opts.proxy = proxy;
-    return this;
-};
-
-/**
  * Run
  *
  * @param {Function} cb
@@ -99,139 +100,100 @@ Download.prototype.proxy = function (proxy) {
 Download.prototype.run = function (cb) {
     cb = cb || function () {};
 
-    var files = [];
     var request = require('request');
     var self = this;
+    var files = [];
 
-    each(this.get(), function (obj, i, done) {
-        var name = obj.name || path.basename(obj.url);
+    each(this.get(), function (url, i, done) {
         var ret = [];
+        var len = 0;
 
-        request.get(obj.url, obj.opts)
-            .on('error', done)
+        if (!urlRegex().test(url)) {
+            done(new Error('Specify a valid URL'));
+            return;
+        }
 
-            .on('data', function (data) {
-                ret.push(data);
-            })
-
+        request.get(url, self.opts)
             .on('response', function (res) {
                 if (res.statusCode < 200 || res.statusCode >= 300) {
-                    cb(res.statusCode);
+                    res.destroy();
+                    done(new Error(res.statusCode));
                     return;
                 }
 
-                self._run(res, obj);
-            })
+                res.on('error', done);
+                res.on('data', function (data) {
+                    ret.push(data);
+                    len += data.length;
+                });
 
-            .on('end', function () {
-                files.push({ url: obj.url, contents: Buffer.concat(ret) });
+                self.ware.run(res, url);
 
-                if (!obj.dest) {
-                    done();
-                    return;
-                }
-
-                if (obj.opts.extract && archiveType(Buffer.concat(ret))) {
-                    return self._extract(Buffer.concat(ret), obj.dest, obj.opts, function (err) {
-                        if (err) {
-                            done(err);
-                            return;
-                        }
-
-                        done();
+                res.on('end', function () {
+                    files.push({
+                        path: path.basename(url),
+                        contents: Buffer.concat(ret, len)
                     });
-                }
-
-                self._write(Buffer.concat(ret), path.join(obj.dest, name), obj.opts, function (err) {
-                    if (err) {
-                        done(err);
-                        return;
-                    }
 
                     done();
                 });
-            });
+            })
+
+            .on('error', done);
     }, function (err) {
         if (err) {
             cb(err);
             return;
         }
 
-        cb(null, files);
+        var pipe = self.pipe(files);
+        var end = concat(function (files) {
+            cb(null, files, pipe);
+        });
+
+        pipe.on('error', function (err) {
+            cb(err);
+            return;
+        });
+
+        pipe.pipe(end);
     });
 };
 
 /**
- * Run the response through the middleware
+ * Construct stream
  *
- * @param {Object} res
- * @param {Object} file
+ * @param {Array} files
  * @api public
  */
 
-Download.prototype._run = function (res, file) {
-    this.ware.run(res, file);
-};
+Download.prototype.pipe = function (files) {
+    var stream = through.obj();
+    var streams = [];
 
-/**
- * Write to file
- *
- * @param {Buffer} buf
- * @param {String} dest
- * @param {Object} opts
- * @param {Function} cb
- * @api private
- */
-
-Download.prototype._write = function (buf, dest, opts, cb) {
-    fs.outputFile(dest, buf, function (err) {
-        if (err) {
-            cb(err);
-            return;
-        }
-
-        if (opts.mode) {
-            return fs.chmod(dest, parseInt(opts.mode, 8), function (err) {
-                if (err) {
-                    cb(err);
-                    return;
-                }
-
-                cb();
-            });
-        }
-
-        cb();
+    files.forEach(function (file) {
+        stream.write(new File(file));
     });
-};
 
-/**
- * Extract archive
- *
- * @param {Buffer} buf
- * @param {String} dest
- * @param {Object} opts
- * @param {Function} cb
- * @api private
- */
+    stream.end();
+    streams.push(stream);
 
-Download.prototype._extract = function (buf, dest, opts, cb) {
-    var decompress = new Decompress(opts)
-        .src(buf)
-        .dest(dest)
-        .use(Decompress.tar(opts))
-        .use(Decompress.tarbz2(opts))
-        .use(Decompress.targz(opts))
-        .use(Decompress.zip(opts));
+    if (this.opts.extract) {
+        streams.push(decompress.tar(this.opts));
+        streams.push(decompress.tarbz2(this.opts));
+        streams.push(decompress.targz(this.opts));
+        streams.push(decompress.zip(this.opts));
+    }
 
-    decompress.run(function (err) {
-        if (err) {
-            cb(err);
-            return;
-        }
+    if (this.rename()) {
+        streams.push(rename(this.rename()));
+    }
 
-        cb();
-    });
+    if (this.dest()) {
+        streams.push(fs.dest(this.dest(), this.opts));
+    }
+
+    return combine(streams);
 };
 
 /**
