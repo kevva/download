@@ -11,19 +11,22 @@ $ npm install --save download
 ## Usage
 
 If you're fetching an archive you can set `extract: true` in options and
-it'll extract it for you.
+it'll extract it for you. You can also run your files through transform streams 
+(e.g gulp plugins) using the `.pipe()` method.
 
 ```js
 var Download = require('download');
+var imagemin = require('gulp-imagemin');
 var progress = require('download-status');
 
 var download = new Download({ extract: true, strip: 1 })
     .get('http://example.com/foo.zip')
     .get('http://example.com/cat.jpg')
+    .pipe(imagemin({ progressive: true }))
     .dest('dest')
     .use(progress());
 
-download.run(function (err, files) {
+download.run(function (err, files, stream) {
     if (err) {
         throw err;
     }
@@ -44,11 +47,20 @@ Add a file to download.
 
 ### .dest(dir)
 
-Set the destination folder to where your files will be written.
+Set the destination folder to where your files will be downloaded.
+
+### .rename(name)
+
+Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename). 
+Takes a `String` or a `Function` as argument.
 
 ### .use(plugin)
 
 Adds a plugin to the middleware stack.
+
+### .pipe(task)
+
+Pipe your files through a transform stream (e.g a gulp plugin).
 
 ### .run(cb)
 
