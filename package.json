@@ -27,7 +27,10 @@
   ],
   "dependencies": {
     "concat-stream": "^1.4.6",
-    "decompress": "^2.0.0",
+    "decompress-tar": "^2.0.1",
+    "decompress-tarbz2": "^2.0.1",
+    "decompress-targz": "^2.0.1",
+    "decompress-unzip": "^2.0.0",
     "each-async": "^1.0.0",
     "gulp-rename": "^1.2.0",
     "rc": "^0.5.1",
