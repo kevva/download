@@ -20,18 +20,18 @@ var imagemin = require('gulp-imagemin');
 var progress = require('download-status');
 
 var download = new Download({ extract: true, strip: 1 })
-    .get('http://example.com/foo.zip')
-    .get('http://example.com/cat.jpg')
-    .pipe(imagemin({ progressive: true }))
-    .dest('dest')
-    .use(progress());
+	.get('http://example.com/foo.zip')
+	.get('http://example.com/cat.jpg')
+	.pipe(imagemin({ progressive: true }))
+	.dest('dest')
+	.use(progress());
 
 download.run(function (err, files, stream) {
-    if (err) {
-        throw err;
-    }
+	if (err) {
+		throw err;
+	}
 
-    console.log('File downloaded successfully!');
+	console.log('File downloaded successfully!');
 });
 ```
 

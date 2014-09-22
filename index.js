@@ -24,16 +24,16 @@ var zip = require('decompress-unzip');
  */
 
 function Download(opts) {
-    if (!(this instanceof Download)) {
-        return new Download();
-    }
+	if (!(this instanceof Download)) {
+		return new Download();
+	}
 
-    this.opts = opts || {};
-    this.opts.proxy = conf['https-proxy'] || conf['http-proxy'] || conf.proxy;
-    this.opts.strictSSL = conf['strict-ssl'];
-    this.tasks = [];
-    this.ware = new Ware();
-    this._get = [];
+	this.opts = opts || {};
+	this.opts.proxy = conf['https-proxy'] || conf['http-proxy'] || conf.proxy;
+	this.opts.strictSSL = conf['strict-ssl'];
+	this.tasks = [];
+	this.ware = new Ware();
+	this._get = [];
 }
 
 /**
@@ -44,12 +44,12 @@ function Download(opts) {
  */
 
 Download.prototype.get = function (url) {
-    if (!arguments.length) {
-        return this._get;
-    }
+	if (!arguments.length) {
+		return this._get;
+	}
 
-    this._get.push(url);
-    return this;
+	this._get.push(url);
+	return this;
 };
 
 /**
@@ -60,12 +60,12 @@ Download.prototype.get = function (url) {
  */
 
 Download.prototype.dest = function (dir) {
-    if (!arguments.length) {
-        return this._dest;
-    }
+	if (!arguments.length) {
+		return this._dest;
+	}
 
-    this._dest = dir;
-    return this;
+	this._dest = dir;
+	return this;
 };
 
 /**
@@ -76,12 +76,12 @@ Download.prototype.dest = function (dir) {
  */
 
 Download.prototype.rename = function (name) {
-    if (!arguments.length) {
-        return this._name;
-    }
+	if (!arguments.length) {
+		return this._name;
+	}
 
-    this._name = name;
-    return this;
+	this._name = name;
+	return this;
 };
 
 /**
@@ -92,8 +92,8 @@ Download.prototype.rename = function (name) {
  */
 
 Download.prototype.use = function (plugin) {
-    this.ware.use(plugin);
-    return this;
+	this.ware.use(plugin);
+	return this;
 };
 
 /**
@@ -104,8 +104,8 @@ Download.prototype.use = function (plugin) {
  */
 
 Download.prototype.pipe = function (task) {
-    this.tasks.push(task);
-    return this;
+	this.tasks.push(task);
+	return this;
 };
 
 /**
@@ -116,66 +116,66 @@ Download.prototype.pipe = function (task) {
  */
 
 Download.prototype.run = function (cb) {
-    cb = cb || function () {};
+	cb = cb || function () {};
 
-    var request = require('request');
-    var self = this;
-    var files = [];
+	var request = require('request');
+	var self = this;
+	var files = [];
 
-    each(this.get(), function (url, i, done) {
-        var ret = [];
-        var len = 0;
+	each(this.get(), function (url, i, done) {
+		var ret = [];
+		var len = 0;
 
-        if (!urlRegex().test(url)) {
-            done(new Error('Specify a valid URL'));
-            return;
-        }
+		if (!urlRegex().test(url)) {
+			done(new Error('Specify a valid URL'));
+			return;
+		}
 
-        request.get(url, self.opts)
-            .on('response', function (res) {
-                if (res.statusCode < 200 || res.statusCode >= 300) {
-                    res.destroy();
-                    done(new Error(res.statusCode));
-                    return;
-                }
+		request.get(url, self.opts)
+			.on('response', function (res) {
+				if (res.statusCode < 200 || res.statusCode >= 300) {
+					res.destroy();
+					done(new Error(res.statusCode));
+					return;
+				}
 
-                res.on('error', done);
-                res.on('data', function (data) {
-                    ret.push(data);
-                    len += data.length;
-                });
+				res.on('error', done);
+				res.on('data', function (data) {
+					ret.push(data);
+					len += data.length;
+				});
 
-                self.ware.run(res, url);
+				self.ware.run(res, url);
 
-                res.on('end', function () {
-                    files.push({
-                        path: path.basename(url),
-                        contents: Buffer.concat(ret, len)
-                    });
+				res.on('end', function () {
+					files.push({
+						path: path.basename(url),
+						contents: Buffer.concat(ret, len)
+					});
 
-                    done();
-                });
-            })
+					done();
+				});
+			})
 
-            .on('error', done);
-    }, function (err) {
-        if (err) {
-            cb(err);
-            return;
-        }
+			.on('error', done);
+	}, function (err) {
+		if (err) {
+			cb(err);
+			return;
+		}
 
-        var pipe = self.construct(files);
-        var end = concat(function (files) {
-            cb(null, files, pipe);
-        });
+		var pipe = self.construct(files);
+		var end = concat(function (files) {
+			cb(null, files, pipe);
+		});
 
-        pipe.on('error', function (err) {
-            cb(err);
-            return;
-        });
+		pipe.on('error', function (err) {
+			cb(err);
+			return;
+		});
 
-        pipe.pipe(end);
-    });
+		pipe.pipe(end);
+	});
 };
 
 /**
@@ -186,29 +186,29 @@ Download.prototype.run = function (cb) {
  */
 
 Download.prototype.construct = function (files) {
-    var stream = through.obj();
+	var stream = through.obj();
 
-    files.forEach(function (file) {
-        stream.write(new File(file));
-    });
+	files.forEach(function (file) {
+		stream.write(new File(file));
+	});
 
-    stream.end();
+	stream.end();
 
-    if (this.opts.extract) {
-        this.tasks.unshift(tar(this.opts), tarBz2(this.opts), tarGz(this.opts), zip(this.opts));
-    }
+	if (this.opts.extract) {
+		this.tasks.unshift(tar(this.opts), tarBz2(this.opts), tarGz(this.opts), zip(this.opts));
+	}
 
-    this.tasks.unshift(stream);
+	this.tasks.unshift(stream);
 
-    if (this.rename()) {
-        this.tasks.push(rename(this.rename()));
-    }
+	if (this.rename()) {
+		this.tasks.push(rename(this.rename()));
+	}
 
-    if (this.dest()) {
-        this.tasks.push(fs.dest(this.dest(), this.opts));
-    }
+	if (this.dest()) {
+		this.tasks.push(fs.dest(this.dest(), this.opts));
+	}
 
-    return combine(this.tasks);
+	return combine(this.tasks);
 };
 
 /**

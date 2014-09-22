@@ -13,17 +13,17 @@ var stdin = require('get-stdin');
  */
 
 var opts = nopt({
-    extract: Boolean,
-    help: Boolean,
-    out: String,
-    strip: Number,
-    version: Boolean
+	extract: Boolean,
+	help: Boolean,
+	out: String,
+	strip: Number,
+	version: Boolean
 }, {
-    e: '--extract',
-    h: '--help',
-    o: '--out',
-    s: '--strip',
-    v: '--version'
+	e: '--extract',
+	h: '--help',
+	o: '--out',
+	s: '--strip',
+	v: '--version'
 });
 
 /**
@@ -31,27 +31,27 @@ var opts = nopt({
  */
 
 function help() {
-    console.log([
-        '',
-        '  ' + pkg.description,
-        '',
-        '  Usage',
-        '    download <url>',
-        '    download <url> > <file>',
-        '    download --out <directory> <url>',
-        '    cat <file> | download --out <directory>',
-        '',
-        '  Example',
-        '    download http://foo.com/file.zip',
-        '    download http://foo.com/cat.png > dog.png',
-        '    download --extract --strip 1 --out dest http://foo.com/file.zip',
-        '    cat urls.txt | download --out dest',
-        '',
-        '  Options',
-        '    -e, --extract           Try decompressing the file',
-        '    -o, --out               Where to place the downloaded files',
-        '    -s, --strip <number>    Strip leading paths from file names on extraction'
-    ].join('\n'));
+	console.log([
+		'',
+		'  ' + pkg.description,
+		'',
+		'  Usage',
+		'    download <url>',
+		'    download <url> > <file>',
+		'    download --out <directory> <url>',
+		'    cat <file> | download --out <directory>',
+		'',
+		'  Example',
+		'    download http://foo.com/file.zip',
+		'    download http://foo.com/cat.png > dog.png',
+		'    download --extract --strip 1 --out dest http://foo.com/file.zip',
+		'    cat urls.txt | download --out dest',
+		'',
+		'  Options',
+		'    -e, --extract           Try decompressing the file',
+		'    -o, --out               Where to place the downloaded files',
+		'    -s, --strip <number>    Strip leading paths from file names on extraction'
+	].join('\n'));
 }
 
 /**
@@ -59,8 +59,8 @@ function help() {
  */
 
 if (input.indexOf('-h') !== -1 || input.indexOf('--help') !== -1) {
-    help();
-    return;
+	help();
+	return;
 }
 
 /**
@@ -68,8 +68,8 @@ if (input.indexOf('-h') !== -1 || input.indexOf('--help') !== -1) {
  */
 
 if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
-    console.log(pkg.version);
-    return;
+	console.log(pkg.version);
+	return;
 }
 
 /**
@@ -81,27 +81,27 @@ if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
  */
 
 function run(src, dest) {
-    var download = new Download(opts)
-        .use(progress());
+	var download = new Download(opts)
+		.use(progress());
 
-    src.forEach(download.get.bind(download));
+	src.forEach(download.get.bind(download));
 
-    if (process.stdout.isTTY) {
-        download.dest(dest ? dest : process.cwd());
-    }
+	if (process.stdout.isTTY) {
+		download.dest(dest ? dest : process.cwd());
+	}
 
-    download.run(function (err, files) {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
+	download.run(function (err, files) {
+		if (err) {
+			console.error(err);
+			process.exit(1);
+		}
 
-        if (!process.stdout.isTTY) {
-            files.forEach(function (file) {
-                process.stdout.write(file.contents);
-            });
-        }
-    });
+		if (!process.stdout.isTTY) {
+			files.forEach(function (file) {
+				process.stdout.write(file.contents);
+			});
+		}
+	});
 }
 
 /**
@@ -109,21 +109,21 @@ function run(src, dest) {
  */
 
 if (process.stdin.isTTY) {
-    var src = opts.argv.remain;
-    var dest = opts.out;
+	var src = opts.argv.remain;
+	var dest = opts.out;
 
-    if (!src.length) {
-        help();
-        return;
-    }
+	if (!src.length) {
+		help();
+		return;
+	}
 
-    run(src, dest);
+	run(src, dest);
 } else {
-    stdin(function (data) {
-        var src = opts.argv.remain;
-        var dest = opts.out;
+	stdin(function (data) {
+		var src = opts.argv.remain;
+		var dest = opts.out;
 
-        [].push.apply(src, data.trim().split('\n'));
-        run(src, dest);
-    });
+		[].push.apply(src, data.trim().split('\n'));
+		run(src, dest);
+	});
 }
