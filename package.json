@@ -19,6 +19,7 @@
     "test": "node test/test.js"
   },
   "files": [
+    "cli.js",
     "index.js"
   ],
   "keywords": [
