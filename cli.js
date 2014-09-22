@@ -81,12 +81,12 @@ if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
  */
 
 function run(src, dest) {
-	var download = new Download(opts)
-		.use(progress());
+	var download = new Download(opts);
 
 	src.forEach(download.get.bind(download));
 
 	if (process.stdout.isTTY) {
+		download.use(progress());
 		download.dest(dest ? dest : process.cwd());
 	}
 
