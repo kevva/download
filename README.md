@@ -92,6 +92,33 @@ Default: `0`
 
 Equivalent to `--strip-components` for tar.
 
+## CLI
+
+```bash
+$ npm install --global download
+```
+
+```sh
+$ download --help
+
+Usage
+  download <url>
+  download <url> > <file>
+  download --out <directory> <url>
+  cat <file> | download --out <directory>
+
+Example
+  download http://foo.com/file.zip
+  download http://foo.com/cat.png > dog.png
+  download --extract --strip 1 --out dest http://foo.com/file.zip
+  cat urls.txt | download --out dest
+
+Options
+  -e, --extract           Try decompressing the file
+  -o, --out               Where to place the downloaded files
+  -s, --strip <number>    Strip leading paths from file names on extraction
+```
+
 ## License
 
 MIT © [Kevin Mårtensson](http://kevinmartensson.com)

@@ -12,6 +12,9 @@
   "engines": {
     "node": ">=0.10.0"
   },
+  "bin": {
+    "download": "cli.js"
+  },
   "scripts": {
     "test": "node test/test.js"
   },
@@ -31,8 +34,11 @@
     "decompress-tarbz2": "^2.0.1",
     "decompress-targz": "^2.0.1",
     "decompress-unzip": "^2.0.0",
+    "download-status": "^2.0.1",
     "each-async": "^1.0.0",
+    "get-stdin": "^3.0.0",
     "gulp-rename": "^1.2.0",
+    "nopt": "^3.0.1",
     "rc": "^0.5.1",
     "request": "^2.34.0",
     "stream-combiner": "^0.2.1",
@@ -44,7 +50,7 @@
   },
   "devDependencies": {
     "archive-type": "^1.0.2",
-    "ava": "0.0.4",
+    "ava": "^0.0.4",
     "gulp-tar": "^1.1.0",
     "nock": "^0.47.0"
   }
