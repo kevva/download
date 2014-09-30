@@ -205,6 +205,7 @@ Download.prototype.construct = function (files) {
 	}
 
 	if (this.dest()) {
+		this.opts.mode = parseInt(this.opts.mode, 8);
 		this.tasks.push(fs.dest(this.dest(), this.opts));
 	}
 
