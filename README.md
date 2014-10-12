@@ -43,28 +43,44 @@ Creates a new `Download` instance.
 
 ### .get(url)
 
+Type: `String`
+
 Add a file to download.
 
 ### .dest(dir)
+
+Type: `String`
 
 Set the destination folder to where your files will be downloaded.
 
 ### .rename(name)
 
-Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename). 
-Takes a `String` or a `Function` as argument.
+Type: `Function|String`
+
+Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename).
 
 ### .use(plugin)
+
+Type: `Function`
 
 Adds a plugin to the middleware stack.
 
 ### .pipe(task)
 
+Type: `Function`
+
 Pipe your files through a transform stream (e.g a gulp plugin).
 
 ### .run(cb)
 
+Type: `Function`
+
 Downloads your files and returns an error if something has gone wrong.
+
+#### cb(err, files, stream)
+
+The callback will return an array of vinyl files in `files` and a Readable/Writable 
+stream in `stream`.
 
 ## Options
 
