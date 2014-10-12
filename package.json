@@ -39,7 +39,7 @@
     "each-async": "^1.0.0",
     "get-stdin": "^3.0.0",
     "gulp-rename": "^1.2.0",
-    "nopt": "^3.0.1",
+    "meow": "^1.0.0",
     "rc": "^0.5.1",
     "request": "^2.34.0",
     "stream-combiner": "^0.2.1",

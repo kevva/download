@@ -2,9 +2,7 @@
 'use strict';
 
 var Download = require('./');
-var input = process.argv.slice(2);
-var nopt = require('nopt');
-var pkg = require('./package.json');
+var meow = require('meow');
 var progress = require('download-status');
 var stdin = require('get-stdin');
 
@@ -12,29 +10,9 @@ var stdin = require('get-stdin');
  * Options
  */
 
-var opts = nopt({
-	extract: Boolean,
-	help: Boolean,
-	out: String,
-	strip: Number,
-	version: Boolean
-}, {
-	e: '--extract',
-	h: '--help',
-	o: '--out',
-	s: '--strip',
-	v: '--version'
-});
-
-/**
- * Help screen
- */
-
-function help() {
-	console.log([
-		'',
-		'  ' + pkg.description,
-		'',
+var cli = meow({
+	requireInput: process.stdin.isTTY,
+	help: [
 		'  Usage',
 		'    download <url>',
 		'    download <url> > <file>',
@@ -51,26 +29,21 @@ function help() {
 		'    -e, --extract           Try decompressing the file',
 		'    -o, --out               Where to place the downloaded files',
 		'    -s, --strip <number>    Strip leading paths from file names on extraction'
-	].join('\n'));
-}
-
-/**
- * Show help
- */
-
-if (input.indexOf('-h') !== -1 || input.indexOf('--help') !== -1) {
-	help();
-	return;
-}
-
-/**
- * Show package version
- */
-
-if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
-	console.log(pkg.version);
-	return;
-}
+	].join('\n')
+}, {
+	boolean: [
+		'extract'
+	],
+	string: [
+		'out',
+		'strip'
+	],
+	alias: {
+		e: 'extract',
+		o: 'out',
+		s: 'strip'
+	}
+});
 
 /**
  * Run
@@ -81,7 +54,7 @@ if (input.indexOf('-v') !== -1 || input.indexOf('--version') !== -1) {
  */
 
 function run(src, dest) {
-	var download = new Download(opts);
+	var download = new Download(cli.flags);
 
 	src.forEach(download.get.bind(download));
 
@@ -109,19 +82,14 @@ function run(src, dest) {
  */
 
 if (process.stdin.isTTY) {
-	var src = opts.argv.remain;
-	var dest = opts.out;
-
-	if (!src.length) {
-		help();
-		return;
-	}
+	var src = cli.input;
+	var dest = cli.flags.out;
 
 	run(src, dest);
 } else {
 	stdin(function (data) {
-		var src = opts.argv.remain;
-		var dest = opts.out;
+		var src = cli.input;
+		var dest = cli.flags.out;
 
 		[].push.apply(src, data.trim().split('\n'));
 		run(src, dest);
