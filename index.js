@@ -25,7 +25,7 @@ var zip = require('decompress-unzip');
 
 function Download(opts) {
 	if (!(this instanceof Download)) {
-		return new Download();
+		return new Download(opts);
 	}
 
 	this.opts = opts || {};
