@@ -19,7 +19,7 @@ var Download = require('download');
 var imagemin = require('gulp-imagemin');
 var progress = require('download-status');
 
-var download = new Download({ extract: true, strip: 1, mode: 755 })
+var download = new Download({ extract: true, strip: 1, mode: '755' })
 	.get('http://example.com/foo.zip')
 	.get('http://example.com/cat.jpg')
 	.pipe(imagemin({ progressive: true }))
@@ -96,10 +96,9 @@ If set to `true`, try extracting the file using [decompress](https://github.com/
 
 ### mode
 
-Type: `Number|String`  
-Default: `null`
+Type: `String`  
 
-Set mode on the downloaded file, i.e `{ mode: 755 }`.
+Set mode on the downloaded file, i.e `{ mode: '755' }`.
 
 ### strip
 
