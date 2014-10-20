@@ -104,7 +104,7 @@ test('download and perform task on it', function (t) {
 });
 
 test('error on 404', function (t) {
-	t.plan(2);
+	t.plan(3);
 
 	var download = new Download()
 		.get('http://foo.com/error');
@@ -113,7 +113,8 @@ test('error on 404', function (t) {
 		.reply(404);
 
 	download.run(function (err) {
-		t.assert(err.message === '404');
+		t.assert(err.message === 'Couldn\'t connect to http://foo.com/error (404)');
+		t.assert(err.code === 404);
 		t.assert(scope.isDone());
 	});
 });
