@@ -5,6 +5,7 @@ var Download = require('../');
 var nock = require('nock');
 var path = require('path');
 var fixture = path.join.bind(path, __dirname, 'fixtures');
+var server = require('./test-server');
 var tar = require('gulp-tar');
 var test = require('ava');
 
@@ -101,6 +102,31 @@ test('download and perform task on it', function (t) {
 		t.assert(scope.isDone());
 		t.assert(path.basename(files[0].path) === 'file.tar');
 	});
+});
+
+test('proxy google.com', function (t) {
+	t.plan(1);
+
+	var srv = server();
+	var download = new Download({
+		headers: { 'proxy-authorization': 'Foo Bar' },
+		proxy: 'http://localhost:9001'
+	});
+
+	srv.listen(9001, function () {
+		srv.on('http://google.com/', function (req, res) {
+			t.assert(req.headers.host === 'google.com');
+			t.assert(req.headers['proxy-authorization'] === 'Foo Bar');
+			res.end();
+		});
+	});
+
+	download
+		.get('http://google.com/')
+		.run(function (err) {
+			t.assert(!err, err);
+			srv.close();
+		});
 });
 
 test('error on 404', function (t) {

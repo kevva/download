@@ -29,8 +29,16 @@ function Download(opts) {
 	}
 
 	this.opts = opts || {};
-	this.opts.proxy = conf['https-proxy'] || conf['http-proxy'] || conf.proxy;
 	this.opts.strictSSL = conf['strict-ssl'];
+	this.opts.proxy = conf['https-proxy'] ||
+					  conf['http-proxy'] ||
+					  conf.proxy ||
+					  process.env.HTTPS_PROXY ||
+					  process.env.https_proxy ||
+					  process.env.HTTP_PROXY ||
+					  process.env.http_proxy ||
+					  this.opts.proxy;
+
 	this.tasks = [];
 	this.ware = new Ware();
 	this._get = [];
