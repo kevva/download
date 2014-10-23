@@ -105,7 +105,7 @@ test('download and perform task on it', function (t) {
 });
 
 test('proxy google.com', function (t) {
-	t.plan(1);
+	t.plan(3);
 
 	var srv = server();
 	var download = new Download({
