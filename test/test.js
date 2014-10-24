@@ -33,7 +33,7 @@ test('set a file to get', function (t) {
 });
 
 test('download a file', function (t) {
-	t.plan(4);
+	t.plan(5);
 
 	var download = new Download()
 		.get('http://foo.com/file.zip');
@@ -46,12 +46,13 @@ test('download a file', function (t) {
 		t.assert(!err);
 		t.assert(scope.isDone());
 		t.assert(files[0].path === 'file.zip');
+		t.assert(files[0].url === 'http://foo.com/file.zip');
 		t.assert(archiveType(files[0].contents) === 'zip');
 	});
 });
 
 test('download a file and rename it', function (t) {
-	t.plan(4);
+	t.plan(5);
 
 	var download = new Download()
 		.get('http://foo.com/file.zip')
@@ -66,6 +67,7 @@ test('download a file and rename it', function (t) {
 		t.assert(scope.isDone());
 		t.assert(path.basename(files[0].path) === 'foobar.zip');
 		t.assert(archiveType(files[0].contents) === 'zip');
+		t.assert(files[0].url === 'http://foo.com/file.zip');
 	});
 });
 
