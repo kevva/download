@@ -165,7 +165,8 @@ Download.prototype.run = function (cb) {
 				res.on('end', function () {
 					files.push({
 						path: path.basename(url),
-						contents: Buffer.concat(ret, len)
+						contents: Buffer.concat(ret, len),
+						url: url
 					});
 
 					done();
@@ -200,7 +201,9 @@ Download.prototype.construct = function (files) {
 	var stream = through.obj();
 
 	files.forEach(function (file) {
-		stream.write(new File(file));
+		var obj = new File(file);
+		obj.url = file.url;
+		stream.write(obj);
 	});
 
 	stream.end();
