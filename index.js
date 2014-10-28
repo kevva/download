@@ -142,14 +142,13 @@ Download.prototype.run = function (cb) {
 		request.get(url, self.opts)
 			.on('response', function (res) {
 				if (res.statusCode < 200 || res.statusCode >= 300) {
-					res.destroy();
-
 					var err = new Error([
 						'Couldn\'t connect to ' + url,
 						'(' + res.statusCode + ')'
 					].join(' '));
 
 					err.code = res.statusCode;
+					res.destroy();
 					done(err);
 					return;
 				}
