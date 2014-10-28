@@ -11,24 +11,23 @@ var stdin = require('get-stdin');
  */
 
 var cli = meow({
-	requireInput: process.stdin.isTTY,
 	help: [
-		'  Usage',
-		'    download <url>',
-		'    download <url> > <file>',
-		'    download --out <directory> <url>',
-		'    cat <file> | download --out <directory>',
+		'Usage',
+		'  download <url>',
+		'  download <url> > <file>',
+		'  download --out <directory> <url>',
+		'  cat <file> | download --out <directory>',
 		'',
-		'  Example',
-		'    download http://foo.com/file.zip',
-		'    download http://foo.com/cat.png > dog.png',
-		'    download --extract --strip 1 --out dest http://foo.com/file.zip',
-		'    cat urls.txt | download --out dest',
+		'Example',
+		'  download http://foo.com/file.zip',
+		'  download http://foo.com/cat.png > dog.png',
+		'  download --extract --strip 1 --out dest http://foo.com/file.zip',
+		'  cat urls.txt | download --out dest',
 		'',
-		'  Options',
-		'    -e, --extract           Try decompressing the file',
-		'    -o, --out               Where to place the downloaded files',
-		'    -s, --strip <number>    Strip leading paths from file names on extraction'
+		'Options',
+		'  -e, --extract           Try decompressing the file',
+		'  -o, --out               Where to place the downloaded files',
+		'  -s, --strip <number>    Strip leading paths from file names on extraction'
 	].join('\n')
 }, {
 	boolean: [
@@ -42,6 +41,9 @@ var cli = meow({
 		e: 'extract',
 		o: 'out',
 		s: 'strip'
+	},
+	default: {
+		out: process.cwd()
 	}
 });
 
@@ -60,7 +62,7 @@ function run(src, dest) {
 
 	if (process.stdout.isTTY) {
 		download.use(progress());
-		download.dest(dest ? dest : process.cwd());
+		download.dest(dest);
 	}
 
 	download.run(function (err, files) {
@@ -84,6 +86,20 @@ function run(src, dest) {
 if (process.stdin.isTTY) {
 	var src = cli.input;
 	var dest = cli.flags.out;
+
+	if (!src.length){
+		console.error([
+			'Specify a URL to fetch',
+			'',
+			'Example',
+			'  download http://foo.com/file.zip',
+			'  download http://foo.com/cat.png > dog.png',
+			'  download --extract --strip 1 --out dest http://foo.com/file.zip',
+			'  cat urls.txt | download --out dest'
+		].join('\n'));
+
+		process.exit(1);
+	}
 
 	run(src, dest);
 } else {
