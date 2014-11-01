@@ -67,7 +67,7 @@ function run(src, dest) {
 
 	download.run(function (err, files) {
 		if (err) {
-			console.error(err);
+			console.error(err.message);
 			process.exit(1);
 		}
 
