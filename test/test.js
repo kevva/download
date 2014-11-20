@@ -5,7 +5,6 @@ var Download = require('../');
 var nock = require('nock');
 var path = require('path');
 var fixture = path.join.bind(path, __dirname, 'fixtures');
-var server = require('./test-server');
 var tar = require('gulp-tar');
 var test = require('ava');
 
@@ -36,17 +35,17 @@ test('download a file', function (t) {
 	t.plan(5);
 
 	var download = new Download()
-		.get('http://foo.com/file.zip');
+		.get('http://foo.com/test-file.zip');
 
 	var scope = nock('http://foo.com')
-		.get('/file.zip')
-		.replyWithFile(200, fixture('file.zip'));
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
 		t.assert(!err);
 		t.assert(scope.isDone());
-		t.assert(files[0].path === 'file.zip');
-		t.assert(files[0].url === 'http://foo.com/file.zip');
+		t.assert(files[0].path === 'test-file.zip');
+		t.assert(files[0].url === 'http://foo.com/test-file.zip');
 		t.assert(archiveType(files[0].contents) === 'zip');
 	});
 });
@@ -55,19 +54,19 @@ test('download a file and rename it', function (t) {
 	t.plan(5);
 
 	var download = new Download()
-		.get('http://foo.com/file.zip')
+		.get('http://foo.com/test-file.zip')
 		.rename('foobar.zip');
 
 	var scope = nock('http://foo.com')
-		.get('/file.zip')
-		.replyWithFile(200, fixture('file.zip'));
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
 		t.assert(!err);
 		t.assert(scope.isDone());
 		t.assert(path.basename(files[0].path) === 'foobar.zip');
 		t.assert(archiveType(files[0].contents) === 'zip');
-		t.assert(files[0].url === 'http://foo.com/file.zip');
+		t.assert(files[0].url === 'http://foo.com/test-file.zip');
 	});
 });
 
@@ -75,11 +74,11 @@ test('download and extract a file', function (t) {
 	t.plan(3);
 
 	var download = new Download({ extract: true })
-		.get('http://foo.com/file.zip');
+		.get('http://foo.com/test-file.zip');
 
 	var scope = nock('http://foo.com')
-		.get('/file.zip')
-		.replyWithFile(200, fixture('file.zip'));
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
 		t.assert(!err);
@@ -92,12 +91,12 @@ test('download and perform task on it', function (t) {
 	t.plan(3);
 
 	var download = new Download()
-		.get('http://foo.com/file.zip')
+		.get('http://foo.com/test-file.zip')
 		.pipe(tar('file.tar'));
 
 	var scope = nock('http://foo.com')
-		.get('/file.zip')
-		.replyWithFile(200, fixture('file.zip'));
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
 		t.assert(!err);
@@ -109,6 +108,7 @@ test('download and perform task on it', function (t) {
 test('proxy google.com', function (t) {
 	t.plan(3);
 
+	var server = require('./fixtures/test-server');
 	var srv = server();
 	var download = new Download({
 		headers: { 'proxy-authorization': 'Foo Bar' },
@@ -123,12 +123,11 @@ test('proxy google.com', function (t) {
 		});
 	});
 
-	download
-		.get('http://google.com/')
-		.run(function (err) {
-			t.assert(!err, err);
-			srv.close();
-		});
+	download.get('http://google.com/');
+	download.run(function (err) {
+		t.assert(!err, err);
+		srv.close();
+	});
 });
 
 test('error on 404', function (t) {
