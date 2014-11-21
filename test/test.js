@@ -42,7 +42,7 @@ test('download a file', function (t) {
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
-		t.assert(!err);
+		t.assert(!err, err);
 		t.assert(scope.isDone());
 		t.assert(files[0].path === 'test-file.zip');
 		t.assert(files[0].url === 'http://foo.com/test-file.zip');
@@ -62,7 +62,7 @@ test('download a file and rename it', function (t) {
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
-		t.assert(!err);
+		t.assert(!err, err);
 		t.assert(scope.isDone());
 		t.assert(path.basename(files[0].path) === 'foobar.zip');
 		t.assert(archiveType(files[0].contents) === 'zip');
@@ -81,7 +81,7 @@ test('download and extract a file', function (t) {
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
-		t.assert(!err);
+		t.assert(!err, err);
 		t.assert(scope.isDone());
 		t.assert(files[0].path === 'file.txt');
 	});
@@ -99,7 +99,7 @@ test('download and perform task on it', function (t) {
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err, files) {
-		t.assert(!err);
+		t.assert(!err, err);
 		t.assert(scope.isDone());
 		t.assert(path.basename(files[0].path) === 'file.tar');
 	});
@@ -121,7 +121,7 @@ test('expose the response stream', function (t) {
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	download.run(function (err) {
-		t.assert(!err);
+		t.assert(!err, err);
 		t.assert(scope.isDone());
 	});
 });
