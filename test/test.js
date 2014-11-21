@@ -105,6 +105,27 @@ test('download and perform task on it', function (t) {
 	});
 });
 
+test('expose the response stream', function (t) {
+	t.plan(3);
+
+	var download = new Download()
+		.get('http://foo.com/test-file.zip')
+		.use(function (res) {
+			res.on('data', function (data) {
+				t.assert(data);
+			});
+		});
+
+	var scope = nock('http://foo.com')
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
+
+	download.run(function (err) {
+		t.assert(!err);
+		t.assert(scope.isDone());
+	});
+});
+
 test('proxy google.com', function (t) {
 	t.plan(3);
 
