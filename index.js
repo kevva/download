@@ -131,9 +131,6 @@ Download.prototype.run = function (cb) {
 	var files = [];
 
 	each(this.get(), function (url, i, done) {
-		var ret = [];
-		var len = 0;
-
 		if (!urlRegex().test(url)) {
 			done(new Error('Specify a valid URL'));
 			return;
@@ -141,33 +138,13 @@ Download.prototype.run = function (cb) {
 
 		request.get(url, self.opts)
 			.on('response', function (res) {
-				if (res.statusCode < 200 || res.statusCode >= 300) {
-					var err = new Error([
-						'Couldn\'t connect to ' + url,
-						'(' + res.statusCode + ')'
-					].join(' '));
+				self.res(url, res, function (err, ret) {
+					if (err) {
+						done(err);
+						return;
+					}
 
-					err.code = res.statusCode;
-					res.destroy();
-					done(err);
-					return;
-				}
-
-				res.on('error', done);
-				res.on('data', function (data) {
-					ret.push(data);
-					len += data.length;
-				});
-
-				self.ware.run(res, url);
-
-				res.on('end', function () {
-					files.push({
-						path: path.basename(url),
-						contents: Buffer.concat(ret, len),
-						url: url
-					});
-
+					files = ret;
 					done();
 				});
 			})
@@ -190,10 +167,55 @@ Download.prototype.run = function (cb) {
 };
 
 /**
+ * Handle response
+ *
+ * @param {String} url
+ * @param {Object} res
+ * @param {Function} cb
+ * @api private
+ */
+
+Download.prototype.res = function (url, res, cb) {
+	var files = [];
+	var ret = [];
+	var len = 0;
+
+	if (res.statusCode < 200 || res.statusCode >= 300) {
+		var err = new Error([
+			'Couldn\'t connect to ' + url,
+			'(' + res.statusCode + ')'
+		].join(' '));
+
+		err.code = res.statusCode;
+		res.destroy();
+		cb(err);
+		return;
+	}
+
+	res.on('error', cb);
+	res.on('data', function (data) {
+		ret.push(data);
+		len += data.length;
+	});
+
+	this.ware.run(res, url);
+
+	res.on('end', function () {
+		files.push({
+			path: path.basename(url),
+			contents: Buffer.concat(ret, len),
+			url: url
+		});
+
+		cb(null, files);
+	});
+};
+
+/**
  * Construct stream
  *
  * @param {Array} files
- * @api public
+ * @api private
  */
 
 Download.prototype.construct = function (files) {
