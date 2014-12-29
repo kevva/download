@@ -144,11 +144,10 @@ Download.prototype.run = function (cb) {
 						return;
 					}
 
-					files = ret;
+					files.push(ret);
 					done();
 				});
 			})
-
 			.on('error', done);
 	}, function (err) {
 		if (err) {
@@ -176,7 +175,6 @@ Download.prototype.run = function (cb) {
  */
 
 Download.prototype.res = function (url, res, cb) {
-	var files = [];
 	var ret = [];
 	var len = 0;
 
@@ -201,13 +199,11 @@ Download.prototype.res = function (url, res, cb) {
 	this.ware.run(res, url);
 
 	res.on('end', function () {
-		files.push({
+		cb(null, {
 			path: path.basename(url),
 			contents: Buffer.concat(ret, len),
 			url: url
 		});
-
-		cb(null, files);
 	});
 };
 
