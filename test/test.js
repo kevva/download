@@ -53,7 +53,7 @@ test('download a file', function (t) {
 		t.assert(scope.isDone());
 		t.assert(files[0].path === 'test-file.zip');
 		t.assert(files[0].url === 'http://foo.com/test-file.zip');
-		t.assert(archiveType(files[0].contents) === 'zip');
+		t.assert(archiveType(files[0].contents).ext === 'zip');
 	});
 });
 
@@ -76,10 +76,10 @@ test('download multiple files', function (t) {
 		t.assert(files.length === 2);
 		t.assert(files[0].path === 'test-file.zip');
 		t.assert(files[0].url === 'http://foo.com/test-file.zip');
-		t.assert(archiveType(files[0].contents) === 'zip');
+		t.assert(archiveType(files[0].contents).ext === 'zip');
 		t.assert(files[1].path === 'test-file.zip');
 		t.assert(files[1].url === 'http://foo.com/nested/test-file.zip');
-		t.assert(archiveType(files[1].contents) === 'zip');
+		t.assert(archiveType(files[1].contents).ext === 'zip');
 	});
 });
 
@@ -98,7 +98,7 @@ test('download a file and rename it', function (t) {
 		t.assert(!err, err);
 		t.assert(scope.isDone());
 		t.assert(path.basename(files[0].path) === 'foobar.zip');
-		t.assert(archiveType(files[0].contents) === 'zip');
+		t.assert(archiveType(files[0].contents).ext === 'zip');
 		t.assert(files[0].url === 'http://foo.com/test-file.zip');
 	});
 });
