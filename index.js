@@ -1,6 +1,6 @@
 'use strict';
 
-var combine = require('stream-combiner');
+var combine = require('stream-combiner2');
 var concat = require('concat-stream');
 var conf = require('rc')('npm');
 var each = require('each-async');

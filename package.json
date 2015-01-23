@@ -42,7 +42,7 @@
     "meow": "^3.0.0",
     "rc": "^0.5.1",
     "request": "^2.34.0",
-    "stream-combiner": "^0.2.1",
+    "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "url-regex": "^2.0.2",
     "vinyl": "^0.4.3",
