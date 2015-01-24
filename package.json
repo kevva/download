@@ -37,12 +37,12 @@
     "decompress-unzip": "^2.0.0",
     "download-status": "^2.0.1",
     "each-async": "^1.0.0",
-    "get-stdin": "^3.0.0",
+    "get-stdin": "^4.0.1",
     "gulp-rename": "^1.2.0",
-    "meow": "^2.0.0",
+    "meow": "^3.0.0",
     "rc": "^0.5.1",
     "request": "^2.34.0",
-    "stream-combiner": "^0.2.1",
+    "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "url-regex": "^2.0.2",
     "vinyl": "^0.4.3",
@@ -53,7 +53,7 @@
     "archive-type": "^2.0.0",
     "ava": "^0.0.4",
     "gulp-tar": "^1.1.0",
-    "nock": "^0.56.0",
+    "nock": "^0.57.0",
     "rimraf": "^2.2.8"
   }
 }
