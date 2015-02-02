@@ -37,6 +37,7 @@
     "decompress-unzip": "^2.0.0",
     "download-status": "^2.0.1",
     "each-async": "^1.0.0",
+    "get-proxy": "^1.0.1",
     "get-stdin": "^4.0.1",
     "gulp-rename": "^1.2.0",
     "meow": "^3.0.0",

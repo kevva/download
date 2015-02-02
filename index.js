@@ -6,6 +6,7 @@ var conf = require('rc')('npm');
 var each = require('each-async');
 var File = require('vinyl');
 var fs = require('vinyl-fs');
+var getProxy = require('get-proxy');
 var path = require('path');
 var rename = require('gulp-rename');
 var tar = require('decompress-tar');
@@ -30,14 +31,7 @@ function Download(opts) {
 
 	this.opts = opts || {};
 	this.opts.strictSSL = conf['strict-ssl'];
-	this.opts.proxy = conf['https-proxy'] ||
-					  conf['http-proxy'] ||
-					  conf.proxy ||
-					  process.env.HTTPS_PROXY ||
-					  process.env.https_proxy ||
-					  process.env.HTTP_PROXY ||
-					  process.env.http_proxy ||
-					  this.opts.proxy;
+	this.opts.proxy = this.opts.proxy || getProxy();
 
 	this.tasks = [];
 	this.ware = new Ware();
