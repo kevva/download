@@ -3,19 +3,16 @@
 var combine = require('stream-combiner2');
 var concat = require('concat-stream');
 var conf = require('rc')('npm');
+var decompress = require('gulp-decompress');
 var each = require('each-async');
 var File = require('vinyl');
 var fs = require('vinyl-fs');
 var getProxy = require('get-proxy');
 var path = require('path');
 var rename = require('gulp-rename');
-var tar = require('decompress-tar');
-var tarBz2 = require('decompress-tarbz2');
-var tarGz = require('decompress-targz');
 var through = require('through2');
 var urlRegex = require('url-regex');
 var Ware = require('ware');
-var zip = require('decompress-unzip');
 
 /**
  * Initialize a new `Download`
@@ -220,7 +217,7 @@ Download.prototype.construct = function (files) {
 	stream.end();
 
 	if (this.opts.extract) {
-		this.tasks.unshift(tar(this.opts), tarBz2(this.opts), tarGz(this.opts), zip(this.opts));
+		this.tasks.unshift(decompress(this.opts));
 	}
 
 	this.tasks.unshift(stream);
