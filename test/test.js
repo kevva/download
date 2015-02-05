@@ -3,11 +3,10 @@
 var archiveType = require('archive-type');
 var Download = require('../');
 var nock = require('nock');
-var fs = require('vinyl-fs');
+var fs = require('fs');
 var path = require('path');
 var fixture = path.join.bind(path, __dirname, 'fixtures');
-var rimraf = require('rimraf');
-var tar = require('gulp-tar');
+var rm = require('rimraf');
 var test = require('ava');
 
 test('expose a constructor', function (t) {
@@ -134,54 +133,27 @@ test('download and extract multiple files', function (t) {
 });
 
 test('specify destination folder', function (t) {
-	t.plan(7);
+	t.plan(4);
 
 	var dest = path.join(__dirname, 'tmp');
-
-	var download = new Download({ extract: true })
-		.get('http://foo.com/test-file.zip')
-		.get('http://foo.com/test.js')
-		.dest(dest);
-
 	var scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'))
 		.get('/test.js')
 		.replyWithFile(200, __filename);
 
-	download.run(function (err, files) {
-		t.assert(!err, err);
-		t.assert(scope.isDone());
-
-		fs.src(['file.txt', 'test.js'], { cwd: dest })
-			.on('data', function (file) {
-				t.assert(file.path === files.shift().path);
-				t.assert(file.isBuffer());
-			})
-			.on('end', function () {
-				rimraf(dest, function (err) {
-					t.assert(!err, err);
-				});
-			});
-	});
-});
-
-test('download and perform task on it', function (t) {
-	t.plan(3);
-
-	var download = new Download()
+	new Download({ extract: true })
 		.get('http://foo.com/test-file.zip')
-		.pipe(tar('file.tar'));
-
-	var scope = nock('http://foo.com')
-		.get('/test-file.zip')
-		.replyWithFile(200, fixture('test-file.zip'));
-
-	download.run(function (err, files) {
-		t.assert(!err, err);
-		t.assert(scope.isDone());
-		t.assert(path.basename(files[0].path) === 'file.tar');
-	});
+		.get('http://foo.com/test.js')
+		.dest(dest)
+		.run(function (err, files) {
+			var read = fs.readdirSync(dest);
+			t.assert(!err, err);
+			t.assert(scope.isDone());
+			rm.sync(dest);
+			t.assert(read[0] === 'file.txt');
+			t.assert(read[1] === 'test.js');
+		});
 });
 
 test('error on invalid URL', function (t) {

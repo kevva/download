@@ -25,7 +25,6 @@ function Download(opts) {
 	}
 
 	this.opts = opts || {};
-	this.tasks = [];
 	this._get = [];
 }
 
@@ -78,18 +77,6 @@ Download.prototype.rename = function (name) {
 };
 
 /**
- * Add a task to the middleware stack
- *
- * @param {Function} task
- * @api public
- */
-
-Download.prototype.pipe = function (task) {
-	this.tasks.push(task);
-	return this;
-};
-
-/**
  * Run
  *
  * @param {Function} cb
@@ -114,13 +101,16 @@ Download.prototype.run = function (cb) {
 				return;
 			}
 
-			files.push({
-				contents: data,
-				path: path.basename(url),
-				url: url
-			});
+			var stream = self.createStream(self.createFile(url, data));
 
-			done();
+			stream.on('error', cb);
+			stream.pipe(concat(function (items) {
+				items.forEach(function (item) {
+					files.push(item);
+				});
+
+				done();
+			}));
 		});
 	}, function (err) {
 		if (err) {
@@ -128,49 +118,54 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		var pipe = self.construct(files);
-		var end = concat(function (files) {
-			cb(null, files, pipe);
-		});
-
-		pipe.on('error', cb);
-		pipe.pipe(end);
+		cb(null, files);
 	});
 };
 
 /**
- * Construct stream
+ * Create vinyl file
  *
- * @param {Array} files
+ * @param {String} url
+ * @param {Buffer} data
  * @api private
  */
 
-Download.prototype.construct = function (files) {
-	var stream = through.obj();
-
-	files.forEach(function (file) {
-		var obj = new File(file);
-		obj.url = file.url;
-		stream.write(obj);
+Download.prototype.createFile = function (url, data) {
+	var obj = new File({
+		contents: data,
+		path: path.basename(url)
 	});
 
-	stream.end();
+	obj.url = url;
+	return obj;
+};
+
+/**
+ * Create stream
+ *
+ * @param {Object} file
+ * @api private
+ */
+
+Download.prototype.createStream = function (file) {
+	var stream = through.obj();
+	var streams = [stream];
+
+	stream.end(file);
 
 	if (this.opts.extract) {
-		this.tasks.unshift(decompress(this.opts));
+		streams.push(decompress(this.opts));
 	}
 
-	this.tasks.unshift(stream);
-
 	if (this.rename()) {
-		this.tasks.push(rename(this.rename()));
+		streams.push(rename(this.rename()));
 	}
 
 	if (this.dest()) {
-		this.tasks.push(fs.dest(this.dest(), this.opts));
+		streams.push(fs.dest(this.dest(), this.opts));
 	}
 
-	return combine(this.tasks);
+	return combine(streams);
 };
 
 /**
