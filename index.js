@@ -2,17 +2,15 @@
 
 var combine = require('stream-combiner2');
 var concat = require('concat-stream');
-var conf = require('rc')('npm');
 var decompress = require('gulp-decompress');
 var each = require('each-async');
 var File = require('vinyl');
 var fs = require('vinyl-fs');
-var getProxy = require('get-proxy');
+var got = require('got');
 var path = require('path');
 var rename = require('gulp-rename');
 var through = require('through2');
 var urlRegex = require('url-regex');
-var Ware = require('ware');
 
 /**
  * Initialize a new `Download`
@@ -27,11 +25,7 @@ function Download(opts) {
 	}
 
 	this.opts = opts || {};
-	this.opts.strictSSL = conf['strict-ssl'];
-	this.opts.proxy = this.opts.proxy || getProxy();
-
 	this.tasks = [];
-	this.ware = new Ware();
 	this._get = [];
 }
 
@@ -84,18 +78,6 @@ Download.prototype.rename = function (name) {
 };
 
 /**
- * Add a plugin to the middleware stack
- *
- * @param {Function} plugin
- * @api public
- */
-
-Download.prototype.use = function (plugin) {
-	this.ware.use(plugin);
-	return this;
-};
-
-/**
  * Add a task to the middleware stack
  *
  * @param {Function} task
@@ -117,7 +99,6 @@ Download.prototype.pipe = function (task) {
 Download.prototype.run = function (cb) {
 	cb = cb || function () {};
 
-	var request = require('request');
 	var self = this;
 	var files = [];
 
@@ -127,19 +108,20 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		request.get(url, self.opts)
-			.on('response', function (res) {
-				self.res(url, res, function (err, ret) {
-					if (err) {
-						done(err);
-						return;
-					}
+		got(url, { encoding: null }, function (err, data) {
+			if (err) {
+				done(err);
+				return;
+			}
 
-					files.push(ret);
-					done();
-				});
-			})
-			.on('error', done);
+			files.push({
+				contents: data,
+				path: path.basename(url),
+				url: url
+			});
+
+			done();
+		});
 	}, function (err) {
 		if (err) {
 			cb(err);
@@ -153,48 +135,6 @@ Download.prototype.run = function (cb) {
 
 		pipe.on('error', cb);
 		pipe.pipe(end);
-	});
-};
-
-/**
- * Handle response
- *
- * @param {String} url
- * @param {Object} res
- * @param {Function} cb
- * @api private
- */
-
-Download.prototype.res = function (url, res, cb) {
-	var ret = [];
-	var len = 0;
-
-	if (res.statusCode < 200 || res.statusCode >= 300) {
-		var err = new Error([
-			'Couldn\'t connect to ' + url,
-			'(' + res.statusCode + ')'
-		].join(' '));
-
-		err.code = res.statusCode;
-		res.destroy();
-		cb(err);
-		return;
-	}
-
-	res.on('error', cb);
-	res.on('data', function (data) {
-		ret.push(data);
-		len += data.length;
-	});
-
-	this.ware.run(res, url);
-
-	res.on('end', function () {
-		cb(null, {
-			path: path.basename(url),
-			contents: Buffer.concat(ret, len),
-			url: url
-		});
 	});
 };
 

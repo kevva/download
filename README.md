@@ -17,14 +17,12 @@ it'll extract it for you. You can also run your files through transform streams
 ```js
 var Download = require('download');
 var imagemin = require('gulp-imagemin');
-var progress = require('download-status');
 
 var download = new Download({ extract: true, strip: 1, mode: '755' })
 	.get('http://example.com/foo.zip')
 	.get('http://example.com/cat.jpg')
 	.pipe(imagemin({ progressive: true }))
-	.dest('dest')
-	.use(progress());
+	.dest('dest');
 
 download.run(function (err, files, stream) {
 	if (err) {
@@ -59,12 +57,6 @@ Type: `Function|String`
 
 Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename).
 
-### .use(plugin)
-
-Type: `Function`
-
-Adds a plugin to the middleware stack.
-
 ### .pipe(task)
 
 Type: `Function`
@@ -83,9 +75,6 @@ The callback will return an array of vinyl files in `files` and a Readable/Writa
 stream in `stream`.
 
 ## Options
-
-You can define options accepted by the [request](https://github.com/mikeal/request#requestoptions-callback) 
-module besides from the options below.
 
 ### extract
 

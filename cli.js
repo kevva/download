@@ -61,7 +61,6 @@ function run(src, dest) {
 	src.forEach(download.get.bind(download));
 
 	if (process.stdout.isTTY) {
-		download.use(progress());
 		download.dest(dest);
 	}
 

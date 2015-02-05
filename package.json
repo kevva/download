@@ -31,21 +31,17 @@
   ],
   "dependencies": {
     "concat-stream": "^1.4.6",
-    "download-status": "^2.0.1",
     "each-async": "^1.0.0",
-    "get-proxy": "^1.0.1",
     "get-stdin": "^4.0.1",
+    "got": "^2.3.2",
     "gulp-decompress": "^1.0.2",
     "gulp-rename": "^1.2.0",
     "meow": "^3.0.0",
-    "rc": "^0.5.1",
-    "request": "^2.34.0",
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "url-regex": "^2.0.2",
     "vinyl": "^0.4.3",
-    "vinyl-fs": "^0.3.7",
-    "ware": "^1.0.1"
+    "vinyl-fs": "^0.3.7"
   },
   "devDependencies": {
     "archive-type": "^2.0.0",
