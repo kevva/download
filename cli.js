@@ -6,10 +6,6 @@ var meow = require('meow');
 var progress = require('download-status');
 var stdin = require('get-stdin');
 
-/**
- * Options
- */
-
 var cli = meow({
 	help: [
 		'Usage',
@@ -47,14 +43,6 @@ var cli = meow({
 	}
 });
 
-/**
- * Run
- *
- * @param {Array} src
- * @param {String} dest
- * @api private
- */
-
 function run(src, dest) {
 	var download = new Download(cli.flags);
 
@@ -77,10 +65,6 @@ function run(src, dest) {
 		}
 	});
 }
-
-/**
- * Apply arguments
- */
 
 if (process.stdin.isTTY) {
 	var src = cli.input;

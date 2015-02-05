@@ -11,19 +11,17 @@ $ npm install --save download
 ## Usage
 
 If you're fetching an archive you can set `extract: true` in options and
-it'll extract it for you. You can also run your files through transform streams 
-(e.g gulp plugins) using the `.pipe()` method.
+it'll extract it for you.
 
 ```js
 var Download = require('download');
-var imagemin = require('gulp-imagemin');
 
 var download = new Download({ extract: true, strip: 1, mode: '755' })
 	.get('http://example.com/foo.zip')
 	.get('http://example.com/cat.jpg')
 	.dest('dest');
 
-download.run(function (err, files, stream) {
+download.run(function (err, files) {
 	if (err) {
 		throw err;
 	}
@@ -38,7 +36,7 @@ download.run(function (err, files, stream) {
 
 Creates a new `Download` instance.
 
-### .get(url)
+### .get(url, [dest])
 
 Type: `String`
 
@@ -62,10 +60,9 @@ Type: `Function`
 
 Downloads your files and returns an error if something has gone wrong.
 
-#### cb(err, files, stream)
+#### cb(err, files)
 
-The callback will return an array of vinyl files in `files` and a Readable/Writable 
-stream in `stream`.
+The callback will return an array of vinyl files.
 
 ## Options
 

@@ -1,16 +1,16 @@
 'use strict';
 
 var combine = require('stream-combiner2');
-var concat = require('concat-stream');
+var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
-var each = require('each-async');
+var eachAsync = require('each-async');
 var File = require('vinyl');
-var fs = require('vinyl-fs');
 var got = require('got');
 var path = require('path');
 var rename = require('gulp-rename');
 var through = require('through2');
 var urlRegex = require('url-regex');
+var vfs = require('vinyl-fs');
 
 /**
  * Initialize a new `Download`
@@ -74,10 +74,10 @@ Download.prototype.dest = function (dir) {
 
 Download.prototype.rename = function (name) {
 	if (!arguments.length) {
-		return this._name;
+		return this._rename;
 	}
 
-	this._name = name;
+	this._rename = name;
 	return this;
 };
 
@@ -90,11 +90,9 @@ Download.prototype.rename = function (name) {
 
 Download.prototype.run = function (cb) {
 	cb = cb || function () {};
-
-	var self = this;
 	var files = [];
 
-	each(this.get(), function (get, i, done) {
+	eachAsync(this.get(), function (get, i, done) {
 		if (!urlRegex().test(get.url)) {
 			done(new Error('Specify a valid URL'));
 			return;
@@ -106,19 +104,19 @@ Download.prototype.run = function (cb) {
 				return;
 			}
 
-			var dest = get.dest || self.dest();
-			var stream = self.createStream(self.createFile(get.url, data), dest);
+			var dest = get.dest || this.dest();
+			var stream = this.createStream(this.createFile(get.url, data), dest);
 
 			stream.on('error', cb);
-			stream.pipe(concat(function (items) {
+			stream.pipe(concatStream(function (items) {
 				items.forEach(function (item) {
 					files.push(item);
 				});
 
 				done();
 			}));
-		});
-	}, function (err) {
+		}.bind(this));
+	}.bind(this), function (err) {
 		if (err) {
 			cb(err);
 			return;
@@ -169,7 +167,7 @@ Download.prototype.createStream = function (file, dest) {
 	}
 
 	if (dest) {
-		streams.push(fs.dest(dest, this.opts));
+		streams.push(vfs.dest(dest, this.opts));
 	}
 
 	return combine(streams);

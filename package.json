@@ -44,7 +44,6 @@
     "vinyl-fs": "^0.3.7"
   },
   "devDependencies": {
-    "archive-type": "^2.0.0",
     "ava": "^0.0.4",
     "nock": "^0.57.0",
     "rimraf": "^2.2.8"
