@@ -25,7 +25,7 @@ test('set a file to get', function (t) {
 	var download = new Download()
 		.get('http://example.com/test.jpg');
 
-	t.assert(download._get[0] === 'http://example.com/test.jpg');
+	t.assert(download._get[0].url === 'http://example.com/test.jpg');
 });
 
 test('download a file', function (t) {
@@ -135,7 +135,7 @@ test('download and extract multiple files', function (t) {
 test('specify destination folder', function (t) {
 	t.plan(4);
 
-	var dest = path.join(__dirname, 'tmp');
+	var d0 = path.join(__dirname, 'd0');
 	var scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'))
@@ -145,14 +145,41 @@ test('specify destination folder', function (t) {
 	new Download({ extract: true })
 		.get('http://foo.com/test-file.zip')
 		.get('http://foo.com/test.js')
-		.dest(dest)
+		.dest(d0)
 		.run(function (err, files) {
-			var read = fs.readdirSync(dest);
+			var r0 = fs.readdirSync(d0);
 			t.assert(!err, err);
 			t.assert(scope.isDone());
-			rm.sync(dest);
-			t.assert(read[0] === 'file.txt');
-			t.assert(read[1] === 'test.js');
+			rm.sync(d0);
+			t.assert(r0[0] === 'file.txt');
+			t.assert(r0[1] === 'test.js');
+		});
+});
+
+test('specify multiple destination folders', function (t) {
+	t.plan(4);
+
+	var d1 = path.join(__dirname, 't1');
+	var d2 = path.join(__dirname, 't2');
+	var scope = nock('http://foo.com')
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'))
+		.get('/test.js')
+		.replyWithFile(200, __filename);
+
+	new Download({ extract: true })
+		.get('http://foo.com/test-file.zip', d1)
+		.get('http://foo.com/test.js')
+		.dest(d2)
+		.run(function (err, files) {
+			var r1 = fs.readdirSync(d1);
+			var r2 = fs.readdirSync(d2);
+			t.assert(!err, err);
+			t.assert(scope.isDone());
+			rm.sync(d1);
+			rm.sync(d2);
+			t.assert(r1[0] === 'file.txt');
+			t.assert(r2[0] === 'test.js');
 		});
 });
 

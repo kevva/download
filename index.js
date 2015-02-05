@@ -25,22 +25,27 @@ function Download(opts) {
 	}
 
 	this.opts = opts || {};
-	this._get = [];
 }
 
 /**
  * Get or set URL to download
  *
  * @param {String} url
+ * @param {String} dest
  * @api public
  */
 
-Download.prototype.get = function (url) {
+Download.prototype.get = function (url, dest) {
 	if (!arguments.length) {
 		return this._get;
 	}
 
-	this._get.push(url);
+	this._get = this._get || [];
+	this._get.push({
+		url: url,
+		dest: dest
+	});
+
 	return this;
 };
 
@@ -89,19 +94,20 @@ Download.prototype.run = function (cb) {
 	var self = this;
 	var files = [];
 
-	each(this.get(), function (url, i, done) {
-		if (!urlRegex().test(url)) {
+	each(this.get(), function (get, i, done) {
+		if (!urlRegex().test(get.url)) {
 			done(new Error('Specify a valid URL'));
 			return;
 		}
 
-		got(url, { encoding: null }, function (err, data) {
+		got(get.url, { encoding: null }, function (err, data) {
 			if (err) {
 				done(err);
 				return;
 			}
 
-			var stream = self.createStream(self.createFile(url, data));
+			var dest = get.dest || self.dest();
+			var stream = self.createStream(self.createFile(get.url, data), dest);
 
 			stream.on('error', cb);
 			stream.pipe(concat(function (items) {
@@ -144,10 +150,11 @@ Download.prototype.createFile = function (url, data) {
  * Create stream
  *
  * @param {Object} file
+ * @param {String} dest
  * @api private
  */
 
-Download.prototype.createStream = function (file) {
+Download.prototype.createStream = function (file, dest) {
 	var stream = through.obj();
 	var streams = [stream];
 
@@ -161,8 +168,8 @@ Download.prototype.createStream = function (file) {
 		streams.push(rename(this.rename()));
 	}
 
-	if (this.dest()) {
-		streams.push(fs.dest(this.dest(), this.opts));
+	if (dest) {
+		streams.push(fs.dest(dest, this.opts));
 	}
 
 	return combine(streams);
