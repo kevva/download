@@ -92,7 +92,7 @@ test('download and extract a file', function (t) {
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
-	new Download({ extract: true })
+	new Download({extract: true})
 		.get('http://foo.com/test-file.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
@@ -111,7 +111,7 @@ test('specify destination folder', function (t) {
 		.get('/test.js')
 		.replyWithFile(200, __filename);
 
-	new Download({ extract: true })
+	new Download({extract: true})
 		.get('http://foo.com/test-file.zip')
 		.get('http://foo.com/test.js')
 		.dest(d0)
@@ -136,7 +136,7 @@ test('specify multiple destination folders', function (t) {
 		.get('/test.js')
 		.replyWithFile(200, __filename);
 
-	new Download({ extract: true })
+	new Download({extract: true})
 		.get('http://foo.com/test-file.zip', d1)
 		.get('http://foo.com/test.js')
 		.dest(d2)

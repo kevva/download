@@ -98,7 +98,7 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		got(get.url, { encoding: null }, function (err, data) {
+		got(get.url, {encoding: null}, function (err, data) {
 			if (err) {
 				done(err);
 				return;
