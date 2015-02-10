@@ -16,7 +16,7 @@ it'll extract it for you.
 ```js
 var Download = require('download');
 
-var download = new Download({ extract: true, strip: 1, mode: '755' })
+var download = new Download({extract: true, strip: 1, mode: '755'})
 	.get('http://example.com/foo.zip')
 	.get('http://example.com/cat.jpg')
 	.dest('dest');
@@ -36,13 +36,44 @@ download.run(function (err, files) {
 
 Creates a new `Download` instance.
 
+#### opts.extract
+
+Type: `Boolean`  
+Default: `false`
+
+If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
+
+#### opts.mode
+
+Type: `String`  
+
+Set mode on the downloaded file, i.e `{mode: '755'}`.
+
+#### opts.strip
+
+Type: `Number`  
+Default: `0`
+
+Equivalent to `--strip-components` for tar.
+
 ### .get(url, [dest])
+
+#### url
 
 Type: `String`
 
-Add a file to download.
+Add a URL to download.
+
+#### dest
+
+Type: `String`
+
+Set an optional destination folder that will take precedence over the one set in 
+`.dest()`.
 
 ### .dest(dir)
+
+#### dir
 
 Type: `String`
 
@@ -50,41 +81,19 @@ Set the destination folder to where your files will be downloaded.
 
 ### .rename(name)
 
+#### name
+
 Type: `Function|String`
 
 Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename).
 
 ### .run(cb)
 
-Type: `Function`
-
-Downloads your files and returns an error if something has gone wrong.
-
 #### cb(err, files)
 
+Type: `Function`
+
 The callback will return an array of vinyl files.
-
-## Options
-
-### extract
-
-Type: `Boolean`  
-Default: `false`
-
-If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
-
-### mode
-
-Type: `String`  
-
-Set mode on the downloaded file, i.e `{ mode: '755' }`.
-
-### strip
-
-Type: `Number`  
-Default: `0`
-
-Equivalent to `--strip-components` for tar.
 
 ## CLI
 
