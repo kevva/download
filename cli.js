@@ -3,7 +3,6 @@
 
 var Download = require('./');
 var meow = require('meow');
-var progress = require('download-status');
 var stdin = require('get-stdin');
 
 var cli = meow({
