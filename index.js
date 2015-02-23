@@ -6,10 +6,10 @@ var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
 var File = require('vinyl');
 var got = require('got');
+var isUrlSuperb = require('is-url-superb');
 var path = require('path');
 var rename = require('gulp-rename');
 var through = require('through2');
-var urlRegex = require('url-regex');
 var vfs = require('vinyl-fs');
 
 /**
@@ -93,7 +93,7 @@ Download.prototype.run = function (cb) {
 	var files = [];
 
 	eachAsync(this.get(), function (get, i, done) {
-		if (!urlRegex().test(get.url)) {
+		if (!isUrlSuperb(get.url)) {
 			done(new Error('Specify a valid URL'));
 			return;
 		}
