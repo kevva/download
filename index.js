@@ -5,6 +5,7 @@ var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
 var File = require('vinyl');
+var filenamify = require('filenamify');
 var got = require('got');
 var isUrlSuperb = require('is-url-superb');
 var path = require('path');
@@ -137,7 +138,7 @@ Download.prototype.run = function (cb) {
 Download.prototype.createFile = function (url, data) {
 	var obj = new File({
 		contents: data,
-		path: path.basename(url)
+		path: filenamify(path.basename(url))
 	});
 
 	obj.url = url;

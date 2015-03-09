@@ -32,6 +32,7 @@
   "dependencies": {
     "concat-stream": "^1.4.6",
     "each-async": "^1.0.0",
+    "filenamify": "^1.0.1",
     "get-stdin": "^4.0.1",
     "got": "^2.3.2",
     "gulp-decompress": "^1.0.2",
