@@ -178,3 +178,21 @@ test('error on invalid URL', function (t) {
 			t.assert(err.message === 'Specify a valid URL');
 		});
 });
+
+test('request options', function(t) {
+	t.plan(4);
+
+	var scope = nock('http://foo.com')
+		.matchHeader('authorization', 'Basic dXNlcjpwYXNzd29yZA==')
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
+
+	new Download({auth: 'user:password'})
+		.get('http://foo.com/test-file.zip')
+		.run(function (err, files) {
+			t.assert(!err, err);
+			t.assert(scope.isDone());
+			t.assert(files[0].path === 'test-file.zip');
+			t.assert(files[0].url === 'http://foo.com/test-file.zip');
+		});
+});
