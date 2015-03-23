@@ -2,11 +2,13 @@
 
 > Download and extract files effortlessly
 
+
 ## Install
 
-```sh
+```
 $ npm install --save download
 ```
+
 
 ## Usage
 
@@ -16,68 +18,61 @@ it'll extract it for you.
 ```js
 var Download = require('download');
 
-var download = new Download({extract: true, strip: 1, mode: '755'})
+new Download({mode: '755'})
 	.get('http://example.com/foo.zip')
 	.get('http://example.com/cat.jpg')
 	.dest('dest');
-
-download.run(function (err, files) {
-	if (err) {
-		throw err;
-	}
-
-	console.log('File downloaded successfully!');
-});
+	.run(function (err, files) {
+		console.log(files);
+		//=> [{path: 'foo.zip', url: 'http://example.com/foo.zip', contents: <Buffer 50 4b 03>, ...}, ...]
+	});
 ```
+
 
 ## API
 
-### new Download(opts)
+### new Download(options)
 
 Creates a new `Download` instance.
 
-#### opts
+#### options
 
-Type: `Object`  
+Type: `object`
 
-Options for [`got`] or the underlying [`http`]/[`https`] request can be specified,
+Options for [`got`](https://github.com/sindresorhus/got) or the underlying [`http`](https://nodejs.org/api/http.html#http_http_request_options_callback)/[`https`](https://nodejs.org/api/https.html#https_https_request_options_callback) request can be specified,
 as well as options specific to the `download` module as described below.
 
-[`got`]: https://github.com/sindresorhus/got
-[`http`]: https://nodejs.org/api/http.html#http_http_request_options_callback
-[`https`]: https://nodejs.org/api/https.html#https_https_request_options_callback
+##### options.extract
 
-##### opts.extract
-
-Type: `Boolean`  
+Type: `boolean`  
 Default: `false`
 
 If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
 
-##### opts.mode
+##### options.mode
 
-Type: `String`  
+Type: `string`
 
 Set mode on the downloaded file, i.e `{mode: '755'}`.
 
-##### opts.strip
+##### options.strip
 
-Type: `Number`  
+Type: `number`  
 Default: `0`
 
-Equivalent to `--strip-components` for tar.
+Remove leading directory components from extracted files.
 
 ### .get(url, [dest])
 
 #### url
 
-Type: `String`
+Type: `string`
 
 Add a URL to download.
 
 #### dest
 
-Type: `String`
+Type: `string`
 
 Set an optional destination folder that will take precedence over the one set in 
 `.dest()`.
@@ -86,7 +81,7 @@ Set an optional destination folder that will take precedence over the one set in
 
 #### dir
 
-Type: `String`
+Type: `string`
 
 Set the destination folder to where your files will be downloaded.
 
@@ -94,44 +89,48 @@ Set the destination folder to where your files will be downloaded.
 
 #### name
 
-Type: `Function|String`
+Type: `function` or `string`
 
 Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename).
 
-### .run(cb)
+### .run(callback)
 
-#### cb(err, files)
+#### callback(err, files)
 
-Type: `Function`
+Type: `function`
 
-The callback will return an array of vinyl files.
+##### files
+
+Contains an array of vinyl files.
+
 
 ## CLI
 
-```bash
+```
 $ npm install --global download
 ```
 
-```sh
+```
 $ download --help
 
-Usage
-  download <url>
-  download <url> > <file>
-  download --out <directory> <url>
-  cat <file> | download --out <directory>
+  Usage
+    $ download <url>
+    $ download <url> > <file>
+    $ download --out <directory> <url>
+    $ cat <file> | download --out <directory>
 
-Example
-  download http://foo.com/file.zip
-  download http://foo.com/cat.png > dog.png
-  download --extract --strip 1 --out dest http://foo.com/file.zip
-  cat urls.txt | download --out dest
+  Example
+    $ download http://foo.com/file.zip
+    $ download http://foo.com/cat.png > dog.png
+    $ download --extract --strip 1 --out dest http://foo.com/file.zip
+    $ cat urls.txt | download --out dest
 
-Options
-  -e, --extract           Try decompressing the file
-  -o, --out               Where to place the downloaded files
-  -s, --strip <number>    Strip leading paths from file names on extraction
+  Options
+    -e, --extract           Try decompressing the file
+    -o, --out               Where to place the downloaded files
+    -s, --strip <number>    Strip leading paths from file names on extraction
 ```
+
 
 ## License
 

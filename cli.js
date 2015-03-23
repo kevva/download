@@ -8,16 +8,16 @@ var stdin = require('get-stdin');
 var cli = meow({
 	help: [
 		'Usage',
-		'  download <url>',
-		'  download <url> > <file>',
-		'  download --out <directory> <url>',
-		'  cat <file> | download --out <directory>',
+		'  $ download <url>',
+		'  $ download <url> > <file>',
+		'  $ download --out <directory> <url>',
+		'  $ cat <file> | download --out <directory>',
 		'',
 		'Example',
-		'  download http://foo.com/file.zip',
-		'  download http://foo.com/cat.png > dog.png',
-		'  download --extract --strip 1 --out dest http://foo.com/file.zip',
-		'  cat urls.txt | download --out dest',
+		'  $ download http://foo.com/file.zip',
+		'  $ download http://foo.com/cat.png > dog.png',
+		'  $ download --extract --strip 1 --out dest http://foo.com/file.zip',
+		'  $ cat urls.txt | download --out dest',
 		'',
 		'Options',
 		'  -e, --extract           Try decompressing the file',
@@ -74,10 +74,10 @@ if (process.stdin.isTTY) {
 			'Specify a URL to fetch',
 			'',
 			'Example',
-			'  download http://foo.com/file.zip',
-			'  download http://foo.com/cat.png > dog.png',
-			'  download --extract --strip 1 --out dest http://foo.com/file.zip',
-			'  cat urls.txt | download --out dest'
+			'  $ download http://foo.com/file.zip',
+			'  $ download http://foo.com/cat.png > dog.png',
+			'  $ download --extract --strip 1 --out dest http://foo.com/file.zip',
+			'  $ cat urls.txt | download --out dest'
 		].join('\n'));
 
 		process.exit(1);

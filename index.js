@@ -29,6 +29,8 @@ function Download(opts) {
 	this.opts = objectAssign({encoding: null}, opts);
 }
 
+module.exports = Download;
+
 /**
  * Get or set URL to download
  *
@@ -174,9 +176,3 @@ Download.prototype.createStream = function (file, dest) {
 
 	return combine(streams);
 };
-
-/**
- * Module exports
- */
-
-module.exports = Download;
