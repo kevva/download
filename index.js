@@ -8,6 +8,7 @@ var File = require('vinyl');
 var filenamify = require('filenamify');
 var got = require('got');
 var isUrlSuperb = require('is-url-superb');
+var objectAssign = require('object-assign');
 var path = require('path');
 var rename = require('gulp-rename');
 var through = require('through2');
@@ -25,7 +26,7 @@ function Download(opts) {
 		return new Download(opts);
 	}
 
-	this.opts = opts || {};
+	this.opts = objectAssign({encoding: null}, opts);
 }
 
 /**
@@ -99,7 +100,7 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		got(get.url, {encoding: null}, function (err, data) {
+		got(get.url, this.opts, function (err, data) {
 			if (err) {
 				done(err);
 				return;

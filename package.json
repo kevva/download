@@ -39,6 +39,7 @@
     "gulp-rename": "^1.2.0",
     "is-url-superb": "^1.0.1",
     "meow": "^3.0.0",
+    "object-assign": "^2.0.0",
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "vinyl": "^0.4.3",

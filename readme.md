@@ -36,20 +36,31 @@ download.run(function (err, files) {
 
 Creates a new `Download` instance.
 
-#### opts.extract
+#### opts
+
+Type: `Object`  
+
+Options for [`got`] or the underlying [`http`]/[`https`] request can be specified,
+as well as options specific to the `download` module as described below.
+
+[`got`]: https://github.com/sindresorhus/got
+[`http`]: https://nodejs.org/api/http.html#http_http_request_options_callback
+[`https`]: https://nodejs.org/api/https.html#https_https_request_options_callback
+
+##### opts.extract
 
 Type: `Boolean`  
 Default: `false`
 
 If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
 
-#### opts.mode
+##### opts.mode
 
 Type: `String`  
 
 Set mode on the downloaded file, i.e `{mode: '755'}`.
 
-#### opts.strip
+##### opts.strip
 
 Type: `Number`  
 Default: `0`
