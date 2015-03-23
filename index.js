@@ -102,24 +102,19 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		got(get.url, this.opts, function (err, data) {
-			if (err) {
-				done(err);
-				return;
-			}
+		var stream = got(get.url, this.opts);
 
+		stream.on('error', done);
+		stream.pipe(concatStream(function (data) {
 			var dest = get.dest || this.dest();
-			var stream = this.createStream(this.createFile(get.url, data), dest);
+			var fileStream = this.createStream(this.createFile(get.url, data), dest);
 
-			stream.on('error', cb);
-			stream.pipe(concatStream(function (items) {
-				items.forEach(function (item) {
-					files.push(item);
-				});
-
+			fileStream.on('error', cb);
+			fileStream.pipe(concatStream(function (items) {
+				files = files.concat(items);
 				done();
 			}));
-		}.bind(this));
+		}.bind(this)));
 	}.bind(this), function (err) {
 		if (err) {
 			cb(err);
