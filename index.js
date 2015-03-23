@@ -7,7 +7,7 @@ var eachAsync = require('each-async');
 var File = require('vinyl');
 var filenamify = require('filenamify');
 var got = require('got');
-var isUrlSuperb = require('is-url-superb');
+var isUrl = require('is-url');
 var objectAssign = require('object-assign');
 var path = require('path');
 var rename = require('gulp-rename');
@@ -95,7 +95,7 @@ Download.prototype.run = function (cb) {
 	var files = [];
 
 	eachAsync(this.get(), function (get, i, done) {
-		if (!isUrlSuperb(get.url)) {
+		if (!isUrl(get.url)) {
 			done(new Error('Specify a valid URL'));
 			return;
 		}
