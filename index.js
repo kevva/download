@@ -1,7 +1,6 @@
 'use strict';
 
 var combine = require('stream-combiner2');
-var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
 var File = require('vinyl');
@@ -10,6 +9,7 @@ var got = require('got');
 var isUrl = require('is-url');
 var objectAssign = require('object-assign');
 var path = require('path');
+var readAllStream = require('read-all-stream');
 var rename = require('gulp-rename');
 var through = require('through2');
 var vfs = require('vinyl-fs');
@@ -123,16 +123,17 @@ Download.prototype.run = function (cb) {
 			this.ware.run(res, get.url);
 		}.bind(this));
 
-		stream.pipe(concatStream(function (data) {
+		readAllStream(stream, null, function (err, data) {
 			var dest = get.dest || this.dest();
 			var fileStream = this.createStream(this.createFile(get.url, data), dest);
 
-			fileStream.on('error', cb);
-			fileStream.pipe(concatStream(function (items) {
+			fileStream.on('error', done);
+
+			readAllStream(fileStream, null, function (err, items) {
 				files = files.concat(items);
 				done();
-			}));
-		}.bind(this)));
+			});
+		}.bind(this));
 	}.bind(this), function (err) {
 		if (err) {
 			cb(err);

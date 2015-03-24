@@ -179,6 +179,22 @@ test('error on invalid URL', function (t) {
 		});
 });
 
+test('error on 404', function (t) {
+	t.plan(3);
+
+	var scope = nock('http://foo.com')
+		.get('/')
+		.reply(404);
+
+	new Download()
+		.get('http://foo.com')
+		.run(function (err) {
+			t.assert(scope.isDone());
+			t.assert(err.code === 404);
+			t.assert(err.message === 'http://foo.com response code is 404 (Not Found)');
+		});
+});
+
 test('request options', function (t) {
 	t.plan(4);
 

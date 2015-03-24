@@ -30,7 +30,6 @@
     "url"
   ],
   "dependencies": {
-    "concat-stream": "^1.4.6",
     "each-async": "^1.0.0",
     "filenamify": "^1.0.1",
     "get-stdin": "^4.0.1",
@@ -40,6 +39,7 @@
     "is-url": "^1.2.0",
     "meow": "^3.0.0",
     "object-assign": "^2.0.0",
+    "read-all-stream": "^1.0.2",
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "vinyl": "^0.4.3",
