@@ -43,11 +43,11 @@
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "vinyl": "^0.4.3",
-    "vinyl-fs": "^0.3.7"
+    "vinyl-fs": "^1.0.0"
   },
   "devDependencies": {
     "ava": "^0.0.4",
-    "nock": "^0.57.0",
+    "nock": "^1.2.1",
     "rimraf": "^2.2.8"
   }
 }
