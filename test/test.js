@@ -179,7 +179,7 @@ test('error on invalid URL', function (t) {
 		});
 });
 
-test('request options', function(t) {
+test('request options', function (t) {
 	t.plan(4);
 
 	var scope = nock('http://foo.com')

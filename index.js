@@ -134,13 +134,10 @@ Download.prototype.run = function (cb) {
  */
 
 Download.prototype.createFile = function (url, data) {
-	var obj = new File({
+	return objectAssign(new File({
 		contents: data,
 		path: filenamify(path.basename(url))
-	});
-
-	obj.url = url;
-	return obj;
+	}), {url: url});
 };
 
 /**
