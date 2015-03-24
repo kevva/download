@@ -13,6 +13,7 @@ var path = require('path');
 var rename = require('gulp-rename');
 var through = require('through2');
 var vfs = require('vinyl-fs');
+var Ware = require('ware');
 
 /**
  * Initialize a new `Download`
@@ -27,6 +28,7 @@ function Download(opts) {
 	}
 
 	this.opts = objectAssign({encoding: null}, opts);
+	this.ware = new Ware();
 }
 
 module.exports = Download;
@@ -86,6 +88,18 @@ Download.prototype.rename = function (name) {
 };
 
 /**
+ * Add a plugin to the middleware stack
+ *
+ * @param {Function} plugin
+ * @api public
+ */
+
+Download.prototype.use = function (plugin) {
+	this.ware.use(plugin);
+	return this;
+};
+
+/**
  * Run
  *
  * @param {Function} cb
@@ -105,6 +119,10 @@ Download.prototype.run = function (cb) {
 		var stream = got(get.url, this.opts);
 
 		stream.on('error', done);
+		stream.on('response', function (res) {
+			this.ware.run(res, get.url);
+		}.bind(this));
+
 		stream.pipe(concatStream(function (data) {
 			var dest = get.dest || this.dest();
 			var fileStream = this.createStream(this.createFile(get.url, data), dest);

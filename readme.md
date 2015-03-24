@@ -93,6 +93,22 @@ Type: `function` or `string`
 
 Rename your files using [gulp-rename](https://github.com/hparra/gulp-rename).
 
+### .use(plugin)
+
+#### plugin(response, url)
+
+Type: `function`
+
+Add a plugin to the middleware stack.
+
+##### response
+
+The [response object](http://nodejs.org/api/http.html#http_http_incomingmessage).
+
+##### url
+
+The requested URL.
+
 ### .run(callback)
 
 #### callback(err, files)

@@ -196,3 +196,25 @@ test('request options', function (t) {
 			t.assert(files[0].url === 'http://foo.com/test-file.zip');
 		});
 });
+
+test('expose the response object', function (t) {
+	t.plan(7);
+
+	var scope = nock('http://foo.com')
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
+
+	new Download()
+		.get('http://foo.com/test-file.zip')
+		.use(function (res, url) {
+			t.assert(res);
+			t.assert(res.statusCode === 200);
+			t.assert(url === 'http://foo.com/test-file.zip');
+		})
+		.run(function (err, files) {
+			t.assert(!err, err);
+			t.assert(scope.isDone());
+			t.assert(files[0].path === 'test-file.zip');
+			t.assert(files[0].url === 'http://foo.com/test-file.zip');
+		});
+});

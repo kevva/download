@@ -43,7 +43,8 @@
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
     "vinyl": "^0.4.3",
-    "vinyl-fs": "^1.0.0"
+    "vinyl-fs": "^1.0.0",
+    "ware": "^1.2.0"
   },
   "devDependencies": {
     "ava": "^0.0.4",
