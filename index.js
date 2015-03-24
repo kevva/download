@@ -1,6 +1,7 @@
 'use strict';
 
 var combine = require('stream-combiner2');
+var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
 var File = require('vinyl');
@@ -128,11 +129,10 @@ Download.prototype.run = function (cb) {
 			var fileStream = this.createStream(this.createFile(get.url, data), dest);
 
 			fileStream.on('error', done);
-
-			readAllStream(fileStream, null, function (err, items) {
+			fileStream.pipe(concatStream(function (items) {
 				files = files.concat(items);
 				done();
-			});
+			}));
 		}.bind(this));
 	}.bind(this), function (err) {
 		if (err) {
