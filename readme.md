@@ -19,13 +19,10 @@ it'll extract it for you.
 var Download = require('download');
 
 new Download({mode: '755'})
-	.get('http://example.com/foo.zip')
-	.get('http://example.com/cat.jpg')
-	.dest('dest');
-	.run(function (err, files) {
-		console.log(files);
-		//=> [{path: 'foo.zip', url: 'http://example.com/foo.zip', contents: <Buffer 50 4b 03>, ...}, ...]
-	});
+    .get('http://example.com/foo.zip')
+    .get('http://example.com/cat.jpg')
+    .dest('dest')
+    .run();
 ```
 
 
