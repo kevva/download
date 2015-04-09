@@ -10,7 +10,7 @@ var fixture = path.join.bind(path, __dirname, 'fixtures');
 
 test('expose a constructor', function (t) {
 	t.plan(1);
-	t.assert(typeof Download === 'function');
+	t.assert(typeof Download === 'function', typeof Download);
 });
 
 test('return an instance if it called without `new`', function (t) {
@@ -24,7 +24,7 @@ test('set a file to get', function (t) {
 	var download = new Download()
 		.get('http://example.com/test.jpg');
 
-	t.assert(download._get[0].url === 'http://example.com/test.jpg');
+	t.assert(download._get[0].url === 'http://example.com/test.jpg', download._get[0].url);
 });
 
 test('download a file', function (t) {
@@ -38,9 +38,9 @@ test('download a file', function (t) {
 		.get('http://foo.com/test-file.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(files[0].path === 'test-file.zip');
-			t.assert(files[0].url === 'http://foo.com/test-file.zip');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].path === 'test-file.zip', files[0].path);
+			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
 		});
 });
 
@@ -58,12 +58,12 @@ test('download multiple files', function (t) {
 		.get('http://foo.com/nested/test-file.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(files.length === 2);
-			t.assert(files[0].path === 'test-file.zip');
-			t.assert(files[0].url === 'http://foo.com/test-file.zip');
-			t.assert(files[1].path === 'test-file.zip');
-			t.assert(files[1].url === 'http://foo.com/nested/test-file.zip');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files.length === 2, files.length);
+			t.assert(files[0].path === 'test-file.zip', files[0].path);
+			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
+			t.assert(files[1].path === 'test-file.zip', files[1].path);
+			t.assert(files[1].url === 'http://foo.com/nested/test-file.zip', files[1].url);
 		});
 });
 
@@ -79,9 +79,9 @@ test('download a file and rename it', function (t) {
 		.rename('foobar.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(path.basename(files[0].path) === 'foobar.zip');
-			t.assert(files[0].url === 'http://foo.com/test-file.zip');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(path.basename(files[0].path) === 'foobar.zip', path.basename(files[0].path));
+			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
 		});
 });
 
@@ -96,8 +96,8 @@ test('download and extract a file', function (t) {
 		.get('http://foo.com/test-file.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(files[0].path === 'file.txt');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].path === 'file.txt', files[0].path);
 		});
 });
 
@@ -118,10 +118,10 @@ test('specify destination folder', function (t) {
 		.run(function (err, files) {
 			var r0 = fs.readdirSync(d0);
 			t.assert(!err, err);
-			t.assert(scope.isDone());
+			t.assert(scope.isDone(), scope.isDone());
 			rimraf.sync(d0);
-			t.assert(r0[0] === 'file.txt');
-			t.assert(r0[1] === 'test.js');
+			t.assert(r0[0] === 'file.txt', r0[0]);
+			t.assert(r0[1] === 'test.js', r0[1]);
 		});
 });
 
@@ -144,11 +144,11 @@ test('specify multiple destination folders', function (t) {
 			var r1 = fs.readdirSync(d1);
 			var r2 = fs.readdirSync(d2);
 			t.assert(!err, err);
-			t.assert(scope.isDone());
+			t.assert(scope.isDone(), scope.isDone());
 			rimraf.sync(d1);
 			rimraf.sync(d2);
-			t.assert(r1[0] === 'file.txt');
-			t.assert(r2[0] === 'test.js');
+			t.assert(r1[0] === 'file.txt', r1[0]);
+			t.assert(r2[0] === 'test.js', r2[0]);
 		});
 });
 
@@ -163,9 +163,9 @@ test('rename file to a valid filename', function (t) {
 		.get('http://foo.com/test?file.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(files[0].path === 'test!file.zip');
-			t.assert(files[0].url === 'http://foo.com/test?file.zip');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].path === 'test!file.zip', files[0].path);
+			t.assert(files[0].url === 'http://foo.com/test?file.zip', files[0].url);
 		});
 });
 
@@ -175,7 +175,7 @@ test('error on invalid URL', function (t) {
 	new Download()
 		.get('foobar')
 		.run(function (err) {
-			t.assert(err.message === 'Specify a valid URL');
+			t.assert(err.message === 'Specify a valid URL', err.message);
 		});
 });
 
@@ -189,9 +189,9 @@ test('error on 404', function (t) {
 	new Download()
 		.get('http://foo.com')
 		.run(function (err) {
-			t.assert(scope.isDone());
-			t.assert(err.code === 404);
-			t.assert(err.message === 'http://foo.com response code is 404 (Not Found)');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(err.code === 404, err.code);
+			t.assert(err.message === 'http://foo.com response code is 404 (Not Found)', err.message);
 		});
 });
 
@@ -207,9 +207,9 @@ test('request options', function (t) {
 		.get('http://foo.com/test-file.zip')
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(files[0].path === 'test-file.zip');
-			t.assert(files[0].url === 'http://foo.com/test-file.zip');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].path === 'test-file.zip', files[0].path);
+			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
 		});
 });
 
@@ -223,14 +223,14 @@ test('expose the response object', function (t) {
 	new Download()
 		.get('http://foo.com/test-file.zip')
 		.use(function (res, url) {
-			t.assert(res);
-			t.assert(res.statusCode === 200);
-			t.assert(url === 'http://foo.com/test-file.zip');
+			t.assert(res, res);
+			t.assert(res.statusCode === 200, res.statusCode);
+			t.assert(url === 'http://foo.com/test-file.zip', url);
 		})
 		.run(function (err, files) {
 			t.assert(!err, err);
-			t.assert(scope.isDone());
-			t.assert(files[0].path === 'test-file.zip');
-			t.assert(files[0].url === 'http://foo.com/test-file.zip');
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].path === 'test-file.zip', files[0].path);
+			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
 		});
 });
