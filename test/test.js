@@ -1,12 +1,12 @@
 'use strict';
 
-var Download = require('../');
 var fs = require('fs');
 var path = require('path');
-var fixture = path.join.bind(path, __dirname, 'fixtures');
 var nock = require('nock');
-var rm = require('rimraf');
+var rimraf = require('rimraf');
 var test = require('ava');
+var Download = require('../');
+var fixture = path.join.bind(path, __dirname, 'fixtures');
 
 test('expose a constructor', function (t) {
 	t.plan(1);
@@ -119,7 +119,7 @@ test('specify destination folder', function (t) {
 			var r0 = fs.readdirSync(d0);
 			t.assert(!err, err);
 			t.assert(scope.isDone());
-			rm.sync(d0);
+			rimraf.sync(d0);
 			t.assert(r0[0] === 'file.txt');
 			t.assert(r0[1] === 'test.js');
 		});
@@ -145,8 +145,8 @@ test('specify multiple destination folders', function (t) {
 			var r2 = fs.readdirSync(d2);
 			t.assert(!err, err);
 			t.assert(scope.isDone());
-			rm.sync(d1);
-			rm.sync(d2);
+			rimraf.sync(d1);
+			rimraf.sync(d2);
 			t.assert(r1[0] === 'file.txt');
 			t.assert(r2[0] === 'test.js');
 		});

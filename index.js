@@ -1,19 +1,19 @@
 'use strict';
 
-var combine = require('stream-combiner2');
+var path = require('path');
 var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
-var File = require('vinyl');
 var filenamify = require('filenamify');
 var got = require('got');
 var isUrl = require('is-url');
 var objectAssign = require('object-assign');
-var path = require('path');
 var readAllStream = require('read-all-stream');
 var rename = require('gulp-rename');
+var streamCombiner = require('stream-combiner2');
 var through = require('through2');
-var vfs = require('vinyl-fs');
+var Vinyl = require('vinyl');
+var vinylFs = require('vinyl-fs');
 var Ware = require('ware');
 
 /**
@@ -153,7 +153,7 @@ Download.prototype.run = function (cb) {
  */
 
 Download.prototype.createFile = function (url, data) {
-	return objectAssign(new File({
+	return objectAssign(new Vinyl({
 		contents: data,
 		path: filenamify(path.basename(url))
 	}), {url: url});
@@ -182,8 +182,8 @@ Download.prototype.createStream = function (file, dest) {
 	}
 
 	if (dest) {
-		streams.push(vfs.dest(dest, this.opts));
+		streams.push(vinylFs.dest(dest, this.opts));
 	}
 
-	return combine(streams);
+	return streamCombiner(streams);
 };

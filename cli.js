@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
-var Download = require('./');
 var meow = require('meow');
-var stdin = require('get-stdin');
+var getStdin = require('get-stdin');
+var Download = require('./');
 
 var cli = meow({
 	help: [
@@ -85,7 +85,7 @@ if (process.stdin.isTTY) {
 
 	run(src, dest);
 } else {
-	stdin(function (data) {
+	getStdin(function (data) {
 		var src = cli.input;
 		var dest = cli.flags.out;
 
