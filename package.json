@@ -31,6 +31,7 @@
     "concat-stream": "^1.4.7",
     "each-async": "^1.0.0",
     "filenamify": "^1.0.1",
+    "get-proxy": "^1.0.1",
     "get-stdin": "^4.0.1",
     "got": "^2.3.2",
     "gulp-decompress": "^1.0.2",
@@ -41,6 +42,7 @@
     "read-all-stream": "^1.0.2",
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.1",
+    "tunnel-agent": "^0.4.0",
     "vinyl": "^0.4.3",
     "vinyl-fs": "^1.0.0",
     "ware": "^1.2.0"

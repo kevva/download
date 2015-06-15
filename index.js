@@ -6,6 +6,8 @@ var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
 var filenamify = require('filenamify');
 var got = require('got');
+var tunnel = require('tunnel-agent');
+var getProxy = require('get-proxy');
 var isUrl = require('is-url');
 var objectAssign = require('object-assign');
 var readAllStream = require('read-all-stream');
@@ -28,7 +30,20 @@ function Download(opts) {
 		return new Download(opts);
 	}
 
-	this.opts = objectAssign({encoding: null}, opts);
+	var defaults = {encoding: null};
+	var proxy = getProxy();
+	if (proxy) {
+		var components = proxy.match(/^(http|https):\/\/(?:(.*:.*)@)?([\w\.]*)(?::(\d{0,5}))?/);
+
+		defaults.proxy = {
+			proto: components[1],
+			host: components[3],
+			port: components[4],
+			proxyAuth: components[2]
+		};
+    }
+
+	this.opts = objectAssign(defaults, opts);
 	this.ware = new Ware();
 }
 
@@ -115,6 +130,26 @@ Download.prototype.run = function (cb) {
 		if (!isUrl(get.url)) {
 			done(new Error('Specify a valid URL'));
 			return;
+		}
+
+		if (this.opts.proxy && !this.opts.agent) {
+			var getMatch = get.url.match(/^(http|https):\/\/[^:\/]*(?:\:(\d{1,5}))?/);
+			var targetProto = getMatch[1].toLowerCase();
+			var targetPort = getMatch[2];
+
+			//Hack to get https working. For some reason it needs the port to explicitly be setted.
+			if (targetProto === 'https' && !targetPort) {
+				this.opts.port = 443;
+			}
+
+			var method = {
+				'http-http': 'httpOverHttp',
+				'https-http': 'httpsOverHttp',
+				'http-https': 'httpOverHttps',
+				'https-https': 'httpsOverHttps',
+			}[targetProto + '-' + this.opts.proxy.proto.toLowerCase()];
+
+			this.opts.agent = tunnel[method]({proxy: this.opts.proxy});
 		}
 
 		var stream = got(get.url, this.opts);
