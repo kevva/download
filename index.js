@@ -133,14 +133,21 @@ Download.prototype.run = function (cb) {
 		}
 
 		if (this.opts.proxy && !this.opts.agent) {
-			var protoMatch = get.url.match(/^(http|https):/);
+			var getMatch = get.url.match(/^(http|https):\/\/[^:]*(?:\:(\d{1,5}))?/);
+			var targetProto = getMatch[1].toLowerCase();
+			var targetPort = getMatch[2];
+
+			//Hack to get https working. For some reason it needs the port to explicitly be setted.
+			if (targetProto === 'https' && !targetProto) {
+				this.opts.port = 443;
+			}
 
 			var method = {
 				'http-http': 'httpOverHttp',
 				'https-http': 'httpsOverHttp',
 				'http-https': 'httpOverHttps',
 				'https-https': 'httpsOverHttps',
-			}[protoMatch[1].toLowerCase() + '-' + this.opts.proxy.proto.toLowerCase()];
+			}[targetProto + '-' + this.opts.proxy.proto.toLowerCase()];
 
 			this.opts.agent = tunnel[method]({proxy: this.opts.proxy});
 		}
