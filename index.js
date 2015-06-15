@@ -6,6 +6,8 @@ var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
 var filenamify = require('filenamify');
 var got = require('got');
+var tunnel = require('tunnel-agent');
+var getProxy = require('get-proxy');
 var isUrl = require('is-url');
 var objectAssign = require('object-assign');
 var readAllStream = require('read-all-stream');
@@ -28,7 +30,21 @@ function Download(opts) {
 		return new Download(opts);
 	}
 
-	this.opts = objectAssign({encoding: null}, opts);
+	var defaults = {encoding: null};
+	var proxy = getProxy();
+	if (proxy) {
+		var components = proxy.match(/(?:http|https):\/\/(?:(.*:.*)@)?([\w\.]*)(?::(\d{0,5}))?/);
+
+		var proxyObj = {
+			host: components[2],
+			port: components[3],
+			proxyAuth: components[1]
+		};
+
+		defaults.agent = tunnel.httpOverHttp({proxy: proxyObj});
+    }
+
+	this.opts = objectAssign(defaults, opts);
 	this.ware = new Ware();
 }
 
