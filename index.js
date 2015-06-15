@@ -33,15 +33,14 @@ function Download(opts) {
 	var defaults = {encoding: null};
 	var proxy = getProxy();
 	if (proxy) {
-		var components = proxy.match(/(?:http|https):\/\/(?:(.*:.*)@)?([\w\.]*)(?::(\d{0,5}))?/);
+		var components = proxy.match(/^(http|https):\/\/(?:(.*:.*)@)?([\w\.]*)(?::(\d{0,5}))?/);
 
-		var proxyObj = {
-			host: components[2],
-			port: components[3],
-			proxyAuth: components[1]
+		defaults.proxy = {
+			proto: components[1],
+			host: components[3],
+			port: components[4],
+			proxyAuth: components[2]
 		};
-
-		defaults.agent = tunnel.httpOverHttp({proxy: proxyObj});
     }
 
 	this.opts = objectAssign(defaults, opts);
@@ -131,6 +130,19 @@ Download.prototype.run = function (cb) {
 		if (!isUrl(get.url)) {
 			done(new Error('Specify a valid URL'));
 			return;
+		}
+
+		if (this.opts.proxy && !this.opts.agent) {
+			var protoMatch = get.url.match(/^(http|https):/);
+
+			var method = {
+				'http-http': 'httpOverHttp',
+				'https-http': 'httpsOverHttp',
+				'http-https': 'httpOverHttps',
+				'https-https': 'httpsOverHttps',
+			}[protoMatch[1].toLowerCase() + '-' + this.opts.proxy.proto.toLowerCase()];
+
+			this.opts.agent = tunnel[method]({proxy: this.opts.proxy});
 		}
 
 		var stream = got(get.url, this.opts);
