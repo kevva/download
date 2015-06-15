@@ -133,12 +133,12 @@ Download.prototype.run = function (cb) {
 		}
 
 		if (this.opts.proxy && !this.opts.agent) {
-			var getMatch = get.url.match(/^(http|https):\/\/[^:]*(?:\:(\d{1,5}))?/);
+			var getMatch = get.url.match(/^(http|https):\/\/[^:\/]*(?:\:(\d{1,5}))?/);
 			var targetProto = getMatch[1].toLowerCase();
 			var targetPort = getMatch[2];
 
 			//Hack to get https working. For some reason it needs the port to explicitly be setted.
-			if (targetProto === 'https' && !targetProto) {
+			if (targetProto === 'https' && !targetPort) {
 				this.opts.port = 443;
 			}
 
