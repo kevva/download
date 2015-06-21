@@ -2,6 +2,8 @@
 
 > Download and extract files effortlessly
 
+*See [download-cli](https://github.com/kevva/download-cli) for the command-line version.*
+
 
 ## Install
 
@@ -115,34 +117,6 @@ Type: `function`
 ##### files
 
 Contains an array of vinyl files.
-
-
-## CLI
-
-```
-$ npm install --global download
-```
-
-```
-$ download --help
-
-  Usage
-    $ download <url>
-    $ download <url> > <file>
-    $ download --out <directory> <url>
-    $ cat <file> | download --out <directory>
-
-  Example
-    $ download http://foo.com/file.zip
-    $ download http://foo.com/cat.png > dog.png
-    $ download --extract --strip 1 --out dest http://foo.com/file.zip
-    $ cat urls.txt | download --out dest
-
-  Options
-    -e, --extract           Try decompressing the file
-    -o, --out               Where to place the downloaded files
-    -s, --strip <number>    Strip leading paths from file names on extraction
-```
 
 
 ## License
