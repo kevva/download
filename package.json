@@ -1,7 +1,7 @@
 {
   "name": "download",
   "version": "4.1.2",
-  "description": "Download and extract files effortlessly",
+  "description": "Download and extract files",
   "license": "MIT",
   "repository": "kevva/download",
   "author": {

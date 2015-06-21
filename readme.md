@@ -1,6 +1,6 @@
 # download [![Build Status](https://travis-ci.org/kevva/download.svg?branch=master)](https://travis-ci.org/kevva/download)
 
-> Download and extract files effortlessly
+> Download and extract files
 
 *See [download-cli](https://github.com/kevva/download-cli) for the command-line version.*
 
@@ -121,4 +121,4 @@ Contains an array of vinyl files.
 
 ## License
 
-MIT © [Kevin Mårtensson](http://kevinmartensson.com)
+MIT © [Kevin Mårtensson](http://github.com/kevva)

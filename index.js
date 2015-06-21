@@ -1,5 +1,4 @@
 'use strict';
-
 var path = require('path');
 var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
