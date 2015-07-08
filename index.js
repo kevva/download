@@ -118,12 +118,16 @@ Download.prototype.run = function (cb) {
 
 		var stream = got(get.url, this.opts);
 
-		stream.on('error', done);
 		stream.on('response', function (res) {
 			this.ware.run(res, get.url);
 		}.bind(this));
 
 		readAllStream(stream, null, function (err, data) {
+			if (err) {
+				done(err);
+				return;
+			}
+
 			var dest = get.dest || this.dest();
 			var fileStream = this.createStream(this.createFile(get.url, data), dest);
 
