@@ -9,7 +9,6 @@
     "email": "kevinmartensson@gmail.com",
     "url": "github.com/kevva"
   },
-  "bin": "cli.js",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -35,9 +34,9 @@
     "gulp-rename": "^1.2.0",
     "is-url": "^1.2.0",
     "object-assign": "^2.0.0",
-    "read-all-stream": "^1.0.2",
+    "read-all-stream": "^3.0.0",
     "stream-combiner2": "^1.0.2",
-    "through2": "^0.6.1",
+    "through2": "^2.0.0",
     "vinyl": "^0.4.3",
     "vinyl-fs": "^1.0.0",
     "ware": "^1.2.0"
