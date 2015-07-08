@@ -120,7 +120,9 @@ Download.prototype.run = function (cb) {
 
 		stream.on('error', done);
 		stream.on('response', function (res) {
-			this.ware.run(res, get.url);
+			stream.headers = res.headers;
+			stream.statusCode = res.statusCode;
+			this.ware.run(stream, get.url);
 		}.bind(this));
 
 		readAllStream(stream, null, function (err, data) {

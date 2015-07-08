@@ -233,3 +233,22 @@ test('expose the response object', function (t) {
 			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
 		});
 });
+
+test('do not flush data to plugin', function (t) {
+	t.plan(7);
+
+	var scope = nock('http://foo.com')
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
+
+	new Download()
+		.get('http://foo.com/test-file.zip')
+		.use(function (res, url) {
+			res.on('data', function () {});
+		})
+		.run(function (err, files) {
+			t.assert(!err, err);
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].contents.length === 166, files[0].contents.length);
+		});
+});
