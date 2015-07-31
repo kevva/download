@@ -5,8 +5,8 @@
   "license": "MIT",
   "repository": "kevva/download",
   "author": {
-    "name": "Kevin Mårtensson",
     "email": "kevinmartensson@gmail.com",
+    "name": "Kevin Mårtensson",
     "url": "github.com/kevva"
   },
   "engines": {
@@ -26,6 +26,7 @@
     "url"
   ],
   "dependencies": {
+    "caw": "^1.0.1",
     "concat-stream": "^1.4.7",
     "each-async": "^1.0.0",
     "filenamify": "^1.0.1",

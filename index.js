@@ -1,5 +1,7 @@
 'use strict';
 var path = require('path');
+var url = require('url');
+var caw = require('caw');
 var concatStream = require('concat-stream');
 var decompress = require('gulp-decompress');
 var eachAsync = require('each-async');
@@ -116,7 +118,9 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		var stream = got(get.url, this.opts);
+		var protocol = url.parse(get.url).protocol;
+		var agent = caw(this.opts.proxy, {protocol: protocol});
+		var stream = got(get.url, objectAssign(this.opts, {agent: agent}));
 
 		stream.on('response', function (res) {
 			stream.headers = res.headers;
