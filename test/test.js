@@ -190,7 +190,32 @@ test('error on 404', function (t) {
 		.run(function (err) {
 			t.assert(scope.isDone(), scope.isDone());
 			t.assert(err.code === 404, err.code);
-			t.assert(err.message === 'http://foo.com response code is 404 (Not Found)', err.message);
+			t.assert(err.message === 'GET http://foo.com/ response code is 404 (Not Found)', err.message);
+		});
+});
+
+test('follows 302 redirect', function (t) {
+	t.plan(5);
+
+	var scope = nock('http://foo.com')
+		.get('/test-file.zip')
+		.reply(302, null, { location: 'http://foo.com/redirected.zip' })
+		.get('/redirected.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
+
+	var called = 0;
+
+	new Download()
+		.get('http://foo.com/test-file.zip')
+		.use(function () {
+			called++;
+		})
+		.run(function (err, files) {
+			t.assert(!err, err);
+			t.assert(scope.isDone(), scope.isDone());
+			t.assert(files[0].path === 'test-file.zip', files[0].path);
+			t.assert(files[0].url === 'http://foo.com/test-file.zip', files[0].url);
+			t.assert(called === 1, 'plugin called ' + called + ' times');
 		});
 });
 
