@@ -120,7 +120,7 @@ Download.prototype.run = function (cb) {
 
 		var protocol = url.parse(get.url).protocol;
 		var agent = caw(this.opts.proxy, {protocol: protocol});
-		var stream = got(get.url, objectAssign(this.opts, {agent: agent}));
+		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
 
 		stream.on('response', function (res) {
 			stream.headers = res.headers;

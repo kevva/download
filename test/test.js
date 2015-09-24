@@ -186,11 +186,11 @@ test('error on 404', function (t) {
 		.reply(404);
 
 	new Download()
-		.get('http://foo.com')
+		.get('http://foo.com/')
 		.run(function (err) {
 			t.ok(scope.isDone());
-			t.is(err.code, 404);
-			t.is(err.message, 'GET http://foo.com/ response code is 404 (Not Found)');
+			t.is(err.statusCode, 404);
+			t.is(err.message, 'Response code 404 (Not Found)');
 		});
 });
 
