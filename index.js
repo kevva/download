@@ -12,7 +12,7 @@ var objectAssign = require('object-assign');
 var readAllStream = require('read-all-stream');
 var rename = require('gulp-rename');
 var streamCombiner = require('stream-combiner2');
-var through = require('through2');
+var PassThrough = require('readable-stream/passthrough');
 var Vinyl = require('vinyl');
 var vinylFs = require('vinyl-fs');
 var Ware = require('ware');
@@ -177,7 +177,7 @@ Download.prototype.createFile = function (url, data) {
  */
 
 Download.prototype.createStream = function (file, dest) {
-	var stream = through.obj();
+	var stream = new PassThrough({objectMode: true});
 	var streams = [stream];
 
 	stream.end(file);
