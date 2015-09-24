@@ -14,7 +14,7 @@ test('expose a constructor', function (t) {
 
 test('return an instance if it called without `new`', function (t) {
 	t.plan(1);
-	t.ok(Download() instanceof Download);
+	t.ok(Download() instanceof Download); // eslint-disable-line
 });
 
 test('set a file to get', function (t) {
@@ -114,7 +114,7 @@ test('specify destination folder', function (t) {
 		.get('http://foo.com/test-file.zip')
 		.get('http://foo.com/test.js')
 		.dest(d0)
-		.run(function (err, files) {
+		.run(function (err) {
 			var r0 = fs.readdirSync(d0);
 			t.ifError(err);
 			t.ok(scope.isDone());
@@ -139,7 +139,7 @@ test('specify multiple destination folders', function (t) {
 		.get('http://foo.com/test-file.zip', d1)
 		.get('http://foo.com/test.js')
 		.dest(d2)
-		.run(function (err, files) {
+		.run(function (err) {
 			var r1 = fs.readdirSync(d1);
 			var r2 = fs.readdirSync(d2);
 			t.ifError(err);
@@ -199,7 +199,7 @@ test('follows 302 redirect', function (t) {
 
 	var scope = nock('http://foo.com')
 		.get('/test-file.zip')
-		.reply(302, null, { location: 'http://foo.com/redirected.zip' })
+		.reply(302, null, {location: 'http://foo.com/redirected.zip'})
 		.get('/redirected.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
@@ -268,7 +268,7 @@ test('do not flush data to plugin', function (t) {
 
 	new Download()
 		.get('http://foo.com/test-file.zip')
-		.use(function (res, url) {
+		.use(function (res) {
 			res.on('data', function () {});
 		})
 		.run(function (err, files) {
