@@ -128,8 +128,18 @@ Download.prototype.run = function (cb) {
 			this.ware.run(stream, get.url);
 		}.bind(this));
 
+		var hasHttpError = false;
+
 		readAllStream(stream, null, function (err, data) {
+			if (hasHttpError) {
+				return;
+			}
+
 			if (err) {
+				if (err instanceof got.HTTPError) {
+					hasHttpError = true;
+				}
+
 				done(err);
 				return;
 			}
