@@ -148,7 +148,7 @@ Download.prototype.run = function (cb) {
 			var fileStream = this.createStream(this.createFile(get.url, data), dest);
 
 			fileStream.on('error', done);
-			fileStream.pipe(concatStream(function (items) {
+			fileStream.pipe(concatStream({encoding: 'object'}, function (items) {
 				files = files.concat(items);
 				done();
 			}));
@@ -204,5 +204,5 @@ Download.prototype.createStream = function (file, dest) {
 		streams.push(vinylFs.dest(dest, this.opts));
 	}
 
-	return streamCombiner(streams);
+	return streamCombiner.obj(streams);
 };
