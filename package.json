@@ -30,7 +30,7 @@
     "concat-stream": "^1.4.7",
     "each-async": "^1.0.0",
     "filenamify": "^1.0.1",
-    "got": "^4.2.0",
+    "got": "^5.0.0",
     "gulp-decompress": "kevva/gulp-decompress#ee4cf132bac743f75b4e2cd486b7f4be204e29ba",
     "gulp-rename": "^1.2.0",
     "is-url": "^1.2.0",
