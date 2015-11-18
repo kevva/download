@@ -122,7 +122,7 @@ Download.prototype.run = function (cb) {
 		if (protocol) {
 			protocol = protocol.slice(0, -1);
 		}
-		var agent = caw(this.opts.proxy, {protocol: protocol.slice(9, -1)});
+		var agent = caw(this.opts.proxy, {protocol: protocol});
 		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
 
 		stream.on('response', function (res) {
