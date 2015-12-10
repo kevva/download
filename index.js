@@ -29,7 +29,7 @@ function Download(opts) {
 		return new Download(opts);
 	}
 
-	this.opts = objectAssign({encoding: null}, opts);
+	this.opts = objectAssign({encoding: null, use: []}, opts);
 	this.ware = new Ware();
 }
 
@@ -164,6 +164,18 @@ Download.prototype.run = function (cb) {
 
 		cb(null, files);
 	});
+};
+
+/**
+ * addDecompresPlugin
+ *
+ * @param {Function|Array} plugin
+ * @api public
+ */
+
+Download.prototype.addDecompresPlugin = function (plugin) {
+	this.opts.use = this.opts.use.concat(plugin);
+	return this;
 };
 
 /**
