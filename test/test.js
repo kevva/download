@@ -4,6 +4,7 @@ var path = require('path');
 var nock = require('nock');
 var rimraf = require('rimraf');
 var test = require('ava');
+var Transform = require('readable-stream/transform');
 var Download = require('../');
 var fixture = path.join.bind(path, __dirname, 'fixtures');
 
@@ -275,5 +276,33 @@ test('do not flush data to plugin', function (t) {
 			t.ifError(err);
 			t.ok(scope.isDone());
 			t.is(files[0].contents.length, 166);
+		});
+});
+
+test('handle decompress plugin', function (t) {
+	t.plan(4);
+
+	var plugin = function () {
+		return new Transform({
+			objectMode: true,
+			transform: function (file, enc, cb) {
+				t.is(file.path, 'file.txt');
+
+				cb(null, file);
+			}
+		});
+	};
+
+	var scope = nock('http://foo.com')
+		.get('/test-file.zip')
+		.replyWithFile(200, fixture('test-file.zip'));
+
+	new Download({extract: true})
+		.get('http://foo.com/test-file.zip')
+		.addDecompresPlugin(plugin)
+		.run(function (err, files) {
+			t.ifError(err);
+			t.ok(scope.isDone());
+			t.is(files[0].path, 'file.txt');
 		});
 });

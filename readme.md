@@ -73,7 +73,7 @@ Add a URL to download.
 
 Type: `string`
 
-Set an optional destination folder that will take precedence over the one set in 
+Set an optional destination folder that will take precedence over the one set in
 `.dest()`.
 
 ### .dest(dir)
@@ -107,6 +107,15 @@ The [response object](http://nodejs.org/api/http.html#http_http_incomingmessage)
 ##### url
 
 The requested URL.
+
+### .addDecompresPlugin(plugin)
+
+#### plugin
+
+Type: `function`, `Array`
+
+Add a decompress plugin.  
+Only work if opts.extract === true
 
 ### .run(callback)
 
