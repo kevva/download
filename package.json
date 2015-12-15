@@ -43,7 +43,7 @@
     "ware": "^1.2.0"
   },
   "devDependencies": {
-    "ava": "*",
+    "ava": "^0.5.0",
     "nock": "^3.1.0",
     "rimraf": "^2.2.8",
     "xo": "*"
