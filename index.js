@@ -31,6 +31,7 @@ function Download(opts) {
 
 	this.opts = objectAssign({encoding: null}, opts);
 	this.ware = new Ware();
+	this.transformStream = [];
 }
 
 module.exports = Download;
@@ -166,6 +167,11 @@ Download.prototype.run = function (cb) {
 	});
 };
 
+Download.prototype.addTransform = function (stream) {
+	this.transformStream.push(stream);
+	return this;
+};
+
 /**
  * Create vinyl file
  *
@@ -202,6 +208,8 @@ Download.prototype.createStream = function (file, dest) {
 	if (this.rename()) {
 		streams.push(rename(this.rename()));
 	}
+
+	streams = streams.concat(this.transformStream);
 
 	if (dest) {
 		streams.push(vinylFs.dest(dest, this.opts));

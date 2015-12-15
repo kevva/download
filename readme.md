@@ -73,7 +73,7 @@ Add a URL to download.
 
 Type: `string`
 
-Set an optional destination folder that will take precedence over the one set in 
+Set an optional destination folder that will take precedence over the one set in
 `.dest()`.
 
 ### .dest(dir)
@@ -117,6 +117,12 @@ Type: `function`
 ##### files
 
 Contains an array of vinyl files.
+
+### .addTransform(stream)
+
+#### stream
+
+Type: `Stream`
 
 
 ## License
