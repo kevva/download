@@ -110,7 +110,8 @@ Download.prototype.use = function (plugin) {
 
 Download.prototype.run = function (cb) {
 	cb = cb || function () {};
-	var files = [];
+	var
+		filesInfo = [];
 
 	eachAsync(this.get(), function (get, i, done) {
 		if (!isUrl(get.url)) {
@@ -128,43 +129,61 @@ Download.prototype.run = function (cb) {
 		stream.on('response', function (res) {
 			stream.headers = res.headers;
 			stream.statusCode = res.statusCode;
-			this.ware.run(stream, get.url);
-		}.bind(this));
+			this.ware.run(stream, get.url, function(err) {
+				if(err)
+					done(err);
+				else {
+					readAllStream(stream, null, function (err, data) {
+						if (err) {
 
-		var hasHttpError = false;
+							done(err);
+							return;
+						}
 
-		readAllStream(stream, null, function (err, data) {
-			if (hasHttpError) {
-				return;
-			}
-
-			if (err) {
-				if (err instanceof got.HTTPError) {
-					hasHttpError = true;
+						filesInfo.push({
+							dest: get.dest || this.dest(),
+							url: get.url,
+							data: data
+						});
+						done();
+					}.bind(this));
 				}
-
-				done(err);
-				return;
-			}
-
-			var dest = get.dest || this.dest();
-			var fileStream = this.createStream(this.createFile(get.url, data), dest);
-
-			fileStream.on('error', done);
-			fileStream.pipe(concatStream({encoding: 'object'}, function (items) {
-				files = files.concat(items);
-				done();
-			}));
+			}.bind(this));
 		}.bind(this));
 	}.bind(this), function (err) {
 		if (err) {
-			cb(err);
+			cb(err, []);
 			return;
 		}
-
-		cb(null, files);
-	});
+		else
+			this.saveFiles(filesInfo, cb)
+	}.bind(this));
 };
+
+/**
+ * Save files to disk
+ *
+ * @param {filesInfo} {url, data, dest}
+ * @api private
+ */
+Download.prototype.saveFiles = function(filesInfo, cb) {
+	var files = [];
+	eachAsync(filesInfo, function(fileInfo, i, done) {
+		var fileStream = this.createStream(this.createFile(fileInfo.url, fileInfo.data), fileInfo.dest);
+
+		fileStream.on('error', done);
+		fileStream.pipe(concatStream({encoding: 'object'}, function (items) {
+			Array.prototype.push.apply(files, items);
+			done();
+		}));
+	}.bind(this), function(err) {
+		if(err) {
+			cb(err, files);
+			return
+		}
+		cb(null, files);
+	})
+}
 
 /**
  * Create vinyl file
