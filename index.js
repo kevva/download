@@ -123,30 +123,34 @@ Download.prototype.run = function (cb) {
 		if (protocol) {
 			protocol = protocol.slice(0, -1);
 		}
-		var agent = caw(this.opts.proxy, {protocol: protocol});
-		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
+		var
+			agent = caw(this.opts.proxy, {protocol: protocol}),
+			stream = got.stream(get.url, objectAssign(this.opts, {agent: agent})),
+			result = {};
 
 		stream.on('response', function (res) {
-			stream.headers = res.headers;
-			stream.statusCode = res.statusCode;
-			this.ware.run(stream, get.url, function(err) {
+			result.headers = res.headers;
+			result.statusCode = res.statusCode;
+		}.bind(this));
+
+		readAllStream(stream, null, function (err, data) {
+			if (err) {
+
+				done(err);
+				return;
+			}
+
+			result.data = data;
+			this.ware.run(result, get.url, function(err) {
 				if(err)
 					done(err);
 				else {
-					readAllStream(stream, null, function (err, data) {
-						if (err) {
-
-							done(err);
-							return;
-						}
-
-						filesInfo.push({
-							dest: get.dest || this.dest(),
-							url: get.url,
-							data: data
-						});
-						done();
-					}.bind(this));
+					filesInfo.push({
+						dest: get.dest || this.dest(),
+						url: get.url,
+						data: data
+					});
+					done();
 				}
 			}.bind(this));
 		}.bind(this));
