@@ -123,35 +123,33 @@ Download.prototype.run = function (cb) {
 		if (protocol) {
 			protocol = protocol.slice(0, -1);
 		}
-		var
-			agent = caw(this.opts.proxy, {protocol: protocol}),
-			stream = got.stream(get.url, objectAssign(this.opts, {agent: agent})),
-			result = {};
+		var agent = caw(this.opts.proxy, {protocol: protocol});
+		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
+		var result = {};
 
 		stream.on('response', function (res) {
 			result.headers = res.headers;
 			result.statusCode = res.statusCode;
-		}.bind(this));
+		});
 
 		readAllStream(stream, null, function (err, data) {
 			if (err) {
-
 				done(err);
 				return;
 			}
 
 			result.data = data;
-			this.ware.run(result, get.url, function(err) {
-				if(err)
+			this.ware.run(result, get.url, function (err) {
+				if (err) {
 					done(err);
-				else {
-					filesInfo.push({
-						dest: get.dest || this.dest(),
-						url: get.url,
-						data: data
-					});
-					done();
+					return;
 				}
+				filesInfo.push({
+					dest: get.dest || this.dest(),
+					url: get.url,
+					data: data
+				});
+				done();
 			}.bind(this));
 		}.bind(this));
 	}.bind(this), function (err) {
@@ -159,8 +157,7 @@ Download.prototype.run = function (cb) {
 			cb(err, []);
 			return;
 		}
-		else
-			this.saveFiles(filesInfo, cb)
+		this.saveFiles(filesInfo, cb);
 	}.bind(this));
 };
 
@@ -170,9 +167,9 @@ Download.prototype.run = function (cb) {
  * @param {filesInfo} {url, data, dest}
  * @api private
  */
-Download.prototype.saveFiles = function(filesInfo, cb) {
+Download.prototype.saveFiles = function (filesInfo, cb) {
 	var files = [];
-	eachAsync(filesInfo, function(fileInfo, i, done) {
+	eachAsync(filesInfo, function (fileInfo, i, done) {
 		var fileStream = this.createStream(this.createFile(fileInfo.url, fileInfo.data), fileInfo.dest);
 
 		fileStream.on('error', done);
@@ -180,14 +177,14 @@ Download.prototype.saveFiles = function(filesInfo, cb) {
 			Array.prototype.push.apply(files, items);
 			done();
 		}));
-	}.bind(this), function(err) {
-		if(err) {
+	}.bind(this), function (err) {
+		if (err) {
 			cb(err, files);
-			return
+			return;
 		}
 		cb(null, files);
-	})
-}
+	});
+};
 
 /**
  * Create vinyl file
