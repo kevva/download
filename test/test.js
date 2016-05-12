@@ -1,52 +1,52 @@
-'use strict';
-var fs = require('fs');
-var path = require('path');
-var nock = require('nock');
-var rimraf = require('rimraf');
-var test = require('ava');
-var Download = require('../');
-var fixture = path.join.bind(path, __dirname, 'fixtures');
+import fs from 'fs';
+import path from 'path';
+import nock from 'nock';
+import rimraf from 'rimraf';
+import test from 'ava';
+import Download from '../';
+const fixture = path.join.bind(path, __dirname, 'fixtures');
 
-test('expose a constructor', function (t) {
+test('expose a constructor', t => {
 	t.plan(1);
 	t.is(typeof Download, 'function');
 });
 
-test('return an instance if it called without `new`', function (t) {
+test('return an instance if it called without `new`', t => {
 	t.plan(1);
-	t.ok(Download() instanceof Download); // eslint-disable-line
+	t.true(Download() instanceof Download); // eslint-disable-line
 });
 
-test('set a file to get', function (t) {
+test('set a file to get', t => {
 	t.plan(1);
 
-	var download = new Download()
+	const download = new Download()
 		.get('http://example.com/test.jpg');
 
 	t.is(download._get[0].url, 'http://example.com/test.jpg');
 });
 
-test('download a file', function (t) {
+test.cb('download a file', t => {
 	t.plan(4);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download()
 		.get('http://foo.com/test-file.zip')
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].path, 'test-file.zip');
 			t.is(files[0].url, 'http://foo.com/test-file.zip');
+			t.end();
 		});
 });
 
-test('download multiple files', function (t) {
+test.cb('download multiple files', t => {
 	t.plan(7);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'))
 		.get('/nested/test-file.zip')
@@ -55,56 +55,59 @@ test('download multiple files', function (t) {
 	new Download()
 		.get('http://foo.com/test-file.zip')
 		.get('http://foo.com/nested/test-file.zip')
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files.length, 2, files.length);
 			t.is(files[0].path, 'test-file.zip');
 			t.is(files[0].url, 'http://foo.com/test-file.zip');
 			t.is(files[1].path, 'test-file.zip');
 			t.is(files[1].url, 'http://foo.com/nested/test-file.zip');
+			t.end();
 		});
 });
 
-test('download a file and rename it', function (t) {
+test.cb('download a file and rename it', t => {
 	t.plan(4);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download()
 		.get('http://foo.com/test-file.zip')
 		.rename('foobar.zip')
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(path.basename(files[0].path), 'foobar.zip');
 			t.is(files[0].url, 'http://foo.com/test-file.zip');
+			t.end();
 		});
 });
 
-test('download and extract a file', function (t) {
+test.cb('download and extract a file', t => {
 	t.plan(3);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download({extract: true})
 		.get('http://foo.com/test-file.zip')
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].path, 'file.txt');
+			t.end();
 		});
 });
 
-test('specify destination folder', function (t) {
+test.cb('specify destination folder', t => {
 	t.plan(4);
 
-	var d0 = path.join(__dirname, 'tmp');
-	var scope = nock('http://foo.com')
+	const d0 = path.join(__dirname, 'tmp');
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'))
 		.get('/test.js')
@@ -114,22 +117,23 @@ test('specify destination folder', function (t) {
 		.get('http://foo.com/test-file.zip')
 		.get('http://foo.com/test.js')
 		.dest(d0)
-		.run(function (err) {
-			var r0 = fs.readdirSync(d0);
+		.run(err => {
+			const r0 = fs.readdirSync(d0);
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			rimraf.sync(d0);
 			t.is(r0[0], 'file.txt');
 			t.is(r0[1], 'test.js');
+			t.end();
 		});
 });
 
-test('specify multiple destination folders', function (t) {
+test.cb('specify multiple destination folders', t => {
 	t.plan(4);
 
-	var d1 = path.join(__dirname, 't1');
-	var d2 = path.join(__dirname, 't2');
-	var scope = nock('http://foo.com')
+	const d1 = path.join(__dirname, 't1');
+	const d2 = path.join(__dirname, 't2');
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'))
 		.get('/test.js')
@@ -139,141 +143,145 @@ test('specify multiple destination folders', function (t) {
 		.get('http://foo.com/test-file.zip', d1)
 		.get('http://foo.com/test.js')
 		.dest(d2)
-		.run(function (err) {
-			var r1 = fs.readdirSync(d1);
-			var r2 = fs.readdirSync(d2);
+		.run(err => {
+			const r1 = fs.readdirSync(d1);
+			const r2 = fs.readdirSync(d2);
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			rimraf.sync(d1);
 			rimraf.sync(d2);
 			t.is(r1[0], 'file.txt');
 			t.is(r2[0], 'test.js');
+			t.end();
 		});
 });
 
-test('rename file to a valid filename', function (t) {
+test.cb('rename file to a valid filename', t => {
 	t.plan(4);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test?file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download()
 		.get('http://foo.com/test?file.zip')
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].path, 'test!file.zip');
 			t.is(files[0].url, 'http://foo.com/test?file.zip');
+			t.end();
 		});
 });
 
-test('error on invalid URL', function (t) {
+test.cb('error on invalid URL', t => {
 	t.plan(1);
 
 	new Download()
 		.get('foobar')
-		.run(function (err) {
+		.run(err => {
 			t.is(err.message, 'Specify a valid URL');
+			t.end();
 		});
 });
 
-test('error on 404', function (t) {
+test.cb('error on 404', t => {
 	t.plan(3);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/')
 		.reply(404);
 
 	new Download()
 		.get('http://foo.com/')
-		.run(function (err) {
-			t.ok(scope.isDone());
+		.run(err => {
+			t.true(scope.isDone());
 			t.is(err.statusCode, 404);
 			t.is(err.message, 'Response code 404 (Not Found)');
+			t.end();
 		});
 });
 
-test('follows 302 redirect', function (t) {
+test.cb('follows 302 redirect', t => {
 	t.plan(5);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.reply(302, null, {location: 'http://foo.com/redirected.zip'})
 		.get('/redirected.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
-	var called = 0;
+	let called = 0;
 
 	new Download()
 		.get('http://foo.com/test-file.zip')
-		.use(function () {
-			called++;
-		})
-		.run(function (err, files) {
+		.use(() => called++)
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].path, 'test-file.zip');
 			t.is(files[0].url, 'http://foo.com/test-file.zip');
-			t.is(called, 1, 'plugin called ' + called + ' times');
+			t.is(called, 1, `plugin called ${called} times`);
+			t.end();
 		});
 });
 
-test('request options', function (t) {
+test.cb('request options', t => {
 	t.plan(4);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.matchHeader('authorization', 'Basic dXNlcjpwYXNzd29yZA==')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download({auth: 'user:password'})
 		.get('http://foo.com/test-file.zip')
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].path, 'test-file.zip');
 			t.is(files[0].url, 'http://foo.com/test-file.zip');
+			t.end();
 		});
 });
 
-test('expose the response object', function (t) {
+test.cb('expose the response object', t => {
 	t.plan(7);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download()
 		.get('http://foo.com/test-file.zip')
-		.use(function (res, url) {
-			t.ok(res);
+		.use((res, url) => {
+			t.truthy(res);
 			t.is(res.statusCode, 200);
 			t.is(url, 'http://foo.com/test-file.zip');
 		})
-		.run(function (err, files) {
+		.run((err, files) => {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].path, 'test-file.zip');
 			t.is(files[0].url, 'http://foo.com/test-file.zip');
+			t.end();
 		});
 });
 
-test('do not flush data to plugin', function (t) {
+test.cb('do not flush data to plugin', t => {
 	t.plan(3);
 
-	var scope = nock('http://foo.com')
+	const scope = nock('http://foo.com')
 		.get('/test-file.zip')
 		.replyWithFile(200, fixture('test-file.zip'));
 
 	new Download()
 		.get('http://foo.com/test-file.zip')
-		.use(function (res) {
-			res.on('data', function () {});
-		})
+		.use(res => res.on('data', () => {}))
 		.run(function (err, files) {
 			t.ifError(err);
-			t.ok(scope.isDone());
+			t.true(scope.isDone());
 			t.is(files[0].contents.length, 166);
+			t.end();
 		});
 });
