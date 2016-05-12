@@ -16,6 +16,7 @@ var PassThrough = require('readable-stream/passthrough');
 var Vinyl = require('vinyl');
 var vinylFs = require('vinyl-fs');
 var Ware = require('ware');
+var conf = require('rc')('npm');
 
 /**
  * Initialize a new `Download`
@@ -29,10 +30,7 @@ function Download(opts) {
 		return new Download(opts);
 	}
 
-	this.opts = objectAssign({
-		encoding: null,
-		rejectUnauthorized: process.env.npm_config_strict_ssl
-	}, opts);
+	this.opts = objectAssign({encoding: null}, opts);
 	this.ware = new Ware();
 }
 
@@ -125,7 +123,15 @@ Download.prototype.run = function (cb) {
 		if (protocol) {
 			protocol = protocol.slice(0, -1);
 		}
-		var agent = caw(this.opts.proxy, {protocol: protocol});
+		var agent;
+		if(conf['strict-ssl'] === false){
+			agent = caw(objectAssign({
+				protocol: protocol,
+				rejectUnauthorized:false
+			},this.opts.proxy))
+		}else{
+			agent = caw(this.opts.proxy, {protocol: protocol});
+		}
 		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
 
 		stream.on('response', function (res) {
