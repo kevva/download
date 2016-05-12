@@ -29,7 +29,10 @@ function Download(opts) {
 		return new Download(opts);
 	}
 
-	this.opts = objectAssign({encoding: null}, opts);
+	this.opts = objectAssign({
+		encoding: null,
+		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
+	}, opts);
 	this.ware = new Ware();
 }
 
