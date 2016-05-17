@@ -110,7 +110,8 @@ Download.prototype.use = function (plugin) {
 
 Download.prototype.run = function (cb) {
 	cb = cb || function () {};
-	var files = [];
+	var
+		filesInfo = [];
 
 	eachAsync(this.get(), function (get, i, done) {
 		if (!isUrl(get.url)) {
@@ -124,44 +125,63 @@ Download.prototype.run = function (cb) {
 		}
 		var agent = caw(this.opts.proxy, {protocol: protocol});
 		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
+		var result = {};
 
 		stream.on('response', function (res) {
-			stream.headers = res.headers;
-			stream.statusCode = res.statusCode;
-			this.ware.run(stream, get.url);
-		}.bind(this));
-
-		var hasHttpError = false;
+			result.headers = res.headers;
+			result.statusCode = res.statusCode;
+		});
 
 		readAllStream(stream, null, function (err, data) {
-			if (hasHttpError) {
-				return;
-			}
-
 			if (err) {
-				if (err instanceof got.HTTPError) {
-					hasHttpError = true;
-				}
-
 				done(err);
 				return;
 			}
 
-			var dest = get.dest || this.dest();
-			var fileStream = this.createStream(this.createFile(get.url, data), dest);
-
-			fileStream.on('error', done);
-			fileStream.pipe(concatStream({encoding: 'object'}, function (items) {
-				files = files.concat(items);
+			result.data = data;
+			this.ware.run(result, get.url, function (err) {
+				if (err) {
+					done(err);
+					return;
+				}
+				filesInfo.push({
+					dest: get.dest || this.dest(),
+					url: get.url,
+					data: data
+				});
 				done();
-			}));
+			}.bind(this));
 		}.bind(this));
 	}.bind(this), function (err) {
 		if (err) {
-			cb(err);
+			cb(err, []);
 			return;
 		}
+		this.saveFiles(filesInfo, cb);
+	}.bind(this));
+};
 
+/**
+ * Save files to disk
+ *
+ * @param {filesInfo} {url, data, dest}
+ * @api private
+ */
+Download.prototype.saveFiles = function (filesInfo, cb) {
+	var files = [];
+	eachAsync(filesInfo, function (fileInfo, i, done) {
+		var fileStream = this.createStream(this.createFile(fileInfo.url, fileInfo.data), fileInfo.dest);
+
+		fileStream.on('error', done);
+		fileStream.pipe(concatStream({encoding: 'object'}, function (items) {
+			Array.prototype.push.apply(files, items);
+			done();
+		}));
+	}.bind(this), function (err) {
+		if (err) {
+			cb(err, files);
+			return;
+		}
 		cb(null, files);
 	});
 };
@@ -177,7 +197,7 @@ Download.prototype.run = function (cb) {
 Download.prototype.createFile = function (url, data) {
 	return objectAssign(new Vinyl({
 		contents: data,
-		path: filenamify(path.basename(url))
+		path: filenamify(path.basename(decodeURIComponent(url)))
 	}), {url: url});
 };
 
