@@ -197,7 +197,7 @@ Download.prototype.saveFiles = function (filesInfo, cb) {
 Download.prototype.createFile = function (url, data) {
 	return objectAssign(new Vinyl({
 		contents: data,
-		path: filenamify(path.basename(url))
+		path: filenamify(path.basename(decodeURIComponent(url)))
 	}), {url: url});
 };
 
