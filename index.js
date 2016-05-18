@@ -27,19 +27,8 @@ const createPromise = (uri, output, stream, opts) => new Promise((resolve, rejec
 	}
 
 	if (opts.extract) {
-		return new Promise((resolve, reject) => {
-			new Decompress(opts)
-				.src(data)
-				.dest(path.dirname(output))
-				.run(err => {
-					if (err) {
-						reject(err);
-						return;
-					}
-
-					resolve(data);
-				});
-		});
+		const decompress = new Decompress(opts).src(data).dest(path.dirname(output));
+		return pify(decompress.run.bind(decompress))().then(() => data);
 	}
 
 	return pify(mkdirp)(path.dirname(output))
