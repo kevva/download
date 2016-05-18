@@ -15,11 +15,18 @@ $ npm install --save download
 ## Usage
 
 ```js
+const fs = require('fs');
 const download = require('download');
 
 download('http://unicorn.com/foo.jpg', 'dist').then(() => {
 	console.log('done!');
 });
+
+download('http://unicorn.com/foo.jpg').then(data => {
+	fs.writeFileSync('dist/foo.jpg', data);
+});
+
+download('http://unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
 ```
 
 
