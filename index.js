@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const caw = require('caw');
-const Decompress = require('decompress');
+const decompress = require('decompress');
 const filenamify = require('filenamify');
 const getStream = require('get-stream');
 const got = require('got');
@@ -19,13 +19,16 @@ const createPromise = (uri, output, stream, opts) => new Promise((resolve, rejec
 
 	stream.on('error', reject);
 }).then(data => {
+	if (!output && opts.extract) {
+		return decompress(data, opts);
+	}
+
 	if (!output) {
 		return data;
 	}
 
 	if (opts.extract) {
-		const decompress = new Decompress(opts).src(data).dest(path.dirname(output));
-		return pify(decompress.run.bind(decompress))().then(() => data);
+		return decompress(data, path.dirname(output), opts);
 	}
 
 	return pify(mkdirp)(path.dirname(output))
