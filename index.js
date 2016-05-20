@@ -14,10 +14,7 @@ const fsP = pify(fs);
 const createPromise = (uri, output, stream, opts) => new Promise((resolve, reject) => {
 	stream.on('response', res => {
 		const stream = opts.encoding === null ? getStream.buffer(res) : getStream(res, opts);
-
-		stream
-			.then(data => resolve(data))
-			.catch(err => reject(err));
+		stream.then(resolve).catch(reject);
 	});
 
 	stream.on('error', reject);

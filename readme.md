@@ -26,7 +26,11 @@ download('http://unicorn.com/foo.jpg').then(data => {
 	fs.writeFileSync('dist/foo.jpg', data);
 });
 
-download('http://unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
+download('unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
+
+Promise.all(['unicorn.com/foo.jpg', 'cats.com/dancing.gif'].map(x => download(x, 'dist'))).then(() => {
+	console.log('files downloaded!');
+});
 ```
 
 
@@ -34,7 +38,7 @@ download('http://unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg')
 
 ### download(url, [destination], [options])
 
-Returns both a Promise for a buffer and a Duplex stream with [additional events](https://github.com/sindresorhus/got#streams).
+Returns both a Promise for a Buffer and a [Duplex stream](https://nodejs.org/api/stream.html#stream_class_stream_duplex) with [additional events](https://github.com/sindresorhus/got#streams).
 
 #### url
 
