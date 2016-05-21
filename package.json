@@ -26,7 +26,7 @@
     "url"
   ],
   "dependencies": {
-    "caw": "^1.2.0",
+    "caw": "^2.0.0",
     "decompress": "^4.0.0",
     "filenamify": "^1.2.1",
     "get-stream": "^2.2.0",
