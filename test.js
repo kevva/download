@@ -5,6 +5,7 @@ import isZip from 'is-zip';
 import nock from 'nock';
 import pathExists from 'path-exists';
 import pify from 'pify';
+import randomBuffer from 'random-buffer';
 import test from 'ava';
 import m from './';
 
@@ -28,6 +29,14 @@ test('download as stream', async t => {
 
 test('download as promise', async t => {
 	t.true(isZip(await m('http://foo.bar/foo.zip')));
+});
+
+test('download a very large file', async t => {
+	nock('http://foo.bar')
+		.get('/large.bin')
+		.reply(200, randomBuffer(7928260));
+
+	t.is((await getStream.buffer(m('http://foo.bar/large.bin'))).length, 7928260);
 });
 
 test('save file', async t => {
