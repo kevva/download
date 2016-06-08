@@ -11,14 +11,17 @@ import m from './';
 
 const fsP = pify(fs);
 
-test.beforeEach(() => {
+test.before(() => {
 	nock('http://foo.bar')
+		.persist()
 		.get('/404')
 		.reply(404)
 		.get('/foo.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
 		.get('/foo?bar.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
+		.get('/large.bin')
+		.reply(200, randomBuffer(7928260))
 		.get('/redirect.zip')
 		.reply(302, null, {location: 'http://foo.bar/foo.zip'});
 });
@@ -32,10 +35,6 @@ test('download as promise', async t => {
 });
 
 test('download a very large file', async t => {
-	nock('http://foo.bar')
-		.get('/large.bin')
-		.reply(200, randomBuffer(7928260));
-
 	t.is((await getStream.buffer(m('http://foo.bar/large.bin'))).length, 7928260);
 });
 
