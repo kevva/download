@@ -5,13 +5,14 @@ import isZip from 'is-zip';
 import nock from 'nock';
 import pathExists from 'path-exists';
 import pify from 'pify';
-import test from 'ava';
+import randomBuffer from 'random-buffer';
+import {serial as test} from 'ava';
 import m from './';
 
 const fsP = pify(fs);
 
-test.beforeEach(() => {
-	nock('http://foo.bar')
+test.beforeEach(t => {
+	t.context = nock('http://foo.bar')
 		.get('/404')
 		.reply(404)
 		.get('/foo.zip')
@@ -28,6 +29,15 @@ test('download as stream', async t => {
 
 test('download as promise', async t => {
 	t.true(isZip(await m('http://foo.bar/foo.zip')));
+});
+
+test('download a very large file', async t => {
+	// The randomBuffer creation is slow, so only create this mock for this particular test.
+	t.context
+		.get('/large.bin')
+		.reply(200, randomBuffer(7928260));
+
+	t.is((await getStream.buffer(m('http://foo.bar/large.bin'))).length, 7928260);
 });
 
 test('save file', async t => {
