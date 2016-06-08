@@ -30,6 +30,10 @@ test('download as promise', async t => {
 	t.true(isZip(await m('http://foo.bar/foo.zip')));
 });
 
+test('download big file', async t => {
+	t.true(isZip(await m('https://nodejs.org/dist/v4.4.5/node-v4.4.5-linux-x86.tar.xz')));
+});
+
 test('save file', async t => {
 	await m('http://foo.bar/foo.zip', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'foo.zip')));

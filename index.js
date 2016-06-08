@@ -12,13 +12,11 @@ const pify = require('pify');
 const fsP = pify(fs);
 
 const createPromise = (uri, output, stream, opts) => new Promise((resolve, reject) => {
-	stream.on('response', res => {
-		const stream = opts.encoding === null ? getStream.buffer(res) : getStream(res, opts);
-		stream.then(resolve).catch(reject);
-	});
-
 	stream.on('error', reject);
+	return opts.encoding === null ? getStream.buffer(stream) : getStream(stream, opts);
 }).then(data => {
+	console.log(`Got the data ${data.length}`);
+
 	if (!output && opts.extract) {
 		return decompress(data, opts);
 	}
