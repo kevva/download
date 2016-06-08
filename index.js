@@ -11,23 +11,27 @@ const mkdirp = require('mkdirp');
 const pify = require('pify');
 const fsP = pify(fs);
 
-const createPromise = (uri, output, stream, opts) => (opts.encoding === null ? getStream.buffer(stream) : getStream(stream, opts)).then(data => {
-	if (!output && opts.extract) {
-		return decompress(data, opts);
-	}
+const createPromise = (uri, output, stream, opts) => {
+	const response = opts.encoding === null ? getStream.buffer(stream) : getStream(stream, opts);
 
-	if (!output) {
-		return data;
-	}
+	return response.then(data => {
+		if (!output && opts.extract) {
+			return decompress(data, opts);
+		}
 
-	if (opts.extract) {
-		return decompress(data, path.dirname(output), opts);
-	}
+		if (!output) {
+			return data;
+		}
 
-	return pify(mkdirp)(path.dirname(output))
-		.then(() => fsP.writeFile(output, data))
-		.then(() => data);
-});
+		if (opts.extract) {
+			return decompress(data, path.dirname(output), opts);
+		}
+
+		return pify(mkdirp)(path.dirname(output))
+			.then(() => fsP.writeFile(output, data))
+			.then(() => data);
+	});
+};
 
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
