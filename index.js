@@ -52,7 +52,7 @@ module.exports = (uri, output, opts) => {
 
 	const agent = caw(opts.proxy, {protocol});
 	const stream = got.stream(uri, Object.assign(opts, {agent}));
-	const dest = output ? path.join(output, filenamify(path.basename(uri))) : null;
+	const dest = output ? path.join(output, filenamify(opts.rename || path.basename(uri))) : null;
 	const promise = createPromise(uri, dest, stream, opts);
 
 	stream.then = promise.then.bind(promise);
