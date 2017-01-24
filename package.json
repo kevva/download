@@ -28,8 +28,8 @@
   "dependencies": {
     "caw": "^2.0.0",
     "decompress": "^4.0.0",
-    "filenamify": "^1.2.1",
-    "get-stream": "^2.2.0",
+    "filenamify": "^2.0.0",
+    "get-stream": "^3.0.0",
     "got": "^6.3.0",
     "mkdirp": "^0.5.1",
     "pify": "^2.3.0"
@@ -37,7 +37,7 @@
   "devDependencies": {
     "ava": "*",
     "is-zip": "^1.0.0",
-    "nock": "^8.0.0",
+    "nock": "^9.0.2",
     "path-exists": "^3.0.0",
     "random-buffer": "^0.1.0",
     "rimraf": "^2.2.8",
