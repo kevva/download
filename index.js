@@ -40,7 +40,6 @@ module.exports = (uri, output, opts) => {
 	}
 
 	opts = Object.assign({
-		encoding: null,
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
 	}, opts);
 
