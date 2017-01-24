@@ -9,6 +9,7 @@ const getStream = require('get-stream');
 const got = require('got');
 const mkdirp = require('mkdirp');
 const pify = require('pify');
+
 const fsP = pify(fs);
 
 const createPromise = (uri, output, stream, opts) => {
