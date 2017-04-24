@@ -27,6 +27,7 @@
   ],
   "dependencies": {
     "caw": "^2.0.0",
+    "content-disposition": "^0.5.2",
     "decompress": "^4.0.0",
     "filenamify": "^2.0.0",
     "get-stream": "^3.0.0",
