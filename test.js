@@ -71,13 +71,13 @@ test('follow redirects', async t => {
 	t.true(isZip(await m('http://foo.bar/redirect.zip')));
 });
 
-test('hanle query string', async t => {
+test('handle query string', async t => {
 	await m('http://foo.bar/querystring.zip?param=value', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'querystring.zip')));
 	await fsP.unlink(path.join(__dirname, 'querystring.zip'));
 });
 
-test('hanle content dispositon', async t => {
+test('handle content dispositon', async t => {
 	await m('http://foo.bar/dispo', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'dispo.zip')));
 	await fsP.unlink(path.join(__dirname, 'dispo.zip'));
