@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import cd from 'content-disposition';
 import getStream from 'get-stream';
 import isZip from 'is-zip';
 import nock from 'nock';
@@ -18,7 +19,13 @@ test.before(() => {
 		.reply(404)
 		.get('/foo.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
-		.get('/foo?bar.zip')
+		.get('/querystring.zip').query({param: 'value'})
+		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
+		.get('/dispo')
+		.replyWithFile(200, path.join(__dirname, 'fixture.zip'), {
+			'Content-Disposition': cd('dispo.zip')
+		})
+		.get('/foo*bar.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
 		.get('/large.bin')
 		.reply(200, randomBuffer(7928260))
@@ -51,15 +58,27 @@ test('extract file', async t => {
 });
 
 test('error on 404', async t => {
-	t.throws(m('http://foo.bar/404'), 'Response code 404 (Not Found)');
+	await t.throws(m('http://foo.bar/404'), 'Response code 404 (Not Found)');
 });
 
 test('rename to valid filename', async t => {
-	await m('http://foo.bar/foo?bar.zip', __dirname);
+	await m('http://foo.bar/foo*bar.zip', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'foo!bar.zip')));
 	await fsP.unlink(path.join(__dirname, 'foo!bar.zip'));
 });
 
 test('follow redirects', async t => {
 	t.true(isZip(await m('http://foo.bar/redirect.zip')));
+});
+
+test('handle query string', async t => {
+	await m('http://foo.bar/querystring.zip?param=value', __dirname);
+	t.true(await pathExists(path.join(__dirname, 'querystring.zip')));
+	await fsP.unlink(path.join(__dirname, 'querystring.zip'));
+});
+
+test('handle content dispositon', async t => {
+	await m('http://foo.bar/dispo', __dirname);
+	t.true(await pathExists(path.join(__dirname, 'dispo.zip')));
+	await fsP.unlink(path.join(__dirname, 'dispo.zip'));
 });
