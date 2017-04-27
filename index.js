@@ -3,15 +3,20 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const caw = require('caw');
-const cd = require('content-disposition');
+const contentDisposition = require('content-disposition');
 const decompress = require('decompress');
 const filenamify = require('filenamify');
 const getStream = require('get-stream');
 const got = require('got');
 const mkdirp = require('mkdirp');
 const pify = require('pify');
+const pEvent = require('p-event');
 
 const fsP = pify(fs);
+
+function filenameFromPath(res) {
+	return path.basename(url.parse(res.requestUrl).pathname);
+}
 
 function getFilename(res) {
 	const header = res.headers['content-disposition'];
@@ -19,16 +24,12 @@ function getFilename(res) {
 		return filenameFromPath(res);
 	}
 
-	const parsed = cd.parse(res.headers['content-disposition']);
+	const parsed = contentDisposition.parse(res.headers['content-disposition']);
 	if (parsed.type === 'attachment' && parsed.parameters && parsed.parameters.filename) {
 		return parsed.parameters.filename;
 	}
 
 	return filenameFromPath(res);
-}
-
-function filenameFromPath(res) {
-	return path.basename(url.parse(res.requestUrl).pathname);
 }
 
 module.exports = (uri, output, opts) => {
@@ -50,31 +51,32 @@ module.exports = (uri, output, opts) => {
 
 	const agent = caw(opts.proxy, {protocol});
 	const stream = got.stream(uri, Object.assign(opts, {agent}));
-	const promise = new Promise((resolve, reject) => {
-		stream.on('error', reject);
-		stream.on('response', res => {
-			const getData = opts.encoding === null ? getStream.buffer(stream) : getStream(stream, opts);
 
-			getData.then(data => {
-				if (!output && opts.extract) {
-					return resolve(decompress(data, opts));
-				}
+	const promise = pEvent(stream, 'response').then(res => {
+		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
+		return Promise.all([getStream(stream, {encoding}), res]);
+	}).then(result => {
+		// TODO: Use destructuring when targeting Node.js 6
+		const data = result[0];
+		const res = result[1];
 
-				if (!output) {
-					return resolve(data);
-				}
+		if (!output && opts.extract) {
+			return decompress(data, opts);
+		}
 
-				output = path.join(output, filenamify(getFilename(res)));
+		if (!output) {
+			return data;
+		}
 
-				if (opts.extract) {
-					return resolve(decompress(data, path.dirname(output), opts));
-				}
+		const outputFilepath = path.join(output, filenamify(getFilename(res)));
 
-				return pify(mkdirp)(path.dirname(output))
-					.then(() => fsP.writeFile(output, data))
-					.then(() => resolve(data));
-			});
-		});
+		if (opts.extract) {
+			return decompress(data, path.dirname(outputFilepath), opts);
+		}
+
+		return pify(mkdirp)(path.dirname(outputFilepath))
+			.then(() => fsP.writeFile(outputFilepath, data))
+			.then(() => data);
 	});
 
 	stream.then = promise.then.bind(promise);

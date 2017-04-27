@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import cd from 'content-disposition';
+import contentDisposition from 'content-disposition';
 import getStream from 'get-stream';
 import isZip from 'is-zip';
 import nock from 'nock';
@@ -8,7 +8,7 @@ import pathExists from 'path-exists';
 import pify from 'pify';
 import randomBuffer from 'random-buffer';
 import test from 'ava';
-import m from './';
+import m from '.';
 
 const fsP = pify(fs);
 
@@ -23,7 +23,7 @@ test.before(() => {
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
 		.get('/dispo')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'), {
-			'Content-Disposition': cd('dispo.zip')
+			'Content-Disposition': contentDisposition('dispo.zip')
 		})
 		.get('/foo*bar.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))

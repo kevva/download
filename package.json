@@ -33,6 +33,7 @@
     "get-stream": "^3.0.0",
     "got": "^6.3.0",
     "mkdirp": "^0.5.1",
+    "p-event": "^1.0.0",
     "pify": "^2.3.0"
   },
   "devDependencies": {
