@@ -28,7 +28,10 @@ download('http://unicorn.com/foo.jpg').then(data => {
 
 download('unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
 
-Promise.all(['unicorn.com/foo.jpg', 'cats.com/dancing.gif'].map(x => download(x, 'dist'))).then(() => {
+Promise.all([
+	'unicorn.com/foo.jpg',
+	'cats.com/dancing.gif'
+].map(x => download(x, 'dist'))).then(() => {
 	console.log('files downloaded!');
 });
 ```
@@ -38,7 +41,7 @@ Promise.all(['unicorn.com/foo.jpg', 'cats.com/dancing.gif'].map(x => download(x,
 
 ### download(url, [destination], [options])
 
-Returns both a Promise for a Buffer and a [Duplex stream](https://nodejs.org/api/stream.html#stream_class_stream_duplex) with [additional events](https://github.com/sindresorhus/got#streams).
+Returns both a `Promise<Buffer>` and a [Duplex stream](https://nodejs.org/api/stream.html#stream_class_stream_duplex) with [additional events](https://github.com/sindresorhus/got#streams).
 
 #### url
 
@@ -54,16 +57,16 @@ Path to where your file will be written.
 
 #### options
 
-Same options as [got](https://github.com/sindresorhus/got) in addition to the ones below.
+Same options as [`got`](https://github.com/sindresorhus/got) in addition to the ones below.
 
 ##### extract
 
 Type: `boolean`<br>
 Default: `false`
 
-If set to `true`, try extracting the file using [decompress](https://github.com/kevva/decompress/).
+If set to `true`, try extracting the file using [`decompress`](https://github.com/kevva/decompress).
 
 
 ## License
 
-MIT © [Kevin Mårtensson](http://github.com/kevva)
+MIT © [Kevin Mårtensson](https://github.com/kevva)

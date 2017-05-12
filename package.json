@@ -32,7 +32,7 @@
     "filenamify": "^2.0.0",
     "get-stream": "^3.0.0",
     "got": "^6.3.0",
-    "mkdirp": "^0.5.1",
+    "make-dir": "^1.0.0",
     "p-event": "^1.0.0",
     "pify": "^2.3.0"
   },
@@ -44,8 +44,5 @@
     "random-buffer": "^0.1.0",
     "rimraf": "^2.2.8",
     "xo": "*"
-  },
-  "xo": {
-    "esnext": true
   }
 }

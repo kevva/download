@@ -8,7 +8,7 @@ const decompress = require('decompress');
 const filenamify = require('filenamify');
 const getStream = require('get-stream');
 const got = require('got');
-const mkdirp = require('mkdirp');
+const makeDir = require('make-dir');
 const pify = require('pify');
 const pEvent = require('p-event');
 
@@ -74,7 +74,7 @@ module.exports = (uri, output, opts) => {
 			return decompress(data, path.dirname(outputFilepath), opts);
 		}
 
-		return pify(mkdirp)(path.dirname(outputFilepath))
+		return makeDir(path.dirname(outputFilepath))
 			.then(() => fsP.writeFile(outputFilepath, data))
 			.then(() => data);
 	});
