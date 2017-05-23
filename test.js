@@ -45,6 +45,12 @@ test('download a very large file', async t => {
 	t.is((await getStream.buffer(m('http://foo.bar/large.bin'))).length, 7928260);
 });
 
+test('download and rename file', async t => {
+	await m('http://foo.bar/foo.zip', __dirname, {filename: 'bar.zip'});
+	t.true(await pathExists(path.join(__dirname, 'bar.zip')));
+	await fsP.unlink(path.join(__dirname, 'bar.zip'));
+});
+
 test('save file', async t => {
 	await m('http://foo.bar/foo.zip', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'foo.zip')));
