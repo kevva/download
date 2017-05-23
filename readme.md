@@ -66,6 +66,12 @@ Default: `false`
 
 If set to `true`, try extracting the file using [`decompress`](https://github.com/kevva/decompress).
 
+##### filename
+
+Type: `string`
+
+Name of the saved file.
+
 
 ## License
 
