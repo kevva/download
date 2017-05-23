@@ -68,7 +68,8 @@ module.exports = (uri, output, opts) => {
 			return data;
 		}
 
-		const outputFilepath = path.join(output, filenamify(getFilename(res)));
+		const filename = opts.filename || filenamify(getFilename(res));
+		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract) {
 			return decompress(data, path.dirname(outputFilepath), opts);
