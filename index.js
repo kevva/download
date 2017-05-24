@@ -25,7 +25,7 @@ function getFilename(res) {
 	}
 
 	const parsed = contentDisposition.parse(res.headers['content-disposition']);
-	if (parsed.type === 'attachment' && parsed.parameters && parsed.parameters.filename) {
+	if (parsed.parameters && parsed.parameters.filename) {
 		return parsed.parameters.filename;
 	}
 
