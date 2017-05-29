@@ -20,13 +20,12 @@ function filenameFromPath(res) {
 
 function getFilename(res) {
 	const header = res.headers['content-disposition'];
-	if (!header) {
-		return filenameFromPath(res);
-	}
 
-	const parsed = contentDisposition.parse(header);
-	if (parsed.parameters && parsed.parameters.filename) {
-		return parsed.parameters.filename;
+	if (header) {
+	  const parsed = contentDisposition.parse(header);
+		if (parsed.parameters && parsed.parameters.filename) {
+			return parsed.parameters.filename;
+		}
 	}
 
 	return filenameFromPath(res);
