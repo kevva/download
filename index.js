@@ -24,7 +24,7 @@ function getFilename(res) {
 		return filenameFromPath(res);
 	}
 
-	const parsed = contentDisposition.parse(res.headers['content-disposition']);
+	const parsed = contentDisposition.parse(header);
 	if (parsed.parameters && parsed.parameters.filename) {
 		return parsed.parameters.filename;
 	}
