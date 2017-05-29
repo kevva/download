@@ -20,13 +20,12 @@ function filenameFromPath(res) {
 
 function getFilename(res) {
 	const header = res.headers['content-disposition'];
-	if (!header) {
-		return filenameFromPath(res);
-	}
 
-	const parsed = contentDisposition.parse(res.headers['content-disposition']);
-	if (parsed.parameters && parsed.parameters.filename) {
-		return parsed.parameters.filename;
+	if (header) {
+		const parsed = contentDisposition.parse(header);
+		if (parsed.parameters && parsed.parameters.filename) {
+			return parsed.parameters.filename;
+		}
 	}
 
 	return filenameFromPath(res);
@@ -60,11 +59,10 @@ module.exports = (uri, output, opts) => {
 		const data = result[0];
 		const res = result[1];
 
-		if (!output && opts.extract) {
-			return decompress(data, opts);
-		}
-
 		if (!output) {
+			if (opts.extract) {
+				return decompress(data, opts);
+			}
 			return data;
 		}
 
