@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
+const parse = require('url').parse;
 const caw = require('caw');
 const contentDisposition = require('content-disposition');
 const decompress = require('decompress');
@@ -15,14 +15,14 @@ const pEvent = require('p-event');
 const fsP = pify(fs);
 
 function filenameFromPath(res) {
-	return path.basename(url.parse(res.requestUrl).pathname);
+	return path.basename(parse(res.requestUrl).pathname);
 }
 
 function getFilename(res) {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
-	  const parsed = contentDisposition.parse(header);
+		const parsed = contentDisposition.parse(header);
 		if (parsed.parameters && parsed.parameters.filename) {
 			return parsed.parameters.filename;
 		}
@@ -42,7 +42,7 @@ module.exports = (uri, output, opts) => {
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
 	}, opts);
 
-	let protocol = url.parse(uri).protocol;
+	let protocol = parse(uri).protocol;
 
 	if (protocol) {
 		protocol = protocol.slice(0, -1);
