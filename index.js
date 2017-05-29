@@ -59,11 +59,10 @@ module.exports = (uri, output, opts) => {
 		const data = result[0];
 		const res = result[1];
 
-		if (!output && opts.extract) {
-			return decompress(data, opts);
-		}
-
 		if (!output) {
+			if (opts.extract) {
+				return decompress(data, opts);
+			}
 			return data;
 		}
 
