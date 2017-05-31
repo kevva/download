@@ -13,23 +13,21 @@ const pify = require('pify');
 const pEvent = require('p-event');
 
 const fsP = pify(fs);
+const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
 
-function filenameFromPath(res) {
-	return path.basename(url.parse(res.requestUrl).pathname);
-}
-
-function getFilename(res) {
+const getFilename = res => {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
 		const parsed = contentDisposition.parse(header);
+
 		if (parsed.parameters && parsed.parameters.filename) {
 			return parsed.parameters.filename;
 		}
 	}
 
 	return filenameFromPath(res);
-}
+};
 
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
@@ -60,10 +58,7 @@ module.exports = (uri, output, opts) => {
 		const res = result[1];
 
 		if (!output) {
-			if (opts.extract) {
-				return decompress(data, opts);
-			}
-			return data;
+			return opts.extract ? decompress(data, opts) : data;
 		}
 
 		const filename = opts.filename || filenamify(getFilename(res));
