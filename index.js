@@ -35,19 +35,19 @@ module.exports = (uri, output, opts) => {
 		output = null;
 	}
 
-	opts = Object.assign({
-		encoding: null,
-		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
-	}, opts);
-
 	let protocol = url.parse(uri).protocol;
 
 	if (protocol) {
 		protocol = protocol.slice(0, -1);
 	}
 
+	opts = Object.assign({
+		encoding: null,
+		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
+	}, opts);
+
 	const agent = caw(opts.proxy, {protocol});
-	const stream = got.stream(uri, Object.assign(opts, {agent}));
+	const stream = got.stream(uri, Object.assign({agent}, opts));
 
 	const promise = pEvent(stream, 'response').then(res => {
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
