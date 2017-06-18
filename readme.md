@@ -72,6 +72,12 @@ Type: `string`
 
 Name of the saved file.
 
+##### proxy
+
+Type: `string`
+
+Proxy endpoint.
+
 
 ## License
 
