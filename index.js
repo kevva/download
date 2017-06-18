@@ -46,8 +46,9 @@ module.exports = (uri, output, opts) => {
 		protocol = protocol.slice(0, -1);
 	}
 
-	const agent = caw(opts.proxy, {protocol});
-	const stream = got.stream(uri, Object.assign(opts, {agent}));
+	const agent = caw(opts.proxy, {protocol});		
+	opts = Object.assign({agent}, opts);
+	const stream = got.stream(uri, opts);
 
 	const promise = pEvent(stream, 'response').then(res => {
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
