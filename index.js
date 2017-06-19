@@ -11,6 +11,7 @@ const got = require('got');
 const makeDir = require('make-dir');
 const pify = require('pify');
 const pEvent = require('p-event');
+const fileType = require('file-type');
 
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
@@ -61,7 +62,14 @@ module.exports = (uri, output, opts) => {
 			return opts.extract ? decompress(data, opts) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res));
+		let filename = opts.filename || filenamify(getFilename(res));
+    		// add file extension if there is none
+   		const fileExt = path.extname(filename);
+    		if (fileExt === '') {
+     			const newExt = fileType(data).ext;
+      			filename += `.${newExt}`;
+   		}
+
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract) {

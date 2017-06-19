@@ -34,7 +34,8 @@
     "got": "^7.0.0",
     "make-dir": "^1.0.0",
     "p-event": "^1.0.0",
-    "pify": "^3.0.0"
+    "pify": "^3.0.0",
+    "file-type": "5.2.0"
   },
   "devDependencies": {
     "ava": "*",
