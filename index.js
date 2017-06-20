@@ -63,12 +63,12 @@ module.exports = (uri, output, opts) => {
 		}
 
 		let filename = opts.filename || filenamify(getFilename(res));
-    		// add file extension if there is none
-   		const fileExt = path.extname(filename);
-    		if (fileExt === '') {
-     			const newExt = fileType(data).ext;
-      			filename += `.${newExt}`;
-   		}
+		// Add file extension if there is none
+		const fileExt = path.extname(filename);
+		if (fileExt === '') {
+			const newExt = fileType(data).ext;
+			filename += `.${newExt}`;
+		}
 
 		const outputFilepath = path.join(output, filename);
 
