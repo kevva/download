@@ -12,9 +12,26 @@ const makeDir = require('make-dir');
 const pify = require('pify');
 const pEvent = require('p-event');
 const fileType = require('file-type');
+const extName = require('ext-name');
 
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
+
+const getExtFromMime = res => {
+	const header = res.headers['content-type'];
+
+	if (!header) {
+		return null;
+	}
+
+	const exts = extName.mime(header);
+
+	if (exts.length !== 1) {
+		return null;
+	}
+
+	return exts[0].ext;
+};
 
 const getFilename = (res, data) => {
 	const header = res.headers['content-disposition'];
@@ -30,10 +47,10 @@ const getFilename = (res, data) => {
 	let filename = filenameFromPath(res);
 
 	if (!path.extname(filename)) {
-		const type = fileType(data);
+		const ext = (fileType(data) || {}).ext || getExtFromMime(res);
 
-		if (type) {
-			filename = `${filename}.${type.ext}`;
+		if (ext) {
+			filename = `${filename}.${ext}`;
 		}
 	}
 
