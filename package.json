@@ -29,13 +29,13 @@
     "caw": "^2.0.0",
     "content-disposition": "^0.5.2",
     "decompress": "^4.0.0",
+		"file-type": "5.2.0",
     "filenamify": "^2.0.0",
     "get-stream": "^3.0.0",
     "got": "^7.0.0",
     "make-dir": "^1.0.0",
     "p-event": "^1.0.0",
-    "pify": "^3.0.0",
-    "file-type": "5.2.0"
+    "pify": "^3.0.0"
   },
   "devDependencies": {
     "ava": "*",
