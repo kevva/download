@@ -30,7 +30,9 @@ test.before(() => {
 		.get('/large.bin')
 		.reply(200, randomBuffer(7928260))
 		.get('/redirect.zip')
-		.reply(302, null, {location: 'http://foo.bar/foo.zip'});
+		.reply(302, null, {location: 'http://foo.bar/foo.zip'})
+		.get('/filetype')
+		.replyWithFile(200, path.join(__dirname, 'fixture.zip'));
 });
 
 test('download as stream', async t => {
@@ -87,4 +89,10 @@ test('handle content dispositon', async t => {
 	await m('http://foo.bar/dispo', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'dispo.zip')));
 	await fsP.unlink(path.join(__dirname, 'dispo.zip'));
+});
+
+test('handle filename from file type', async t => {
+	await m('http://foo.bar/filetype', __dirname);
+	t.true(await pathExists(path.join(__dirname, 'filetype.zip')));
+	await fsP.unlink(path.join(__dirname, 'filetype.zip'));
 });
