@@ -27,7 +27,17 @@ const getFilename = res => {
 		}
 	}
 
-	return filenameFromPath(res);
+	let filename = filenameFromPath(res);
+
+	if (!path.extname(filename)) {
+		const type = fileType(data);
+
+		if (type) {
+			filename = `${filename}.${type.ext}`;
+		}
+	}
+
+	return filename;
 };
 
 module.exports = (uri, output, opts) => {
@@ -62,14 +72,7 @@ module.exports = (uri, output, opts) => {
 			return opts.extract ? decompress(data, opts) : data;
 		}
 
-		let filename = opts.filename || filenamify(getFilename(res));
-		// Add file extension if there is none
-		const fileExt = path.extname(filename);
-		if (fileExt === '') {
-			const newExt = fileType(data).ext;
-			filename += `.${newExt}`;
-		}
-
+		const filename = opts.filename || filenamify(getFilename(res, data));
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract) {
