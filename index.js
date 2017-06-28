@@ -11,11 +11,12 @@ const got = require('got');
 const makeDir = require('make-dir');
 const pify = require('pify');
 const pEvent = require('p-event');
+const fileType = require('file-type');
 
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
 
-const getFilename = res => {
+const getFilename = (res, data) => {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
@@ -26,7 +27,17 @@ const getFilename = res => {
 		}
 	}
 
-	return filenameFromPath(res);
+	let filename = filenameFromPath(res);
+
+	if (!path.extname(filename)) {
+		const type = fileType(data);
+
+		if (type) {
+			filename = `${filename}.${type.ext}`;
+		}
+	}
+
+	return filename;
 };
 
 module.exports = (uri, output, opts) => {
@@ -61,7 +72,7 @@ module.exports = (uri, output, opts) => {
 			return opts.extract ? decompress(data, opts) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res));
+		const filename = opts.filename || filenamify(getFilename(res, data));
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract) {
