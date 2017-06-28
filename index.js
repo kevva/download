@@ -16,7 +16,7 @@ const fileType = require('file-type');
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
 
-const getFilename = res => {
+const getFilename = (res, data) => {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
