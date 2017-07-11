@@ -57,7 +57,7 @@ Path to where your file will be written.
 
 #### options
 
-Same options as [`got`](https://github.com/sindresorhus/got) in addition to the ones below.
+Same options as [`got`](https://github.com/sindresorhus/got#options) and [`decompress`](https://github.com/kevva/decompress#options) in addition to the ones below.
 
 ##### extract
 
