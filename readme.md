@@ -78,6 +78,13 @@ Type: `string`
 
 Proxy endpoint.
 
+##### strip
+
+Type: `number`<br>
+Default: 0
+
+Remove leading directory components from extracted files.
+
 
 ## License
 
