@@ -8,7 +8,7 @@
 ## Install
 
 ```
-$ npm install --save download
+$ npm install download
 ```
 
 
@@ -56,6 +56,8 @@ Type: `string`
 Path to where your file will be written.
 
 #### options
+
+Type: `Object`
 
 Same options as [`got`](https://github.com/sindresorhus/got#options) and [`decompress`](https://github.com/kevva/decompress#options) in addition to the ones below.
 
