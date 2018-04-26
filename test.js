@@ -31,7 +31,14 @@ test.before(() => {
 		.reply(200, randomBuffer(7928260))
 		.get('/redirect.zip')
 		.reply(302, null, {location: 'http://foo.bar/foo.zip'})
+		.get('/redirect-https.zip')
+		.reply(301, null, {location: 'https://foo.bar/foo-https.zip'})
 		.get('/filetype')
+		.replyWithFile(200, path.join(__dirname, 'fixture.zip'));
+
+	nock('https://foo.bar')
+		.persist()
+		.get('/foo-https.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'));
 });
 
@@ -77,6 +84,10 @@ test('rename to valid filename', async t => {
 
 test('follow redirects', async t => {
 	t.true(isZip(await m('http://foo.bar/redirect.zip')));
+});
+
+test('follow redirect to https', async t => {
+	t.true(isZip(await m('http://foo.bar/redirect-https.zip')));
 });
 
 test('handle query string', async t => {

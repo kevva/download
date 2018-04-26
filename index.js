@@ -57,17 +57,23 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
+const getProtocolFromUri = uri => {
+	let protocol = url.parse(uri).protocol;
+
+	if (protocol) {
+		protocol = protocol.slice(0, -1);
+	}
+
+	return protocol;
+};
+
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
 		output = null;
 	}
 
-	let protocol = url.parse(uri).protocol;
-
-	if (protocol) {
-		protocol = protocol.slice(0, -1);
-	}
+	const protocol = getProtocolFromUri(uri);
 
 	opts = Object.assign({
 		encoding: null,
@@ -75,7 +81,13 @@ module.exports = (uri, output, opts) => {
 	}, opts);
 
 	const agent = caw(opts.proxy, {protocol});
-	const stream = got.stream(uri, Object.assign({agent}, opts));
+	const stream = got.stream(uri, Object.assign({agent}, opts))
+		.on('redirect', (response, nextOptions) => {
+			const redirectProtocol = getProtocolFromUri(nextOptions.href);
+			if (redirectProtocol && redirectProtocol !== protocol) {
+				nextOptions.agent = caw(opts.proxy, {protocol: redirectProtocol});
+			}
+		});
 
 	const promise = pEvent(stream, 'response').then(res => {
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
