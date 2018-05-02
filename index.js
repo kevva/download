@@ -58,7 +58,7 @@ const getFilename = (res, data) => {
 };
 
 const getProtocolFromUri = uri => {
-	let protocol = url.parse(uri).protocol;
+	let {protocol} = url.parse(uri);
 
 	if (protocol) {
 		protocol = protocol.slice(0, -1);
@@ -93,9 +93,7 @@ module.exports = (uri, output, opts) => {
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
 		return Promise.all([getStream(stream, {encoding}), res]);
 	}).then(result => {
-		// TODO: Use destructuring when targeting Node.js 6
-		const data = result[0];
-		const res = result[1];
+		const [data, res] = result;
 
 		if (!output) {
 			return opts.extract ? decompress(data, opts) : data;
