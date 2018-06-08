@@ -4,6 +4,7 @@ const path = require('path');
 const url = require('url');
 const caw = require('caw');
 const contentDisposition = require('content-disposition');
+const archiveType = require('archive-type');
 const decompress = require('decompress');
 const filenamify = require('filenamify');
 const getStream = require('get-stream');
@@ -96,13 +97,13 @@ module.exports = (uri, output, opts) => {
 		const [data, res] = result;
 
 		if (!output) {
-			return opts.extract ? decompress(data, opts) : data;
+			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
 		}
 
 		const filename = opts.filename || filenamify(getFilename(res, data));
 		const outputFilepath = path.join(output, filename);
 
-		if (opts.extract) {
+		if (opts.extract && archiveType(data)) {
 			return decompress(data, path.dirname(outputFilepath), opts);
 		}
 

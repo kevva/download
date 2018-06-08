@@ -26,6 +26,7 @@
     "url"
   ],
   "dependencies": {
+    "archive-type": "^4.0.0",
     "caw": "^2.0.1",
     "content-disposition": "^0.5.2",
     "decompress": "^4.2.0",

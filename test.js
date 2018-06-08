@@ -19,6 +19,8 @@ test.before(() => {
 		.reply(404)
 		.get('/foo.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
+		.get('/foo.js')
+		.replyWithFile(200, __filename)
 		.get('/querystring.zip').query({param: 'value'})
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
 		.get('/dispo')
@@ -70,6 +72,12 @@ test('extract file', async t => {
 	await m('http://foo.bar/foo.zip', __dirname, {extract: true});
 	t.true(await pathExists(path.join(__dirname, 'file.txt')));
 	await fsP.unlink(path.join(__dirname, 'file.txt'));
+});
+
+test('extract file that is not compressed', async t => {
+	await m('http://foo.bar/foo.js', __dirname, {extract: true});
+	t.true(await pathExists(path.join(__dirname, 'foo.js')));
+	await fsP.unlink(path.join(__dirname, 'foo.js'));
 });
 
 test('error on 404', async t => {
