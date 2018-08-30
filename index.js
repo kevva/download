@@ -36,26 +36,28 @@ const getExtFromMime = res => {
 
 const getFilename = (res, data) => {
 	const header = res.headers['content-disposition'];
+	let filename;
 
 	if (header) {
 		const parsed = contentDisposition.parse(header);
 
 		if (parsed.parameters && parsed.parameters.filename) {
-			return parsed.parameters.filename;
+			filename = parsed.parameters.filename;
 		}
 	}
 
-	let filename = filenameFromPath(res);
-
-	if (!path.extname(filename)) {
-		const ext = (fileType(data) || {}).ext || getExtFromMime(res);
-
-		if (ext) {
-			filename = `${filename}.${ext}`;
-		}
+	if (!filename) {
+		filename = filenameFromPath(res);
 	}
 
-	return filename;
+	const parsed = path.parse(filename);
+	let ext = parsed.ext;
+
+	if (!ext || ext === '.') {
+		ext = (fileType(data) || {}).ext || getExtFromMime(res);
+	}
+
+	return filenamify(decodeURIComponent(parsed.name), { replacement: ' ' }) + ext;
 };
 
 const getProtocolFromUri = uri => {
@@ -100,7 +102,7 @@ module.exports = (uri, output, opts) => {
 			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res, data));
+		const filename = opts.filename || getFilename(res, data);
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract && archiveType(data)) {
