@@ -50,14 +50,14 @@ const getFilename = (res, data) => {
 		filename = filenameFromPath(res);
 	}
 
-	const parsed = path.parse(filename);
-	let ext = parsed.ext;
+	const filenameParse = path.parse(filename);
+	let {ext} = filenameParse;
 
 	if (!ext || ext === '.') {
-		ext = (fileType(data) || {}).ext || getExtFromMime(res);
+		ext = '.' + ((fileType(data) || {}).ext || getExtFromMime(res));
 	}
 
-	return filenamify(decodeURIComponent(parsed.name), { replacement: ' ' }) + ext;
+	return filenamify(decodeURIComponent(filenameParse.name)) + ext;
 };
 
 const getProtocolFromUri = uri => {
