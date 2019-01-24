@@ -82,7 +82,7 @@ module.exports = (uri, output, opts) => {
 	}, opts);
 
 	const agent = caw(opts.proxy, {protocol});
-	const stream = got.stream(uri, Object.assign({agent}, opts))
+	const stream = got.stream(url.parse(uri), Object.assign({agent}, opts))
 		.on('redirect', (response, nextOptions) => {
 			const redirectProtocol = getProtocolFromUri(nextOptions.href);
 			if (redirectProtocol && redirectProtocol !== protocol) {
