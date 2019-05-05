@@ -37,7 +37,7 @@
 		"got": "^8.3.1",
 		"make-dir": "^1.2.0",
 		"p-event": "^2.1.0",
-		"pify": "^3.0.0"
+		"fs-extra": "^7.0.1"
 	},
 	"devDependencies": {
 		"ava": "*",
