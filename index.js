@@ -2,7 +2,6 @@
 const fs = require('fs');
 const path = require('path');
 const {URL} = require('url');
-const caw = require('caw');
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
 const decompress = require('decompress');
@@ -58,37 +57,18 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
-const getProtocolFromUri = uri => {
-	let {protocol} = new URL(uri);
-
-	if (protocol) {
-		protocol = protocol.slice(0, -1);
-	}
-
-	return protocol;
-};
-
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
 		output = null;
 	}
 
-	const protocol = getProtocolFromUri(uri);
-
 	opts = Object.assign({
 		encoding: null,
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
 	}, opts);
 
-	const agent = caw(opts.proxy, {protocol});
-	const stream = got.stream(uri, Object.assign({agent}, opts))
-		.on('redirect', (response, nextOptions) => {
-			const redirectProtocol = getProtocolFromUri(nextOptions.href);
-			if (redirectProtocol && redirectProtocol !== protocol) {
-				nextOptions.agent = caw(opts.proxy, {protocol: redirectProtocol});
-			}
-		});
+	const stream = got.stream(uri, opts);
 
 	const promise = pEvent(stream, 'response').then(res => {
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;

@@ -32,6 +32,10 @@ const download = require('download');
 })();
 ```
 
+### Proxies
+
+To work with proxies, read the [`got documentation`](https://github.com/sindresorhus/got#proxies).
+
 
 ## API
 
@@ -69,9 +73,3 @@ If set to `true`, try extracting the file using [`decompress`](https://github.co
 Type: `string`
 
 Name of the saved file.
-
-##### proxy
-
-Type: `string`
-
-Proxy endpoint.
