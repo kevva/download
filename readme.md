@@ -18,28 +18,24 @@ $ npm install download
 const fs = require('fs');
 const download = require('download');
 
-download('http://unicorn.com/foo.jpg', 'dist').then(() => {
-	console.log('done!');
-});
+(async () => {
+	await download('http://unicorn.com/foo.jpg', 'dist');
 
-download('http://unicorn.com/foo.jpg').then(data => {
-	fs.writeFileSync('dist/foo.jpg', data);
-});
+	fs.writeFileSync('dist/foo.jpg', await download('http://unicorn.com/foo.jpg'));
 
-download('unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
+	download('unicorn.com/foo.jpg').pipe(fs.createWriteStream('dist/foo.jpg'));
 
-Promise.all([
-	'unicorn.com/foo.jpg',
-	'cats.com/dancing.gif'
-].map(x => download(x, 'dist'))).then(() => {
-	console.log('files downloaded!');
-});
+	await Promise.all([
+		'unicorn.com/foo.jpg',
+		'cats.com/dancing.gif'
+	].map(url => download(url, 'dist')));
+})();
 ```
 
 
 ## API
 
-### download(url, [destination], [options])
+### download(url, destination?, options?)
 
 Returns both a `Promise<Buffer>` and a [Duplex stream](https://nodejs.org/api/stream.html#stream_class_stream_duplex) with [additional events](https://github.com/sindresorhus/got#streams-1).
 
@@ -79,8 +75,3 @@ Name of the saved file.
 Type: `string`
 
 Proxy endpoint.
-
-
-## License
-
-MIT © [Kevin Mårtensson](https://github.com/kevva)

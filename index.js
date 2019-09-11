@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
+const {URL} = require('url');
 const caw = require('caw');
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
@@ -16,7 +16,7 @@ const fileType = require('file-type');
 const extName = require('ext-name');
 
 const fsP = pify(fs);
-const filenameFromPath = res => path.basename(url.parse(res.requestUrl).pathname);
+const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
 const getExtFromMime = res => {
 	const header = res.headers['content-type'];
@@ -59,7 +59,7 @@ const getFilename = (res, data) => {
 };
 
 const getProtocolFromUri = uri => {
-	let {protocol} = url.parse(uri);
+	let {protocol} = new URL(uri);
 
 	if (protocol) {
 		protocol = protocol.slice(0, -1);
