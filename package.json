@@ -35,8 +35,7 @@
 		"get-stream": "^4.1.0",
 		"got": "^8.3.1",
 		"make-dir": "^2.1.0",
-		"p-event": "^2.1.0",
-		"pify": "^4.0.1"
+		"p-event": "^2.1.0"
 	},
 	"devDependencies": {
 		"ava": "^1.4.1",
@@ -46,5 +45,10 @@
 		"random-buffer": "^0.1.0",
 		"rimraf": "^3.0.0",
 		"xo": "^0.24.0"
+	},
+	"xo": {
+		"rules": {
+			"promise/prefer-await-to-then": "none"
+		}
 	}
 }
