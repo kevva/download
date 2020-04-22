@@ -57,6 +57,17 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
+const getReName = (res, data, rename) => {
+	var filename = filenamify(getFilename(res, data));
+
+	if (rename && rename.indexOf('.') == -1 && filename.indexOf('.')>-1) {
+		const start = filename.lastIndexOf('.');
+		rename += filename.substr(start,filename.length-start);
+	}
+
+	return rename || filename;
+}
+
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
@@ -80,7 +91,7 @@ module.exports = (uri, output, opts) => {
 			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res, data));
+		const filename = getReName(res, data, opts.filename);
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract && archiveType(data)) {
