@@ -36,6 +36,23 @@ const download = require('download');
 
 To work with proxies, read the [`got documentation`](https://github.com/sindresorhus/got#proxies).
 
+### Rewriting
+
+This feature allows downloading from mirrors, by supporting URL rewriting.
+
+Create a `.downloadrc` in you home directory or somewhere else that can be searched by [cosmiconfig](https://github.com/davidtheclark/cosmiconfig), with prefix replacing rules. For instance, rewriting the URLs to download image processing binary files:
+
+```json
+{
+  "rewrite": {
+    "https://raw.githubusercontent.com/imagemin/cwebp-bin/": "https://npm.taobao.org/mirrors/cwebp-bin/",
+    "https://raw.githubusercontent.com/imagemin/mozjpeg-bin/": "https://npm.taobao.org/mirrors/mozjpeg-bin/",
+    "https://raw.githubusercontent.com/imagemin/pngquant-bin/": "https://npm.taobao.org/mirrors/pngquant-bin/"
+  }
+}
+```
+
+Only prefixes will be matched for now.
 
 ## API
 

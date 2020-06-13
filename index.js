@@ -13,6 +13,7 @@ const pify = require('pify');
 const pEvent = require('p-event');
 const fileType = require('file-type');
 const extName = require('ext-name');
+const {cosmiconfigSync} = require('cosmiconfig');
 
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
@@ -57,6 +58,8 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
+const { config } = cosmiconfigSync('download').search() || {};
+
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
@@ -68,6 +71,16 @@ module.exports = (uri, output, opts) => {
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
 	}, opts);
 
+	if (config && config.rewrite) {
+		for (const [match, replace] of Object.entries(config.rewrite)) {
+			if (typeof match === 'string') {
+				if (uri.startsWith(match)) {
+					uri = replace + uri.slice(match.length);
+					break;
+				}
+			}
+		}
+	}
 	const stream = got.stream(uri, opts);
 
 	const promise = pEvent(stream, 'response').then(res => {
