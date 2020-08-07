@@ -64,7 +64,7 @@ module.exports = (uri, output, opts) => {
 	}
 
 	const strictSSL = process.env.npm_config_strict_ssl;
-	this.opts = objectAssign({
+	this.opts = Object.assign({
 		encoding: null,
 		rejectUnauthorized: strictSSL ? (strictSSL !== 'false') : (!!strictSSL)
 	}, opts);
