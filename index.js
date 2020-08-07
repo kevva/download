@@ -1,21 +1,21 @@
 'use strict';
-var path = require('path');
-var url = require('url');
-var caw = require('caw');
-var concatStream = require('concat-stream');
-var decompress = require('gulp-decompress');
-var eachAsync = require('each-async');
-var filenamify = require('filenamify');
-var got = require('got');
-var isUrl = require('is-url');
-var objectAssign = require('object-assign');
-var readAllStream = require('read-all-stream');
-var rename = require('gulp-rename');
-var streamCombiner = require('stream-combiner2');
-var PassThrough = require('readable-stream/passthrough');
-var Vinyl = require('vinyl');
-var vinylFs = require('vinyl-fs');
-var Ware = require('ware');
+const path = require('path');
+const url = require('url');
+const caw = require('caw');
+const concatStream = require('concat-stream');
+const decompress = require('gulp-decompress');
+const eachAsync = require('each-async');
+const filenamify = require('filenamify');
+const got = require('got');
+const isUrl = require('is-url');
+const objectAssign = require('object-assign');
+const readAllStream = require('read-all-stream');
+const rename = require('gulp-rename');
+const streamCombiner = require('stream-combiner2');
+const PassThrough = require('readable-stream/passthrough');
+const Vinyl = require('vinyl');
+const vinylFs = require('vinyl-fs');
+const Ware = require('ware');
 
 /**
  * Initialize a new `Download`
@@ -113,7 +113,7 @@ Download.prototype.use = function (plugin) {
 
 Download.prototype.run = function (cb) {
 	cb = cb || function () {};
-	var files = [];
+	let files = [];
 
 	eachAsync(this.get(), function (get, i, done) {
 		if (!isUrl(get.url)) {
@@ -121,12 +121,12 @@ Download.prototype.run = function (cb) {
 			return;
 		}
 
-		var protocol = url.parse(get.url).protocol;
+		let protocol = url.parse(get.url).protocol;
 		if (protocol) {
 			protocol = protocol.slice(0, -1);
 		}
-		var agent = caw(this.opts.proxy, {protocol: protocol});
-		var stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
+		let agent = caw(this.opts.proxy, {protocol: protocol});
+		let stream = got.stream(get.url, objectAssign(this.opts, {agent: agent}));
 
 		stream.on('response', function (res) {
 			stream.headers = res.headers;
@@ -134,7 +134,7 @@ Download.prototype.run = function (cb) {
 			this.ware.run(stream, get.url);
 		}.bind(this));
 
-		var hasHttpError = false;
+		let hasHttpError = false;
 
 		readAllStream(stream, null, function (err, data) {
 			if (hasHttpError) {
@@ -150,8 +150,8 @@ Download.prototype.run = function (cb) {
 				return;
 			}
 
-			var dest = get.dest || this.dest();
-			var fileStream = this.createStream(this.createFile(get.url, data), dest);
+			let dest = get.dest || this.dest();
+			let fileStream = this.createStream(this.createFile(get.url, data), dest);
 
 			fileStream.on('error', done);
 			fileStream.pipe(concatStream({encoding: 'object'}, function (items) {
@@ -193,8 +193,8 @@ Download.prototype.createFile = function (url, data) {
  */
 
 Download.prototype.createStream = function (file, dest) {
-	var stream = new PassThrough({objectMode: true});
-	var streams = [stream];
+	let stream = new PassThrough({objectMode: true});
+	let streams = [stream];
 
 	stream.end(file);
 
