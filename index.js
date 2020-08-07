@@ -28,10 +28,10 @@ function Download(opts) {
 	if (!(this instanceof Download)) {
 		return new Download(opts);
 	}
-
+	const strictSSL = process.env.npm_config_strict_ssl;
 	this.opts = objectAssign({
 		encoding: null,
-		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
+		rejectUnauthorized: strictSSL ? (strictSSL !== 'false') : (!!strictSSL)
 	}, opts);
 	this.ware = new Ware();
 }
