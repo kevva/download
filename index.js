@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const {URL} = require('url');
+const url = require('url');
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
 const decompress = require('decompress');
@@ -14,6 +14,7 @@ const pEvent = require('p-event');
 const fileType = require('file-type');
 const extName = require('ext-name');
 
+const { URL } = url;
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
@@ -63,11 +64,12 @@ module.exports = (uri, output, opts) => {
 		output = null;
 	}
 
-	const strictSSL = process.env.npm_config_strict_ssl;
-	this.opts = Object.assign({
+	const strictSSL = Boolean(process.env.npm_config_strict_ssl === 'false' ? '' : process.env.npm_config_strict_ssl);
+	this.opts = {
 		encoding: null,
-		rejectUnauthorized: strictSSL ? (strictSSL !== 'false') : (!!strictSSL)
-	}, opts);
+		rejectUnauthorized: strictSSL,
+		...opts
+	};
 
 	const stream = got.stream(uri, opts);
 
