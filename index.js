@@ -14,7 +14,7 @@ const pEvent = require('p-event');
 const fileType = require('file-type');
 const extName = require('ext-name');
 
-const { URL } = url;
+const URL = url.URL;
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
