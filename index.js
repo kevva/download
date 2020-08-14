@@ -73,9 +73,9 @@ module.exports = async (uri, output, opts) => {
 		...opts
 	};
 
-	try {
-		const stream = got.stream(uri, opts);
+	const stream = got.stream(uri, opts);
 
+	try {
 		const streamResponse = await pEvent(stream, 'response');
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
 
@@ -96,8 +96,10 @@ module.exports = async (uri, output, opts) => {
 		await makeDir(path.dirname(outputFilepath));
 		const streamData = await fsP.writeFile(outputFilepath, data);
 
-		return streamData;
+		stream.then = Promise.resolve(streamData)
 	} catch (error) {
-		return Promise.reject(error);
+		stream.catch = Promise.reject(error);
 	}
+
+	return stream;
 };
