@@ -93,7 +93,7 @@ module.exports = async (uri, output, opts) => {
 		const streamData = await fsP.writeFile(outputFilepath, data);
 
 		return streamData;
-	} catch(e) {
-		return Promise.reject(null)
+	} catch (error) {
+		return Promise.reject(error);
 	}
 };
