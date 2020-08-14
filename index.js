@@ -62,6 +62,10 @@ module.exports = async (uri, output, opts) => {
 		output = null;
 	}
 
+	if (!opts) {
+		opts = {};
+	}
+
 	const strictSSL = Boolean(process.env.npm_config_strict_ssl === 'false' ? '' : process.env.npm_config_strict_ssl);
 	this.opts = {
 		encoding: null,
