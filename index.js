@@ -69,27 +69,31 @@ module.exports = async (uri, output, opts) => {
 		...opts
 	};
 
-	const stream = got.stream(uri, opts);
+	try {
+		const stream = got.stream(uri, opts);
 
-	const streamResponse = await pEvent(stream, 'response');
-	const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
+		const streamResponse = await pEvent(stream, 'response');
+		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
 
-	const result = await Promise.all([getStream(stream, {encoding}), streamResponse]);
-	const [data, res] = result;
+		const result = await Promise.all([getStream(stream, {encoding}), streamResponse]);
+		const [data, res] = result;
 
-	if (!output) {
-		return opts.extract && archiveType(data) ? decompress(data, opts) : data;
+		if (!output) {
+			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
+		}
+
+		const filename = opts.filename || filenamify(getFilename(res, data));
+		const outputFilepath = path.join(output, filename);
+
+		if (opts.extract && archiveType(data)) {
+			return decompress(data, path.dirname(outputFilepath), opts);
+		}
+
+		await makeDir(path.dirname(outputFilepath));
+		const streamData = await fsP.writeFile(outputFilepath, data);
+
+		return streamData;
+	} catch(e) {
+		return Promise.reject(null)
 	}
-
-	const filename = opts.filename || filenamify(getFilename(res, data));
-	const outputFilepath = path.join(output, filename);
-
-	if (opts.extract && archiveType(data)) {
-		return decompress(data, path.dirname(outputFilepath), opts);
-	}
-
-	await makeDir(path.dirname(outputFilepath));
-	const streamData = await fsP.writeFile(outputFilepath, data);
-
-	return streamData;
 };
