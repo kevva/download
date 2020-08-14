@@ -56,7 +56,7 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
-module.exports = async function (uri, output, opts) {
+module.exports = async (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
 		output = null;
