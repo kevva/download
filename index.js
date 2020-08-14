@@ -1,7 +1,6 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const {URL} = require('url');
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
 const decompress = require('decompress');
@@ -18,80 +17,79 @@ const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
 const getExtFromMime = res => {
-    const header = res.headers['content-type'];
+	const header = res.headers['content-type'];
 
-    if (!header) {
-        return null;
-    }
+	if (!header) {
+		return null;
+	}
 
-    const exts = extName.mime(header);
+	const exts = extName.mime(header);
 
-    if (exts.length !== 1) {
-        return null;
-    }
+	if (exts.length !== 1) {
+		return null;
+	}
 
-    return exts[0].ext;
+	return exts[0].ext;
 };
 
 const getFilename = (res, data) => {
-    const header = res.headers['content-disposition'];
+	const header = res.headers['content-disposition'];
 
-    if (header) {
-        const parsed = contentDisposition.parse(header);
+	if (header) {
+		const parsed = contentDisposition.parse(header);
 
-        if (parsed.parameters && parsed.parameters.filename) {
-            return parsed.parameters.filename;
-        }
-    }
+		if (parsed.parameters && parsed.parameters.filename) {
+			return parsed.parameters.filename;
+		}
+	}
 
-    let filename = filenameFromPath(res);
+	let filename = filenameFromPath(res);
 
-    if (!path.extname(filename)) {
-        const ext = (fileType(data) || {}).ext || getExtFromMime(res);
+	if (!path.extname(filename)) {
+		const ext = (fileType(data) || {}).ext || getExtFromMime(res);
 
-        if (ext) {
-            filename = `${filename}.${ext}`;
-        }
-    }
+		if (ext) {
+			filename = `${filename}.${ext}`;
+		}
+	}
 
-    return filename;
+	return filename;
 };
 
-module.exports = async function(uri, output, opts) {
-    if (typeof output === 'object') {
-        opts = output;
-        output = null;
-    }
+module.exports = async function (uri, output, opts) {
+	if (typeof output === 'object') {
+		opts = output;
+		output = null;
+	}
 
-    const strictSSL = Boolean(process.env.npm_config_strict_ssl === 'false' ? '' : process.env.npm_config_strict_ssl);
-    this.opts = {
-        encoding: null,
-        rejectUnauthorized: strictSSL,
-        ...opts
-    };
+	const strictSSL = Boolean(process.env.npm_config_strict_ssl === 'false' ? '' : process.env.npm_config_strict_ssl);
+	this.opts = {
+		encoding: null,
+		rejectUnauthorized: strictSSL,
+		...opts
+	};
 
-    const stream = got.stream(uri, opts);
-    let streamData = null;
+	const stream = got.stream(uri, opts);
 
-    const streamResponse = await pEvent(stream, 'response');
-    const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
+	const streamResponse = await pEvent(stream, 'response');
+	const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
 
-    const result = await Promise.all([getStream(stream, {encoding}), streamResponse]);
-    const [data, res] = result;
+	const result = await Promise.all([getStream(stream, {encoding}), streamResponse]);
+	const [data, res] = result;
 
-    if (!output) {
-        streamData = opts.extract && archiveType(data) ? decompress(data, opts) : data;
-    } else {
-        const filename = opts.filename || filenamify(getFilename(res, data));
-        const outputFilepath = path.join(output, filename);
+	if (!output) {
+		return opts.extract && archiveType(data) ? decompress(data, opts) : data;
+	}
 
-        if (opts.extract && archiveType(data)) {
-            streamData = decompress(data, path.dirname(outputFilepath), opts);
-        } else {
-            await makeDir(path.dirname(outputFilepath));
-            streamData = await fsP.writeFile(outputFilepath, data);
-        }
-    }
+	const filename = opts.filename || filenamify(getFilename(res, data));
+	const outputFilepath = path.join(output, filename);
 
-    return streamData;
+	if (opts.extract && archiveType(data)) {
+		return decompress(data, path.dirname(outputFilepath), opts);
+	}
+
+	await makeDir(path.dirname(outputFilepath));
+	const streamData = await fsP.writeFile(outputFilepath, data);
+
+	return streamData;
 };
