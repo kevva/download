@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const {URL} = require('url');
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
 const decompress = require('decompress');
@@ -56,14 +57,10 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
-module.exports = async (uri, output, opts) => {
+module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
 		output = null;
-	}
-
-	if (!opts) {
-		opts = {};
 	}
 
 	const strictSSL = Boolean(process.env.npm_config_strict_ssl === 'false' ? '' : process.env.npm_config_strict_ssl);
@@ -75,11 +72,10 @@ module.exports = async (uri, output, opts) => {
 
 	const stream = got.stream(uri, opts);
 
-	try {
-		const streamResponse = await pEvent(stream, 'response');
+	const promise = pEvent(stream, 'response').then(res => {
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
-
-		const result = await Promise.all([getStream(stream, {encoding}), streamResponse]);
+		return Promise.all([getStream(stream, {encoding}), res]);
+	}).then(result => {
 		const [data, res] = result;
 
 		if (!output) {
@@ -93,13 +89,13 @@ module.exports = async (uri, output, opts) => {
 			return decompress(data, path.dirname(outputFilepath), opts);
 		}
 
-		await makeDir(path.dirname(outputFilepath));
-		const streamData = await fsP.writeFile(outputFilepath, data);
+		return makeDir(path.dirname(outputFilepath))
+			.then(() => fsP.writeFile(outputFilepath, data))
+			.then(() => data);
+	});
 
-		stream.then = Promise.resolve(streamData)
-	} catch (error) {
-		stream.catch = Promise.reject(error);
-	}
+	stream.then = promise.then.bind(promise);
+	stream.catch = promise.catch.bind(promise);
 
 	return stream;
 };
