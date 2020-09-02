@@ -57,6 +57,28 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
+const writeWithoutOverwriting = (output, filename, data) => {
+	try {
+		if (fs.existsSync(path.join(output, filename))) {
+			let { name, ext } = path.parse(filename)
+			let i = 0;
+			let newFilename = name + "(" + i + ")" + ext
+			
+			while(fs.existsSync(path.join(output, newFilename))){
+				newFilename = name + "(" + ++i + ")" + ext
+			}
+			
+			return fsP.writeFile(path.join(output, newFilename), data)	
+		} else {
+			return fsP.writeFile(path.join(output, filename), data)
+		}
+	} catch(err) {
+		//console.error(err)
+		// correct ?
+		return Promise.reject(err)
+	}
+}
+
 module.exports = (uri, output, opts) => {
 	if (typeof output === 'object') {
 		opts = output;
@@ -88,7 +110,7 @@ module.exports = (uri, output, opts) => {
 		}
 
 		return makeDir(path.dirname(outputFilepath))
-			.then(() => fsP.writeFile(outputFilepath, data))
+			.then(() => writeWithoutOverwriting(output, filename, data))
 			.then(() => data);
 	});
 

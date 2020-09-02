@@ -1,13 +1,13 @@
 {
-	"name": "download",
-	"version": "8.0.0",
-	"description": "Download and extract files",
+	"name": "download-wo",
+	"version": "1.0.0",
+	"description": "Download and extract files without overwriting them",
 	"license": "MIT",
-	"repository": "kevva/download",
+	"repository": "ASGdev/download-wo",
 	"author": {
-		"email": "kevinmartensson@gmail.com",
-		"name": "Kevin Mårtensson",
-		"url": "github.com/kevva"
+		"email": "aurelien.surier@gmail.com",
+		"name": "Aurelien Surier",
+		"url": "github.com/ASGdev"
 	},
 	"engines": {
 		"node": ">=10"
