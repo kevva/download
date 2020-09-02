@@ -7,7 +7,7 @@
 ## Install
 
 ```
-$ npm install ??
+$ npm install getfile-wo
 ```
 
 
