@@ -1,5 +1,5 @@
 {
-	"name": "download-wo",
+	"name": "getfile-wo",
 	"version": "1.0.0",
 	"description": "Download and extract files without overwriting them",
 	"license": "MIT",
