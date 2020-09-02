@@ -1,14 +1,13 @@
-# download [![Build Status](https://travis-ci.org/kevva/download.svg?branch=master)](https://travis-ci.org/kevva/download)
+# download-wo (download without overwriting)
 
-> Download and extract files
+> Download and extract files without overwriting by renaming them. Forked from [https://github.com/kevva/download](https://github.com/kevva/download).
 
-*See [download-cli](https://github.com/kevva/download-cli) for the command-line version.*
-
+> :warning: **Not extensively tested !!**
 
 ## Install
 
 ```
-$ npm install download
+$ npm install ??
 ```
 
 
