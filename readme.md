@@ -15,7 +15,7 @@ $ npm install getfile-wo
 
 ```js
 const fs = require('fs');
-const download = require('download');
+const download = require('getfile-wo');
 
 (async () => {
 	await download('http://unicorn.com/foo.jpg', 'dist');
@@ -72,3 +72,10 @@ If set to `true`, try extracting the file using [`decompress`](https://github.co
 Type: `string`
 
 Name of the saved file.
+
+##### decode
+
+Type: `boolean`<br>
+Default: `true`
+
+Enable URI decoding for more readable file name (e.g replaces "%20" with space).
