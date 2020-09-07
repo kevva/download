@@ -33,7 +33,7 @@ const getExtFromMime = res => {
 	return exts[0].ext;
 };
 
-const getFilename = (res, data) => {
+const getFilename = (res, data, decode) => {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
@@ -45,6 +45,14 @@ const getFilename = (res, data) => {
 	}
 
 	let filename = filenameFromPath(res);
+	
+	if(decode){
+		try {
+			filename = decodeURIComponent(filename);
+		} catch(e){
+			console.error(e);
+		}
+	}
 
 	if (!path.extname(filename)) {
 		const ext = (fileType(data) || {}).ext || getExtFromMime(res);
@@ -58,7 +66,7 @@ const getFilename = (res, data) => {
 };
 
 const writeWithoutOverwriting = (output, filename, data) => {
-	try {
+	try {		
 		if (fs.existsSync(path.join(output, filename))) {
 			let { name, ext } = path.parse(filename)
 			let i = 0;
@@ -87,7 +95,8 @@ module.exports = (uri, output, opts) => {
 
 	opts = Object.assign({
 		encoding: null,
-		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
+		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false',
+		decode: true
 	}, opts);
 
 	const stream = got.stream(uri, opts);
@@ -102,7 +111,7 @@ module.exports = (uri, output, opts) => {
 			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res, data));
+		const filename = opts.filename || filenamify(getFilename(res, data, opts.decode));
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract && archiveType(data)) {
