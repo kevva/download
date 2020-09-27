@@ -1,5 +1,5 @@
 'use strict';
-const fs = require('fs');
+const {promises: fs} = require('fs');
 const path = require('path');
 const {URL} = require('url');
 const contentDisposition = require('content-disposition');
@@ -8,13 +8,10 @@ const decompress = require('decompress');
 const filenamify = require('filenamify');
 const getStream = require('get-stream');
 const got = require('got');
-const makeDir = require('make-dir');
-const pify = require('pify');
 const pEvent = require('p-event');
 const fileType = require('file-type');
 const extName = require('ext-name');
 
-const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
 const getExtFromMime = res => {
@@ -87,8 +84,8 @@ module.exports = (uri, output, opts) => {
 			return decompress(data, path.dirname(outputFilepath), opts);
 		}
 
-		return makeDir(path.dirname(outputFilepath))
-			.then(() => fsP.writeFile(outputFilepath, data))
+		return fs.mkdir(path.dirname(outputFilepath), {recursive: true})
+			.then(() => fs.writeFile(outputFilepath, data))
 			.then(() => data);
 	});
 
