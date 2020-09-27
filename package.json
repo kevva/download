@@ -34,7 +34,7 @@
 		"filenamify": "^3.0.0",
 		"get-stream": "^4.1.0",
 		"got": "^8.3.1",
-		"p-event": "^2.1.0",
+		"p-event": "^2.1.0"
 	},
 	"devDependencies": {
 		"ava": "^1.4.1",
