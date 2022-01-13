@@ -1,20 +1,16 @@
-'use strict';
-const fs = require('fs');
-const path = require('path');
-const {URL} = require('url');
-const contentDisposition = require('content-disposition');
-const archiveType = require('archive-type');
-const decompress = require('decompress');
-const filenamify = require('filenamify');
-const getStream = require('get-stream');
-const got = require('got');
-const makeDir = require('make-dir');
-const pify = require('pify');
-const pEvent = require('p-event');
-const fileType = require('file-type');
-const extName = require('ext-name');
+import {promises as fs} from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import contentDisposition from 'content-disposition';
+import archiveType from 'archive-type';
+import decompress from 'decompress';
+import filenamify from 'filenamify';
+import getStream from 'get-stream';
+import got from 'got';
+import {pEvent} from 'p-event';
+import fileType from 'file-type';
+import extName from 'ext-name';
 
-const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
 const getExtFromMime = res => {
@@ -57,43 +53,48 @@ const getFilename = (res, data) => {
 	return filename;
 };
 
-module.exports = (uri, output, opts) => {
+const download = (uri, output, options) => {
 	if (typeof output === 'object') {
-		opts = output;
+		options = output;
 		output = null;
 	}
 
-	opts = Object.assign({
-		encoding: null,
-		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
-	}, opts);
+	options = {
+		responseType: 'buffer',
+		https: {
+			rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false',
+		},
+		...options,
+	};
 
-	const stream = got.stream(uri, opts);
+	const stream = got.stream(uri, options);
 
 	const promise = pEvent(stream, 'response').then(res => {
-		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
+		const encoding = options.responseType === 'buffer' ? 'buffer' : options.encoding;
 		return Promise.all([getStream(stream, {encoding}), res]);
 	}).then(result => {
 		const [data, res] = result;
 
 		if (!output) {
-			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
+			return options.extract && archiveType(data) ? decompress(data, options) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res, data));
+		const filename = options.filename || filenamify(getFilename(res, data));
 		const outputFilepath = path.join(output, filename);
 
-		if (opts.extract && archiveType(data)) {
-			return decompress(data, path.dirname(outputFilepath), opts);
+		if (options.extract && archiveType(data)) {
+			return decompress(data, path.dirname(outputFilepath), options);
 		}
 
-		return makeDir(path.dirname(outputFilepath))
-			.then(() => fsP.writeFile(outputFilepath, data))
+		return fs.mkdir(path.dirname(outputFilepath), {recursive: true})
+			.then(() => fs.writeFile(outputFilepath, data))
 			.then(() => data);
 	});
 
-	stream.then = promise.then.bind(promise);
+	stream.then = promise.then.bind(promise); // eslint-disable-line unicorn/no-thenable
 	stream.catch = promise.catch.bind(promise);
 
 	return stream;
 };
+
+export default download;

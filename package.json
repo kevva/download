@@ -10,10 +10,18 @@
 		"url": "github.com/kevva"
 	},
 	"engines": {
-		"node": ">=10"
+		"node": "^12.20.0 || ^14.14.0 || >=16.0.0"
 	},
 	"scripts": {
-		"test": "xo && ava"
+		"ava": "ava",
+		"xo": "xo",
+		"test": "npm run xo && npm run ava",
+		"test-ci": "npm run xo && c8 ava"
+	},
+	"main": "index.js",
+	"type": "module",
+	"exports": {
+		".": "./index.js"
 	},
 	"files": [
 		"index.js"
@@ -25,26 +33,35 @@
 		"request",
 		"url"
 	],
+	"c8": {
+		"reporter": [
+			"lcovonly",
+			"text"
+		]
+	},
 	"dependencies": {
 		"archive-type": "^4.0.0",
-		"content-disposition": "^0.5.2",
+		"content-disposition": "^0.5.4",
 		"decompress": "^4.2.1",
 		"ext-name": "^5.0.0",
-		"file-type": "^11.1.0",
-		"filenamify": "^3.0.0",
-		"get-stream": "^4.1.0",
-		"got": "^8.3.1",
-		"make-dir": "^2.1.0",
-		"p-event": "^2.1.0",
-		"pify": "^4.0.1"
+		"file-type": "^12.4.2",
+		"filenamify": "^5.1.1",
+		"get-stream": "^6.0.1",
+		"got": "^11.8.5",
+		"p-event": "^5.0.1"
 	},
 	"devDependencies": {
-		"ava": "^1.4.1",
+		"ava": "^4.3.0",
+		"c8": "^7.11.3",
 		"is-zip": "^1.0.0",
-		"nock": "^10.0.6",
-		"path-exists": "^3.0.0",
+		"nock": "^13.2.6",
+		"path-exists": "^5.0.0",
 		"random-buffer": "^0.1.0",
-		"rimraf": "^3.0.0",
-		"xo": "^0.24.0"
+		"xo": "^0.49.0"
+	},
+	"xo": {
+		"rules": {
+			"unicorn/prevent-abbreviations": "off"
+		}
 	}
 }
