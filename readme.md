@@ -1,4 +1,4 @@
-# download [![Build Status](https://travis-ci.org/kevva/download.svg?branch=master)](https://travis-ci.org/kevva/download)
+# download [![CI](https://github.com/kevva/download/actions/workflows/ci.yml/badge.svg)](https://github.com/kevva/download/actions/workflows/ci.yml)
 
 > Download and extract files
 
@@ -7,16 +7,16 @@
 
 ## Install
 
-```
-$ npm install download
+```sh
+npm install download
 ```
 
 
 ## Usage
 
 ```js
-const fs = require('fs');
-const download = require('download');
+import fs from 'node:fs';
+import download from 'download';
 
 (async () => {
 	await download('http://unicorn.com/foo.jpg', 'dist');
@@ -63,8 +63,8 @@ Same options as [`got`](https://github.com/sindresorhus/got#options) and [`decom
 
 ##### extract
 
-Type: `boolean`<br>
-Default: `false`
+* Type: `boolean`
+* Default: `false`
 
 If set to `true`, try extracting the file using [`decompress`](https://github.com/kevva/decompress).
 
