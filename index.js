@@ -66,10 +66,10 @@ module.exports = (uri, output, opts) => {
 		output = null;
 	}
 
-	opts = Object.assign({
+	opts = Object.assign({ // eslint-disable-line prefer-object-spread
 		encoding: null,
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
-	}, opts); // eslint-disable-line prefer-object-spread
+	}, opts);
 
 	const stream = got.stream(uri, opts);
 
