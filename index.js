@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const {URL} = require('url');
+const {URL} = require('url'); // eslint-disable-line node/prefer-global/url
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
 const decompress = require('decompress');
@@ -63,17 +63,17 @@ module.exports = (uri, output, opts) => {
 		output = null;
 	}
 
-	opts = Object.assign({
+	opts = Object.assign({ // eslint-disable-line prefer-object-spread
 		encoding: null,
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
 	}, opts);
 
 	const stream = got.stream(uri, opts);
 
-	const promise = pEvent(stream, 'response').then(res => {
+	const promise = pEvent(stream, 'response').then(res => { // eslint-disable-line promise/prefer-await-to-then
 		const encoding = opts.encoding === null ? 'buffer' : opts.encoding;
 		return Promise.all([getStream(stream, {encoding}), res]);
-	}).then(result => {
+	}).then(result => { // eslint-disable-line promise/prefer-await-to-then
 		const [data, res] = result;
 
 		if (!output) {
@@ -88,11 +88,11 @@ module.exports = (uri, output, opts) => {
 		}
 
 		return makeDir(path.dirname(outputFilepath))
-			.then(() => fsP.writeFile(outputFilepath, data))
-			.then(() => data);
+			.then(() => fsP.writeFile(outputFilepath, data)) // eslint-disable-line promise/prefer-await-to-then
+			.then(() => data); // eslint-disable-line promise/prefer-await-to-then
 	});
 
-	stream.then = promise.then.bind(promise);
+	stream.then = promise.then.bind(promise); // eslint-disable-line promise/prefer-await-to-then
 	stream.catch = promise.catch.bind(promise);
 
 	return stream;
