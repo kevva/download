@@ -1,7 +1,10 @@
 'use strict';
+
+/* eslint-disable promise/prefer-await-to-then */
+
 const fs = require('fs');
 const path = require('path');
-const {URL} = require('url');
+const {URL} = require('url'); // eslint-disable-line node/prefer-global/url
 const contentDisposition = require('content-disposition');
 const archiveType = require('archive-type');
 const decompress = require('decompress');
@@ -66,7 +69,7 @@ module.exports = (uri, output, opts) => {
 	opts = Object.assign({
 		encoding: null,
 		rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false'
-	}, opts);
+	}, opts); // eslint-disable-line prefer-object-spread
 
 	const stream = got.stream(uri, opts);
 
