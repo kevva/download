@@ -32,6 +32,38 @@ const download = require('download');
 })();
 ```
 
+### Example with progress bar
+
+For big files, it may be useful to use a progress bar on the CLI. You must install also module `progress`.
+
+```js
+const download = require('download')
+const ProgressBar = require('progress')
+
+const writeStream = fs.createWriteStream('http://unicorn.com/foo.zip')
+const readStream = download('dist/foo.zip')
+
+readStream.on('response', function (res) {
+  const len = parseInt(res.headers['content-length'], 10)
+  const bar = new ProgressBar('  downloading [:bar] :rate/bps :percent :etas', {
+    complete: '=',
+    incomplete: ' ',
+    width: 20,
+    total: len
+  })
+
+  readStream.on('data', function (chunk) {
+    writeStream.write(chunk)
+    bar.tick(chunk.length)
+  })
+
+  readStream.on('end', function () {
+    console.log('\n')
+    writeStream.end()
+  })
+})
+```
+
 ### Proxies
 
 To work with proxies, read the [`got documentation`](https://github.com/sindresorhus/got#proxies).
