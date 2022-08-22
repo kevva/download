@@ -58,7 +58,7 @@ readStream.on('response', function (res) {
   })
 
   readStream.on('end', function () {
-    console.log('\n')
+    console.log('Download done with success\n')
     writeStream.end()
   })
 })
