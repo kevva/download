@@ -3,7 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import contentDisposition from 'content-disposition';
 import archiveType from 'archive-type';
-import decompress from 'decompress';
+import decompress from '@xhmikosr/decompress';
 import filenamify from 'filenamify';
 import getStream from 'get-stream';
 import got from 'got';

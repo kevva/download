@@ -59,14 +59,14 @@ Path to where your file will be written.
 
 Type: `Object`
 
-Same options as [`got`](https://github.com/sindresorhus/got#options) and [`decompress`](https://github.com/kevva/decompress#options) in addition to the ones below.
+Same options as [`got`](https://github.com/sindresorhus/got#options) and [`decompress`](https://github.com/XhmikosR/decompress#options) in addition to the ones below.
 
 ##### extract
 
 * Type: `boolean`
 * Default: `false`
 
-If set to `true`, try extracting the file using [`decompress`](https://github.com/kevva/decompress).
+If set to `true`, try extracting the file using [`decompress`](https://github.com/XhmikosR/decompress).
 
 ##### filename
 
