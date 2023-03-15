@@ -1,4 +1,4 @@
-# download [![CI](https://github.com/kevva/download/actions/workflows/ci.yml/badge.svg)](https://github.com/kevva/download/actions/workflows/ci.yml)
+# download [![CI](https://github.com/XhmikosR/download/actions/workflows/ci.yml/badge.svg)](https://github.com/XhmikosR/download/actions/workflows/ci.yml)
 
 > Download and extract files
 
@@ -8,7 +8,7 @@
 ## Install
 
 ```sh
-npm install download
+npm install @xhmikosr/downloader
 ```
 
 
@@ -16,7 +16,7 @@ npm install download
 
 ```js
 import fs from 'node:fs';
-import download from 'download';
+import download from '@xhmikosr/downloader';
 
 (async () => {
 	await download('http://unicorn.com/foo.jpg', 'dist');

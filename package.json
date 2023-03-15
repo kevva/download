@@ -1,9 +1,12 @@
 {
-	"name": "download",
+	"name": "@xhmikosr/downloader",
 	"version": "8.0.0",
 	"description": "Download and extract files",
 	"license": "MIT",
-	"repository": "kevva/download",
+	"repository": "XhmikosR/download",
+	"publishConfig": {
+		"access": "public"
+	},
 	"author": {
 		"email": "kevinmartensson@gmail.com",
 		"name": "Kevin Mårtensson",
