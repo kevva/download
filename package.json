@@ -38,13 +38,6 @@
 		"request",
 		"url"
 	],
-	"c8": {
-		"reporter": [
-			"html",
-			"lcovonly",
-			"text"
-		]
-	},
 	"dependencies": {
 		"@xhmikosr/decompress": "^6.0.0",
 		"archive-type": "^4.0.0",
