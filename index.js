@@ -8,7 +8,7 @@ import filenamify from 'filenamify';
 import getStream from 'get-stream';
 import got from 'got';
 import {pEvent} from 'p-event';
-import {fileTypeFromBuffer} from 'file-type';
+import fileType from 'file-type';
 import extName from 'ext-name';
 
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
@@ -29,7 +29,7 @@ const getExtFromMime = res => {
 	return exts[0].ext;
 };
 
-const getFilename = async (res, data) => {
+const getFilename = (res, data) => {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
@@ -43,7 +43,7 @@ const getFilename = async (res, data) => {
 	let filename = filenameFromPath(res);
 
 	if (!path.extname(filename)) {
-		const ext = (await fileTypeFromBuffer(data) || {}).ext || getExtFromMime(res);
+		const ext = (fileType(data) || {}).ext || getExtFromMime(res);
 
 		if (ext) {
 			filename = `${filename}.${ext}`;
@@ -72,14 +72,14 @@ const download = (uri, output, options) => {
 	const promise = pEvent(stream, 'response').then(res => {
 		const encoding = options.responseType === 'buffer' ? 'buffer' : options.encoding;
 		return Promise.all([getStream(stream, {encoding}), res]);
-	}).then(async result => {
+	}).then(result => {
 		const [data, res] = result;
 
 		if (!output) {
 			return options.extract && archiveType(data) ? decompress(data, options) : data;
 		}
 
-		const filename = options.filename || filenamify(await getFilename(res, data));
+		const filename = options.filename || filenamify(getFilename(res, data));
 		const outputFilepath = path.join(output, filename);
 
 		if (options.extract && archiveType(data)) {
