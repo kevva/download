@@ -10,16 +10,17 @@
 	"author": {
 		"email": "kevinmartensson@gmail.com",
 		"name": "Kevin Mårtensson",
-		"url": "github.com/kevva"
+		"url": "https://github.com/kevva"
 	},
 	"engines": {
 		"node": "^12.20.0 || ^14.14.0 || >=16.0.0"
 	},
 	"scripts": {
 		"ava": "ava",
+		"lint": "xo",
 		"xo": "xo",
 		"test": "npm run xo && npm run ava",
-		"test-ci": "npm run xo && c8 ava"
+		"test-ci": "c8 ava"
 	},
 	"main": "index.js",
 	"type": "module",
