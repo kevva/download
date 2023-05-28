@@ -1,0 +1,7 @@
+{
+  "reporter": [
+    "html",
+    "lcovonly",
+    "text"
+  ]
+}
