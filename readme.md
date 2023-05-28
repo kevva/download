@@ -1,4 +1,4 @@
-# download [![CI](https://github.com/XhmikosR/download/actions/workflows/ci.yml/badge.svg)](https://github.com/XhmikosR/download/actions/workflows/ci.yml)
+# download [![CI](https://github.com/XhmikosR/download/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/XhmikosR/download/actions/workflows/ci.yml)
 
 > Download and extract files
 
