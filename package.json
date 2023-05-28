@@ -13,12 +13,13 @@
 		"url": "https://github.com/kevva"
 	},
 	"engines": {
-		"node": "^12.20.0 || ^14.14.0 || >=16.0.0"
+		"node": "^14.14.0 || >=16.0.0"
 	},
 	"scripts": {
 		"ava": "ava",
 		"lint": "xo",
 		"xo": "xo",
+		"fix": "xo --fix",
 		"test": "npm run xo && npm run ava",
 		"test-ci": "c8 ava"
 	},
@@ -39,29 +40,30 @@
 	],
 	"c8": {
 		"reporter": [
+			"html",
 			"lcovonly",
 			"text"
 		]
 	},
 	"dependencies": {
-		"@xhmikosr/decompress": "^5.0.0",
+		"@xhmikosr/decompress": "^6.0.0",
 		"archive-type": "^4.0.0",
 		"content-disposition": "^0.5.4",
 		"ext-name": "^5.0.0",
-		"file-type": "^12.4.2",
+		"file-type": "^18.4.0",
 		"filenamify": "^5.1.1",
 		"get-stream": "^6.0.1",
-		"got": "^11.8.5",
+		"got": "^11.8.6",
 		"p-event": "^5.0.1"
 	},
 	"devDependencies": {
-		"ava": "^4.3.0",
-		"c8": "^7.11.3",
+		"ava": "^5.3.0",
+		"c8": "^7.13.0",
 		"is-zip": "^1.0.0",
-		"nock": "^13.2.6",
+		"nock": "^13.3.1",
 		"path-exists": "^5.0.0",
 		"random-buffer": "^0.1.0",
-		"xo": "^0.49.0"
+		"xo": "^0.54.2"
 	},
 	"xo": {
 		"rules": {
