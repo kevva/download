@@ -2,7 +2,7 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import contentDisposition from 'content-disposition';
-import archiveType from 'archive-type';
+import archiveType from '@xhmikosr/archive-type';
 import decompress from '@xhmikosr/decompress';
 import filenamify from 'filenamify';
 import getStream from 'get-stream';
