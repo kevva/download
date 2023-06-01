@@ -1,3 +1,4 @@
+import {randomBytes} from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -7,7 +8,6 @@ import getStream from 'get-stream';
 import isZip from 'is-zip';
 import nock from 'nock';
 import {pathExists} from 'path-exists';
-import randomBuffer from 'random-buffer';
 import download from './index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +31,7 @@ test.before(() => {
 		.get('/foo*bar.zip')
 		.replyWithFile(200, path.join(__dirname, 'fixture.zip'))
 		.get('/large.bin')
-		.reply(200, randomBuffer(7_928_260))
+		.reply(200, randomBytes(7_928_260))
 		.get('/redirect.zip')
 		.reply(302, null, {location: 'http://foo.bar/foo.zip'})
 		.get('/redirect-https.zip')
