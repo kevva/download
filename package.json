@@ -39,8 +39,8 @@
 		"url"
 	],
 	"dependencies": {
+		"@xhmikosr/archive-type": "^5.0.0",
 		"@xhmikosr/decompress": "^7.0.0",
-		"archive-type": "^4.0.0",
 		"content-disposition": "^0.5.4",
 		"ext-name": "^5.0.0",
 		"file-type": "^12.4.2",
