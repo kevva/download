@@ -69,27 +69,32 @@ const download = (uri, output, options) => {
 
 	const stream = got.stream(uri, options);
 
-	const promise = pEvent(stream, 'response').then(res => {
-		const encoding = options.responseType === 'buffer' ? 'buffer' : options.encoding;
-		return Promise.all([getStream(stream, {encoding}), res]);
-	}).then(result => {
-		const [data, res] = result;
+	const promise = pEvent(stream, 'response')
+		.then(res => {
+			const encoding = options.responseType === 'buffer' ? 'buffer' : options.encoding;
+			return Promise.all([getStream(stream, {encoding}), res]);
+		})
+		.then(result => {
+			const [data, res] = result;
 
-		if (!output) {
-			return options.extract && archiveType(data) ? decompress(data, options) : data;
-		}
+			if (!output) {
+				return options.extract && archiveType(data)
+					? decompress(data, options)
+					: data;
+			}
 
-		const filename = options.filename || filenamify(getFilename(res, data));
-		const outputFilepath = path.join(output, filename);
+			const filename = options.filename || filenamify(getFilename(res, data));
+			const outputFilepath = path.join(output, filename);
 
-		if (options.extract && archiveType(data)) {
-			return decompress(data, path.dirname(outputFilepath), options);
-		}
+			if (options.extract && archiveType(data)) {
+				return decompress(data, path.dirname(outputFilepath), options);
+			}
 
-		return fs.mkdir(path.dirname(outputFilepath), {recursive: true})
-			.then(() => fs.writeFile(outputFilepath, data))
-			.then(() => data);
-	});
+			return fs
+				.mkdir(path.dirname(outputFilepath), {recursive: true})
+				.then(() => fs.writeFile(outputFilepath, data))
+				.then(() => data);
+		});
 
 	stream.then = promise.then.bind(promise); // eslint-disable-line unicorn/no-thenable
 	stream.catch = promise.catch.bind(promise);
