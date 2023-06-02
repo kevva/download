@@ -57,9 +57,15 @@ Path to where your file will be written.
 
 #### options
 
+##### options.got
+
 Type: `Object`
 
-Same options as [`got`](https://github.com/sindresorhus/got#options) and [`decompress`](https://github.com/XhmikosR/decompress#options) in addition to the ones below.
+Same options as [`got`](https://github.com/sindresorhus/got#options).
+
+##### options.decompress
+
+Same options as [`decompress`](https://github.com/XhmikosR/decompress#options).
 
 ##### extract
 

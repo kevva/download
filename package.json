@@ -42,11 +42,12 @@
 		"@xhmikosr/archive-type": "^5.0.0",
 		"@xhmikosr/decompress": "^7.0.0",
 		"content-disposition": "^0.5.4",
+		"defaults": "^2.0.1",
 		"ext-name": "^5.0.0",
 		"file-type": "^12.4.2",
 		"filenamify": "^5.1.1",
 		"get-stream": "^6.0.1",
-		"got": "^11.8.6",
+		"got": "^13.0.0",
 		"p-event": "^5.0.1"
 	},
 	"devDependencies": {

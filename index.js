@@ -4,6 +4,7 @@ import process from 'node:process';
 import contentDisposition from 'content-disposition';
 import archiveType from '@xhmikosr/archive-type';
 import decompress from '@xhmikosr/decompress';
+import defaults from 'defaults';
 import filenamify from 'filenamify';
 import getStream from 'get-stream';
 import got from 'got';
@@ -59,25 +60,27 @@ const download = (uri, output, options) => {
 		output = null;
 	}
 
-	options = {
-		responseType: 'buffer',
-		https: {
-			rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false',
+	options = defaults(options, {
+		got: {
+			responseType: 'buffer',
+			https: {
+				rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false',
+			},
 		},
-		...options,
-	};
+		decompress: {},
+	});
 
-	const stream = got.stream(uri, options);
+	const stream = got.stream(uri, options.got);
 
 	const promise = pEvent(stream, 'response')
 		.then(res => {
-			const encoding = options.responseType === 'buffer' ? 'buffer' : options.encoding;
+			const encoding = options.got.responseType === 'buffer' ? 'buffer' : options.got.encoding;
 			return Promise.all([getStream(stream, {encoding}), res]);
 		})
 		.then(([data, res]) => {
 			if (!output) {
 				return options.extract && archiveType(data)
-					? decompress(data, options)
+					? decompress(data, options.decompress)
 					: data;
 			}
 
@@ -85,7 +88,11 @@ const download = (uri, output, options) => {
 			const outputFilepath = path.join(output, filename);
 
 			if (options.extract && archiveType(data)) {
-				return decompress(data, path.dirname(outputFilepath), options);
+				return decompress(
+					data,
+					path.dirname(outputFilepath),
+					options.decompress,
+				);
 			}
 
 			return fs
