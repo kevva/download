@@ -74,9 +74,7 @@ const download = (uri, output, options) => {
 			const encoding = options.responseType === 'buffer' ? 'buffer' : options.encoding;
 			return Promise.all([getStream(stream, {encoding}), res]);
 		})
-		.then(result => {
-			const [data, res] = result;
-
+		.then(([data, res]) => {
 			if (!output) {
 				return options.extract && archiveType(data)
 					? decompress(data, options)
