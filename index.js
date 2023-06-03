@@ -35,7 +35,7 @@ const getFilename = (res, data) => {
 	if (header) {
 		const parsed = contentDisposition.parse(header);
 
-		if (parsed.parameters && parsed.parameters.filename) {
+		if (parsed.parameters?.filename) {
 			return parsed.parameters.filename;
 		}
 	}
@@ -43,7 +43,7 @@ const getFilename = (res, data) => {
 	let filename = filenameFromPath(res);
 
 	if (!path.extname(filename)) {
-		const ext = (fileType(data) || {}).ext || getExtFromMime(res);
+		const ext = fileType(data)?.ext || getExtFromMime(res);
 
 		if (ext) {
 			filename = `${filename}.${ext}`;
@@ -94,7 +94,8 @@ const download = (uri, output, options) => {
 				.then(() => data);
 		});
 
-	stream.then = promise.then.bind(promise); // eslint-disable-line unicorn/no-thenable
+	// eslint-disable-next-line unicorn/no-thenable
+	stream.then = promise.then.bind(promise);
 	stream.catch = promise.catch.bind(promise);
 
 	return stream;
