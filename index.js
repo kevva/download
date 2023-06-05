@@ -5,12 +5,12 @@ import contentDisposition from 'content-disposition';
 import archiveType from '@xhmikosr/archive-type';
 import decompress from '@xhmikosr/decompress';
 import defaults from 'defaults';
+import extName from 'ext-name';
+import {fileTypeFromBuffer} from 'file-type';
 import filenamify from 'filenamify';
 import getStream from 'get-stream';
 import got from 'got';
 import {pEvent} from 'p-event';
-import fileType from 'file-type';
-import extName from 'ext-name';
 
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
 
@@ -30,7 +30,7 @@ const getExtFromMime = res => {
 	return exts[0].ext;
 };
 
-const getFilename = (res, data) => {
+const getFilename = async (res, data) => {
 	const header = res.headers['content-disposition'];
 
 	if (header) {
@@ -44,7 +44,8 @@ const getFilename = (res, data) => {
 	let filename = filenameFromPath(res);
 
 	if (!path.extname(filename)) {
-		const ext = fileType(data)?.ext || getExtFromMime(res);
+		const fileType = await fileTypeFromBuffer(data);
+		const ext = fileType?.ext || getExtFromMime(res);
 
 		if (ext) {
 			filename = `${filename}.${ext}`;
@@ -77,17 +78,17 @@ const download = (uri, output, options) => {
 			const encoding = options.got.responseType === 'buffer' ? 'buffer' : options.got.encoding;
 			return Promise.all([getStream(stream, {encoding}), res]);
 		})
-		.then(([data, res]) => {
+		.then(async ([data, res]) => {
 			if (!output) {
-				return options.extract && archiveType(data)
+				return options.extract && await archiveType(data)
 					? decompress(data, options.decompress)
 					: data;
 			}
 
-			const filename = options.filename || filenamify(getFilename(res, data));
+			const filename = options.filename || filenamify(await getFilename(res, data));
 			const outputFilepath = path.join(output, filename);
 
-			if (options.extract && archiveType(data)) {
+			if (options.extract && await archiveType(data)) {
 				return decompress(
 					data,
 					path.dirname(outputFilepath),

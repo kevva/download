@@ -83,7 +83,11 @@ test('extract file that is not compressed', async t => {
 });
 
 test('error on 404', async t => {
-	await t.throwsAsync(download('http://foo.bar/404'), undefined, 'Response code 404 (Not Found)');
+	await t.throwsAsync(
+		download('http://foo.bar/404'),
+		undefined,
+		'Response code 404 (Not Found)',
+	);
 });
 
 test('rename to valid filename', async t => {
