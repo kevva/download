@@ -1,4 +1,4 @@
-import {promises as fs} from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import contentDisposition from 'content-disposition';
@@ -13,10 +13,8 @@ import got from 'got';
 import mergeOptions from 'merge-options';
 import {pEvent} from 'p-event';
 
-const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
-
-const getExtFromMime = res => {
-	const header = res.headers['content-type'];
+const getExtFromMime = response => {
+	const header = response.headers['content-type'];
 
 	if (!header) {
 		return null;
@@ -24,15 +22,11 @@ const getExtFromMime = res => {
 
 	const exts = extName.mime(header);
 
-	if (exts.length !== 1) {
-		return null;
-	}
-
-	return exts[0].ext;
+	return exts.length === 1 ? exts[0].ext : null;
 };
 
-const getFilename = async (res, data) => {
-	const header = res.headers['content-disposition'];
+const getFilename = async (response, data) => {
+	const header = response.headers['content-disposition'];
 
 	if (header) {
 		const parsed = contentDisposition.parse(header);
@@ -42,11 +36,11 @@ const getFilename = async (res, data) => {
 		}
 	}
 
-	let filename = filenameFromPath(res);
+	let filename = path.basename(new URL(response.requestUrl).pathname);
 
 	if (!path.extname(filename)) {
 		const fileType = await fileTypeFromBuffer(data);
-		const ext = fileType?.ext || getExtFromMime(res);
+		const ext = fileType?.ext || getExtFromMime(response);
 
 		if (ext) {
 			filename = `${filename}.${ext}`;
@@ -77,26 +71,22 @@ const download = (uri, output, options) => {
 	const stream = got.stream(uri, options.got);
 
 	const promise = pEvent(stream, 'response')
-		.then(res => {
+		.then(response => {
 			const encoding = options.got.responseType === 'buffer' ? 'buffer' : options.got.encoding;
-			return Promise.all([getStream(stream, {encoding}), res]);
+			return Promise.all([getStream(stream, {encoding}), response]);
 		})
-		.then(async ([data, res]) => {
+		.then(async ([data, response]) => {
+			const hasArchiveData = options.extract && await archiveType(data);
+
 			if (!output) {
-				return options.extract && await archiveType(data)
-					? decompress(data, options.decompress)
-					: data;
+				return hasArchiveData ? decompress(data, options.decompress) : data;
 			}
 
-			const filename = options.filename || filenamify(await getFilename(res, data));
+			const filename = options.filename || filenamify(await getFilename(response, data));
 			const outputFilepath = path.join(output, filename);
 
-			if (options.extract && await archiveType(data)) {
-				return decompress(
-					data,
-					path.dirname(outputFilepath),
-					options.decompress,
-				);
+			if (hasArchiveData) {
+				return decompress(data, path.dirname(outputFilepath), options.decompress);
 			}
 
 			return fs
