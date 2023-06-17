@@ -13,6 +13,8 @@ import download from './index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const removeDir = async dir => fs.rm(dir, {force: true, recursive: true});
+
 test.before(() => {
 	nock('http://foo.bar')
 		.persist()
@@ -61,25 +63,25 @@ test('download a very large file', async t => {
 test('download and rename file', async t => {
 	await download('http://foo.bar/foo.zip', __dirname, {filename: 'bar.zip'});
 	t.true(await pathExists(path.join(__dirname, 'bar.zip')));
-	await fs.unlink(path.join(__dirname, 'bar.zip'));
+	await removeDir(path.join(__dirname, 'bar.zip'));
 });
 
 test('save file', async t => {
 	await download('http://foo.bar/foo.zip', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'foo.zip')));
-	await fs.unlink(path.join(__dirname, 'foo.zip'));
+	await removeDir(path.join(__dirname, 'foo.zip'));
 });
 
 test('extract file', async t => {
 	await download('http://foo.bar/foo.zip', __dirname, {extract: true});
 	t.true(await pathExists(path.join(__dirname, 'file.txt')));
-	await fs.unlink(path.join(__dirname, 'file.txt'));
+	await removeDir(path.join(__dirname, 'file.txt'));
 });
 
 test('extract file that is not compressed', async t => {
 	await download('http://foo.bar/foo.js', __dirname, {extract: true});
 	t.true(await pathExists(path.join(__dirname, 'foo.js')));
-	await fs.unlink(path.join(__dirname, 'foo.js'));
+	await removeDir(path.join(__dirname, 'foo.js'));
 });
 
 test('error on 404', async t => {
@@ -93,7 +95,7 @@ test('error on 404', async t => {
 test('rename to valid filename', async t => {
 	await download('http://foo.bar/foo*bar.zip', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'foo!bar.zip')));
-	await fs.unlink(path.join(__dirname, 'foo!bar.zip'));
+	await removeDir(path.join(__dirname, 'foo!bar.zip'));
 });
 
 test('follow redirects', async t => {
@@ -107,17 +109,17 @@ test('follow redirect to https', async t => {
 test('handle query string', async t => {
 	await download('http://foo.bar/querystring.zip?param=value', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'querystring.zip')));
-	await fs.unlink(path.join(__dirname, 'querystring.zip'));
+	await removeDir(path.join(__dirname, 'querystring.zip'));
 });
 
 test('handle content disposition', async t => {
 	await download('http://foo.bar/dispo', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'dispo.zip')));
-	await fs.unlink(path.join(__dirname, 'dispo.zip'));
+	await removeDir(path.join(__dirname, 'dispo.zip'));
 });
 
 test('handle filename from file type', async t => {
 	await download('http://foo.bar/filetype', __dirname);
 	t.true(await pathExists(path.join(__dirname, 'filetype.zip')));
-	await fs.unlink(path.join(__dirname, 'filetype.zip'));
+	await removeDir(path.join(__dirname, 'filetype.zip'));
 });
