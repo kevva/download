@@ -40,7 +40,7 @@ const getFilename = (res, data) => {
 		const parsed = contentDisposition.parse(header);
 
 		if (parsed.parameters && parsed.parameters.filename) {
-			return parsed.parameters.filename;
+			return decodeURIComponent(parsed.parameters.filename);
 		}
 	}
 
@@ -54,7 +54,7 @@ const getFilename = (res, data) => {
 		}
 	}
 
-	return filename;
+	return decodeURIComponent(filename);
 };
 
 module.exports = (uri, output, opts) => {
