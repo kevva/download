@@ -1,6 +1,6 @@
 {
 	"name": "@tpp/download2",
-	"version": "8.1.0",
+	"version": "8.1.1",
 	"description": "Download and extract files",
 	"license": "MIT",
 	"repository": "theproductiveprogrammer/download",
