@@ -1,14 +1,9 @@
 {
-	"name": "download",
-	"version": "8.0.0",
+	"name": "@tpp/download2",
+	"version": "8.1.0",
 	"description": "Download and extract files",
 	"license": "MIT",
-	"repository": "kevva/download",
-	"author": {
-		"email": "kevinmartensson@gmail.com",
-		"name": "Kevin Mårtensson",
-		"url": "github.com/kevva"
-	},
+	"repository": "theproductiveprogrammer/download",
 	"engines": {
 		"node": ">=10"
 	},
