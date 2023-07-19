@@ -13,9 +13,11 @@ const pify = require('pify');
 const pEvent = require('p-event');
 const fileType = require('file-type');
 const extName = require('ext-name');
+const crypto = require('crypto');
 
 const fsP = pify(fs);
 const filenameFromPath = res => path.basename(new URL(res.requestUrl).pathname);
+const randName = len => crypto.randomBytes(Math.round(len / 2)).toString('hex')
 
 const getExtFromMime = res => {
 	const header = res.headers['content-type'];
@@ -80,7 +82,7 @@ module.exports = (uri, output, opts) => {
 			return opts.extract && archiveType(data) ? decompress(data, opts) : data;
 		}
 
-		const filename = opts.filename || filenamify(getFilename(res, data));
+		const filename = opts.filename || filenamify(getFilename(res, data)) || randName(16);
 		const outputFilepath = path.join(output, filename);
 
 		if (opts.extract && archiveType(data)) {
@@ -97,3 +99,4 @@ module.exports = (uri, output, opts) => {
 
 	return stream;
 };
+
